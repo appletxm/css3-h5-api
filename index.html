@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="assets/images/logo.ico" type="image/png">
+  <style>
+    body{
+      font-size: .12rem;
+    }
+
+    img{
+      background-color: gray;
+    }
+
+    form{
+      display: block;
+      margin: 20px;
+    }
+
+    form input{
+      display: block;
+      margin: 0 0 5px 0;
+    }
+
+    .drag-drop-panel{
+      height: 200px;
+      background: gray;
+    }
+    .drag-drop-panel::before{
+      color: white;
+      content: "drag to this panel"
+    }
+    .drag-drop-panel-to{
+      box-shadow: 0 0 10px rgba(0,0,0,0.2), inset 0 0 10px rgba(0,0,0,0.5);
+    }
+    .drag-drop-panel-to::before{
+      color: orange;
+    }
+    .drag-from-panel{
+      background-color: plum;
+      padding: 5px;
+    }
+    .drag-from-panel::selection{
+      background-color: orange;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="drag-drop-panel"></div>
+  <div class="drag-from-panel">
+    <img src="assets/images/rc-code.jpg" /><br/>
+    选择从这里开始选择从这里开始选择从这里开始选择从这里开始选择从这里开始，选择从这里开始，选择从这里开始选择从这里开始。
+  </div>
+
+  <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+  <script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
+
+  <script type="module">
+    import DragDrop from './src/drag-drop.js'
+
+    // document.querySelector('.drag-from-panel').addEventListener('mousedown', function(event){
+    //   console.info('=====================', event.target)
+    //   if(event.target.tagName.toLowerCase() === 'li'){
+    //     console.info('==========2222==============')
+    //     event.target.select()
+    //   }
+    // })
+
+    let dragDrop = new DragDrop({
+      toObj: document.querySelector('.drag-drop-panel'),
+      fromObj: document.querySelector('.drag-from-panel')
+    })
+  </script>
+</body>
+</html>
