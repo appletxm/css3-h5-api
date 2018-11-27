@@ -50,6 +50,25 @@
     .drag-from-panel::selection{
       background-color: orange;
     }
+
+    .mask-font{
+      font-size: 50px;
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+      background: white;
+    }
+
+    .mask-box{
+      width: 500px;
+      height: 100px;
+      background: linear-gradient(90deg, red, green);
+      /* -webkit-mask-image: -webkit-element(#mask-font);
+      mask-image: -moz-element(#mask-font);
+      mask-image: element(#mask-font); */
+      -webkit-mask-image: url(assets/images/logo-s.png);
+      mask-image: url(assets/images/logo-s.png);
+    }
   </style>
 </head>
 
@@ -59,6 +78,10 @@
     <img src="assets/images/rc-code.jpg" /><br/>
     选择从这里开始选择从这里开始选择从这里开始选择从这里开始选择从这里开始，选择从这里开始，选择从这里开始选择从这里开始。
   </div>
+
+  <p>test css3 image-mask</p>
+  <h1 id="mask-font" class="mask-font"></h1>
+  <div class="mask-box"></div>
 
   <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
   <script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
