@@ -51,23 +51,71 @@
       background-color: orange;
     }
 
-    .mask-font{
-      font-size: 50px;
-      width: 30px;
-      height: 30px;
-      border-radius: 15px;
+    .mask-box {
+      width: 300px;
+      height:100px;
+      position: relative;
+    }
+
+    .mask-shape{
+      height: 100px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    .mask-shape div{
+      position: absolute;
+      top: 35px;
+      left: 30px;
+      right: 30px;
+      height: 4px;
       background: white;
     }
 
-    .mask-box{
-      width: 500px;
-      height: 100px;
+    .mask-shape p{
+      content: "";
+      display: block;
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 25px;
+      top: 0;
+      left: 0;
+      background: white;
+      text-align: center;
+    }
+
+    p::after{
+      content: "1"
+    }
+
+    .mask-shape p:nth-of-type(2) {
+      left: 130px;
+    }
+
+    .mask-shape p:nth-of-type(3) {
+      left: auto;
+      right: 0;
+    }
+
+    .mask-bg-color{
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: linear-gradient(90deg, red, green);
       /* -webkit-mask-image: -webkit-element(#mask-font);
       mask-image: -moz-element(#mask-font);
       mask-image: element(#mask-font); */
       -webkit-mask-image: url(assets/images/logo-s.png);
       mask-image: url(assets/images/logo-s.png);
+
+      -webkit-mask-repeat: no-repeat;
+      -moz-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
     }
   </style>
 </head>
@@ -80,8 +128,16 @@
   </div>
 
   <p>test css3 image-mask</p>
-  <h1 id="mask-font" class="mask-font"></h1>
-  <div class="mask-box"></div>
+  <div class="mask-box">
+    <div id="mask-font" class="mask-shape">
+      <p></p>
+      <p></p>
+      <p></p>
+      <div></div>
+    </div>
+    <div class="mask-bg-color"></div>
+  </div>
+ 
 
   <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
   <script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
