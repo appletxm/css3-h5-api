@@ -15,6 +15,8 @@ function getContentType(extendsName){
       return 'image/gif'
     case 'jpg':
       return 'image/jpeg'
+    case 'pdf':
+      return 'application/pdf'
     default:
       return 'text/plain'
   }

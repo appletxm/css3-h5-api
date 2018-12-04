@@ -34,7 +34,7 @@ function getImageFile (req, res) {
 }
 
 function getHtmlFile (req, res) {
-  let htmlFilePath = path.join(__dirname, '../index.html')
+  let htmlFilePath = path.join(__dirname, req.path === '/' ? '../index.html' : ('../' + req.path))
   let html = fs.readFileSync(htmlFilePath)
   let contentType = getContentType('html')
 
@@ -55,7 +55,23 @@ function getScriptFile (req, res) {
 
 function getCssFile (req, res) {
   console.info('====get css file')
+  let filePath = path.join(__dirname, '../' + req.path)
+  let file = fs.readFileSync(filePath)
   let contentType = getContentType('css')
+
+  res.set('Content-Type', contentType)
+  res.send(file)
+  res.end()
+}
+
+function getPdfFile (req, res) {
+  let filePath = decodeURIComponent(path.join(__dirname, '../' + req.path))
+  let file = fs.readFileSync(filePath)
+  let contentType = getContentType('pdf')
+
+  res.set('Content-Type', contentType)
+  res.send(file)
+  res.end()
 }
 
 function routerAssets (req, res, logger) {
@@ -72,6 +88,8 @@ function routerAssets (req, res, logger) {
     getCssFile(req, res)
   } else if (req.originalUrl.indexOf('.html') >= 0 || req.originalUrl.indexOf('.htm') >= 0) {
     getHtmlFile(req, res)
+  } else if (req.originalUrl.indexOf('.pdf') >= 0) {
+    getPdfFile(req, res)
   } else {
     getHtmlFile(req, res)
   }
