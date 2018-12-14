@@ -1,63 +1,69 @@
 <!DOCTYPE html>
 
 <html lang="en" style="font-size: 100px;">
+
 <head>
   <meta charset="UTF-8">
   <!-- <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="expires" content="0"> -->
-	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
-	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-	<meta name="format-detection" content="telephone=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
   <title>test css3 and h5 api</title>
   <link rel="icon" href="assets/images/logo.ico" type="image/png">
   <style>
-    body{
+    body {
       font-size: .12rem;
     }
 
-    img{
+    img {
       background-color: gray;
     }
 
-    form{
+    form {
       display: block;
       margin: 20px;
     }
 
-    form input{
+    form input {
       display: block;
       margin: 0 0 5px 0;
     }
 
-    .drag-drop-panel{
+    .drag-drop-panel {
       height: 200px;
       background: gray;
     }
-    .drag-drop-panel::before{
+
+    .drag-drop-panel::before {
       color: white;
       content: "drag to this panel"
     }
-    .drag-drop-panel-to{
-      box-shadow: 0 0 10px rgba(0,0,0,0.2), inset 0 0 10px rgba(0,0,0,0.5);
+
+    .drag-drop-panel-to {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.5);
     }
-    .drag-drop-panel-to::before{
+
+    .drag-drop-panel-to::before {
       color: orange;
     }
-    .drag-from-panel{
+
+    .drag-from-panel {
       background-color: plum;
       padding: 5px;
     }
-    .drag-from-panel::selection{
+
+    .drag-from-panel::selection {
       background-color: orange;
     }
 
     .mask-box {
       width: 300px;
-      height:100px;
+      height: 100px;
       position: relative;
     }
 
-    .mask-shape{
+    .mask-shape {
       height: 100px;
       position: absolute;
       top: 0;
@@ -65,7 +71,7 @@
       width: 100%;
     }
 
-    .mask-shape div{
+    .mask-shape div {
       position: absolute;
       top: 35px;
       left: 30px;
@@ -74,7 +80,7 @@
       background: white;
     }
 
-    .mask-shape p{
+    .mask-shape p {
       content: "";
       display: block;
       position: absolute;
@@ -87,7 +93,7 @@
       text-align: center;
     }
 
-    p::after{
+    p::after {
       content: "1"
     }
 
@@ -100,7 +106,7 @@
       right: 0;
     }
 
-    .mask-bg-color{
+    .mask-bg-color {
       position: absolute;
       top: 0;
       left: 0;
@@ -118,10 +124,29 @@
       mask-repeat: no-repeat;
     }
 
-    .svg-step{
+    .svg-step {
       width: 300px;
       height: 50px;
       position: relative;
+    }
+
+    .container {
+      background: #eee;
+      width: 300px;
+      height: 200px;
+      margin: 0 auto;
+      overflow: auto;
+    }
+
+    nav {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      height: 50px;
+      background: #999;
+      color: #fff;
+      font-size: 30px;
+      line-height: 50px;
     }
   </style>
 </head>
@@ -129,7 +154,7 @@
 <body>
   <div class="drag-drop-panel"></div>
   <div class="drag-from-panel">
-    <img src="assets/images/rc-code.jpg" /><br/>
+    <img src="assets/images/rc-code.jpg" /><br />
     选择从这里开始选择从这里开始选择从这里开始选择从这里开始选择从这里开始，选择从这里开始，选择从这里开始选择从这里开始。
   </div>
 
@@ -143,19 +168,24 @@
     </div>
     <div class="mask-bg-color"></div>
   </div>
- 
+
   <div class="svg-step">
-    <svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 234 18" style="enable-background:new 0 0 234 18;" xml:space="preserve">
+    <svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+      y="0px" viewBox="0 0 234 18" style="enable-background:new 0 0 234 18;" xml:space="preserve">
       <style type="text/css">
-        .st0{fill:url(#step-path-color);}
+        .st0 {
+          fill: url(#step-path-color);
+        }
+
       </style>
       <title>路径</title>
       <desc>Created with Sketch.</desc>
       <g id="快版">
         <g id="关于我们-copy" transform="translate(-71.000000, -980.000000)">
-            <linearGradient id="step-path-color" gradientUnits="userSpaceOnUse" x1="138.6789" y1="1037.2778" x2="137.7548" y2="1037.2778" gradientTransform="matrix(234 0 0 -18 -32154 19660)">
-            <stop  offset="0" style="stop-color:#FF7793"/>
-            <stop  offset="1" style="stop-color:#B254C7"/>
+          <linearGradient id="step-path-color" gradientUnits="userSpaceOnUse" x1="138.6789" y1="1037.2778" x2="137.7548"
+            y2="1037.2778" gradientTransform="matrix(234 0 0 -18 -32154 19660)">
+            <stop offset="0" style="stop-color:#FF7793" />
+            <stop offset="1" style="stop-color:#B254C7" />
           </linearGradient>
           <path id="step-path" class="st0" d="M259.9,987l25.5,0c0,0,0,0,0,0c0.9,0,1.7-0.5,2.1-1.3c1.3-3.3,4.6-5.7,8.4-5.7c5,0,9,4,9,9
             s-4,9-9,9c-3.8,0-7-2.3-8.4-5.7c-0.4-0.8-1.2-1.3-2.1-1.3c0,0,0,0-0.1,0h-51.1c0,0,0,0-0.1,0c-0.9,0-1.7,0.5-2.1,1.3
@@ -164,12 +194,48 @@
             c0,0,0,0-0.1,0c-0.9,0-1.7,0.5-2.1,1.3c-1.3,3.3-4.6,5.7-8.4,5.7c-5,0-9-4-9-9s4-9,9-9c3.8,0,7,2.3,8.4,5.7
             c0.4,0.8,1.2,1.3,2.1,1.3c0,0,0,0,0,0l25.4,0l25.4,0c0,0,0,0,0,0c0.9,0,1.7-0.5,2.1-1.3c1.3-3.3,4.6-5.7,8.4-5.7
             c3.8,0,7,2.3,8.4,5.7c0.4,0.8,1.2,1.3,2.1,1.3c0,0,0,0,0,0l25.5,0l25.5,0c0,0,0,0,0,0c0.9,0,1.7-0.5,2.1-1.3
-            c1.3-3.3,4.6-5.7,8.4-5.7c3.8,0,7,2.3,8.4,5.7c0.4,0.8,1.2,1.3,2.1,1.3c0,0,0,0,0,0L259.9,987z"/>
+            c1.3-3.3,4.6-5.7,8.4-5.7c3.8,0,7,2.3,8.4,5.7c0.4,0.8,1.2,1.3,2.1,1.3c0,0,0,0,0,0L259.9,987z" />
         </g>
       </g>
     </svg>
   </div>
-  
+
+  <div class="container">
+    <nav>我是导航栏1 postion stikcy</nav>
+    <div class="content">
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+    </div>
+    <nav>我是导航栏2</nav>
+    <div class="content">
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+    </div>
+    <nav>我是导航栏3</nav>
+    <div class="content">
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+      <p>我是内容栏</p>
+    </div>
+  </div>
+
 
   <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
   <script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
@@ -191,4 +257,5 @@
     })
   </script>
 </body>
+
 </html>
