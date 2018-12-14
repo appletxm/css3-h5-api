@@ -145,8 +145,20 @@
       height: 50px;
       background: #999;
       color: #fff;
-      font-size: 30px;
+      font-size: 14px;
       line-height: 50px;
+    }
+
+    .text-gradient{
+      font-size: .3rem;
+    }
+    .text-gradient h1{
+      display: inline-block;
+      font-weight: normal;
+      font-size: .3rem;
+      background: linear-gradient(90deg, red, green);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
   </style>
 </head>
@@ -236,6 +248,9 @@
     </div>
   </div>
 
+  <div class="text-gradient">
+    <h1>text gradient</h1>
+  </div>
 
   <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
   <script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
