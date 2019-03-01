@@ -252,26 +252,41 @@
     <h1>text gradient</h1>
   </div>
 
+  <button id="testJavascript">执行javascript alert</button>
+
   <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
   <script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
 
   <script type="module">
     import DragDrop from './src/drag-drop.js'
 
-    // document.querySelector('.drag-from-panel').addEventListener('mousedown', function(event){
-    //   console.info('=====================', event.target)
-    //   if(event.target.tagName.toLowerCase() === 'li'){
-    //     console.info('==========2222==============')
-    //     event.target.select()
-    //   }
-    // })
+    document.querySelector('.drag-from-panel').addEventListener('mousedown', function(event){
+      console.info('=====================', event.target)
+      if(event.target.tagName.toLowerCase() === 'li'){
+        console.info('==========2222==============')
+        event.target.select()
+      }
+    })
 
     let dragDrop = new DragDrop({
       toObj: document.querySelector('.drag-drop-panel'),
       fromObj: document.querySelector('.drag-from-panel')
     })
+  </script>
 
-    window.postMessage(JSON.stringify({a:1, b:123, c:''}))
+  <script type="text/javascript">
+    window.onload = function() {
+      // alert('page load completed')
+      document.addEventListener("message", function(event) {
+        alert(event.data)
+      }, false)
+
+      document.onmessa
+
+      document.querySelector('#testJavascript').onclick = function(event) {
+        window.postMessage(JSON.stringify({a:1, b:123, c:''}), '*')
+      }
+    }
   </script>
 </body>
 
