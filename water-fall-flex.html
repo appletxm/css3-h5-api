@@ -130,5 +130,18 @@
       </span>
     </li>
   </ul>
+
+  <script>
+    var box = document.querySelector('.box')
+    box.addEventListener('click', function(event) {
+      console.info('box boubble')
+      console.info(event.target, event.currentTarget)
+    }, false)
+
+    box.addEventListener('click', function(event) {
+      console.info('box catch')
+      console.info(event.target, event.currentTarget)
+    }, true)
+  </script>
 </body>
 </html>
