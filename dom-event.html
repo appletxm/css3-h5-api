@@ -69,6 +69,13 @@
 
   <div class="test">click me test</div>
 
+  <button id="customizeClick">trigger html customize event</button>
+
+  <div id="eventT">recieve data: </div>
+
+  <p><label><input type="checkbox" id="checkbox"> Checked</label>
+  <p><button id="button">Click me</button>
+
   <!-- <div id="p">
     parent
     <div id="c">
@@ -131,21 +138,85 @@
       // console.info(event.target, event.currentTarget)
     }, true)
 
-  //   var p = document.getElementById('p'),
-  //       c = document.getElementById('c');
-  //   p.addEventListener('click', function (e) {
-  //     alert('父节点冒泡')
-  //   }, false);
+    //   var p = document.getElementById('p'),
+    //       c = document.getElementById('c');
+    //   p.addEventListener('click', function (e) {
+    //     alert('父节点冒泡')
+    //   }, false);
 
-  //   c.addEventListener('click', function (e) {
-  //     alert('子节点捕获')
-  //   }, true);
-  //   c.addEventListener('click', function (e) {
-  //     alert('子节点冒泡')
-  //   }, false);
-  //   p.addEventListener('click', function (e) {
-  //     alert('父节点捕获')
-  //   }, true);
-  // </script>
+    //   c.addEventListener('click', function (e) {
+    //     alert('子节点捕获')
+    //   }, true);
+    //   c.addEventListener('click', function (e) {
+    //     alert('子节点冒泡')
+    //   }, false);
+    //   p.addEventListener('click', function (e) {
+    //     alert('父节点捕获')
+    //   }, true);
+    // 
+
+    /*
+      HTMLEvents	   HTMLEvent	 initEvent()
+      MouseEvents	   MouseEvent	 initMouseEvent()
+      UIEvents	     UIEvent	   initUIEvent()
+    */
+    var event = document.createEvent('HTMLEvents');
+    event.initEvent('build', true, true);
+    document.addEventListener('build', function (e) {
+      console.info(e)
+    }, false);
+    // setTimeout(function() {
+    //   document.querySelector('#customizeClick').dispatchEvent(event);
+    // }, 1000)
+
+    /*
+    Event
+    */
+    var eventC = new CustomEvent('myevent_c', {detail: {a:1}});
+    eventC.detail.a = 456; // Ignored in sloppy mode, throws in strict mode
+    // console.log(eventC, eventC.detail); // 123
+
+    var eventE = new Event('myevent_e');
+    eventE.detail = 123; // It's not readonly
+    eventE.detail = 456;
+    // console.log(eventE, eventE.detail); // 456
+
+    // var eventE = new MouseEvent()
+    
+    
+    document.querySelector('#eventT').addEventListener('myevent_c', function(e) {
+      console.info('myevent_c:', e)
+      e.target.innerHTML = e.detail.a
+    })
+    document.querySelector('#eventT').addEventListener('myevent_e', function(e) {
+      console.info('myevent_e:', e)
+      e.target.innerHTML = e.detail
+    })
+    document.addEventListener('myevent_e', function(e) {
+      console.info('myevent_e document:', e)
+    })
+    document.querySelector('#eventT').dispatchEvent(eventE)
+
+    /*
+    MouseEvent
+    */
+    function simulateClick() {
+      var evt = new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        view: window
+      });
+      var cb = document.getElementById("checkbox"); //element to click on
+      var canceled = !cb.dispatchEvent(evt);
+      if(canceled) {
+        // A handler called preventDefault
+        alert("canceled");
+      } else {
+        // None of the handlers called preventDefault
+        alert("not canceled");
+      }
+    }
+    document.getElementById("button").addEventListener('click', simulateClick);
+  </script>
 </body>
 </html>
