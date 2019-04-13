@@ -88,44 +88,54 @@
     var img = document.querySelector('img')
     var span = document.querySelector('span')
 
+    document.addEventListener('click', function(event) {
+      console.info('document catch', event.eventPhase)
+      // console.info(event.target, event.currentTarget)
+    }, true)
+
+    document.addEventListener('click', function(event) {
+      console.info('document bobuule', event.eventPhase)
+      // console.info(event.target, event.currentTarget)
+    }, false)
+
     box.addEventListener('click', function(event) {
-      console.info('box catch')
+      console.info('box catch', event.eventPhase)
       // console.info(event.target, event.currentTarget)
     }, true)
     box.addEventListener('click', function(event) {
-      console.info('box boubble')
+      console.info('box boubble', event.eventPhase)
       // console.info(event.target, event.currentTarget)
     }, false)
 
     img.addEventListener('click', function(event) {
-      console.info('img catch')
+      console.info('img catch 3', event.eventPhase)
       // console.info(event.target, event.currentTarget)
     }, true)
     img.addEventListener('click', function(event) {
-      console.info('img catch 3')
+      console.info('img catch', event.eventPhase)
       // console.info(event.target, event.currentTarget)
     }, true)
     img.addEventListener('click', function(event) {
-      console.info('img catch 2')
+      console.info('img catch 2', event.eventPhase)
       // console.info(event.target, event.currentTarget)
     }, true)
     img.addEventListener('click', function(event) {
-      console.info('img boubble')
+      console.info('img boubble', event.eventPhase)
       // console.info(event.target, event.currentTarget)
       // event.stopPropagation()
-      event.stopImmediatePropagation()
+      // event.stopImmediatePropagation()
     }, false)
     img.addEventListener('click', function(event) {
-      console.info('img boubble 2')
+      console.info('img boubble 2', event.eventPhase)
       // console.info(event.target, event.currentTarget)
     }, false)
 
     span.addEventListener('click', function(event) {
-      console.info('span catch')
+      console.info('span catch', event.eventPhase)
       // console.info(event.target, event.currentTarget)
     }, true)
     span.addEventListener('click', function(event) {
-      console.info('span boubble')
+      console.info('span boubble', event.eventPhase)
       // console.info(event.target, event.currentTarget)
     }, false)
 
