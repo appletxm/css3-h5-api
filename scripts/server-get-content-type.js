@@ -17,6 +17,8 @@ function getContentType(extendsName){
       return 'image/jpeg'
     case 'pdf':
       return 'application/pdf'
+    case 'stream':
+      return 'application/octet-stream' // 'application/octet-stream', 'application/x-msdownload'
     default:
       return 'text/plain'
   }

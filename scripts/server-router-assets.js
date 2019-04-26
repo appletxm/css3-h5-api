@@ -74,6 +74,18 @@ function getPdfFile (req, res) {
   res.end()
 }
 
+function getExcelFile (req, res) {
+  let filePath = decodeURIComponent(path.join(__dirname, '../uploads/订单列表-20190410144008.xlsx'))
+  let file = fs.readFileSync(filePath)
+  let contentType = getContentType('stream')
+
+  console.info(req.headers['user-agent'])
+
+  res.set('Content-Type', contentType + ';charset=utf-8')
+  res.send(file)
+  res.end()
+}
+
 function routerAssets (req, res, logger) {
   console.info('[http get]', req.baseUrl, req.originalUrl)
   logger.info('[http get]', req.baseUrl, req.originalUrl)
@@ -90,6 +102,8 @@ function routerAssets (req, res, logger) {
     getHtmlFile(req, res)
   } else if (req.originalUrl.indexOf('.pdf') >= 0) {
     getPdfFile(req, res)
+  } else if(req.originalUrl.indexOf('download-excel')) {
+    getExcelFile(req, res)
   } else {
     getHtmlFile(req, res)
   }
