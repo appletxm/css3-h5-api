@@ -19,61 +19,21 @@
       font-size: .12rem;
     }
     .box {
+      margin-right: .1rem;
       list-style: none;
-      display: block;
-      column-count: 4;
-      column-gap: .1rem;
-      margin: .08rem;
-    }
-
-    @media screen and (min-width: 1601px) {
-      .box {
-        column-count: 7;
-      }
-    }
-
-    @media screen and (min-width: 1201px) and (max-width: 1600px) {
-      .box {
-        column-count: 6;
-      }
-    }
-
-    @media screen and (min-width: 1001px) and (max-width: 1200px) {
-      .box {
-        column-count: 5;
-      }
-    }
-
-    @media screen and (min-width: 800px) and (max-width: 1000px) {
-      .box {
-        column-count: 4;
-      }
-    }
-
-    @media screen and (min-width: 400px) and (max-width: 799px) {
-      .box {
-        column-count: 3;
-      }
-    }
-
-    @media screen and (max-width: 399px) and (max-width: 600px) {
-      .box {
-        column-count: 1;
-      }
-    }
-
-    .box::after {
-      content: "";
-      clear: both;
-      display: block;
+      display: flex;
+      flex-flow: wrap;
+      padding-bottom: .1rem;
     }
 
     li {
       word-wrap: break-word;
       word-break: break-all;
-      padding-bottom: .08rem;
+      padding-top: .1rem;
       box-sizing: border-box;
-      break-inside: avoid;
+      width: 2rem;
+      margin-left: .1rem;
+      height: auto;
     }
 
     li span {
@@ -94,37 +54,13 @@
       margin-top: .1rem;
       color: #999;
     }
-
-    li p {
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-
-    li p::after {
-      display: block;
-      content: "";
-      padding-top: 100%;
-    }
-
-    li p img {
-      position: absolute;
-      width: 100%;
-      top: 50%;
-      left: 50%;
-      transform: translateX(-50%) translateY(-50%);
-    }
-
-    .control-float {
-      float: left;
-    }
   </style>
 </head>
 <body>
   <ul class="box">
     <li>
       <span>
-        <p><img src="https://cn.bing.com/th?id=OIP.s2L_4xYaGK6bGy33UidzkgHaEo&pid=Api&rs=1&p=0" /></p>
+        <img src="./assets/images/bg.jpg" width="50">
         <b>数据内容</b>
         <i>具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。</i>
       </span>
@@ -132,7 +68,7 @@
 
     <li>
       <span>
-        <p><img src="https://www.backgroundsy.com/file/preview/energy-flow.jpg"/></p>
+        <img src="./assets/images/bg.jpg" width="50">
         <b>数据内容</b>
         <i>具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。</i>
       </span>
@@ -140,7 +76,7 @@
 
     <li>
       <span>
-        <p><img src="https://cn.bing.com/th?id=OIP.2kexemAshzs-u4e-9_AnvwHaKc&pid=Api&rs=1&p=0"/></p>
+        <img src="./assets/images/bg.jpg" width="50">
         <b>数据内容</b>
         <i>具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。</i>
       </span>
@@ -148,7 +84,7 @@
 
     <li>
       <span>
-        <p><img src="https://cn.bing.com/th?id=OIP.cIvQo5wmlVTBLDbydjTTrAHaFj&pid=Api&rs=1&p=0"/></p>
+        <img src="./assets/images/bg.jpg" width="50">
         <b>数据内容</b>
         <i>具体内容具体内容，具体内容具体内容，具体内容具体内容。</i>
       </span>
@@ -156,7 +92,7 @@
 
     <li>
       <span>
-        <p><img src="https://cn.bing.com/th?id=OIP.T0gDxmrDbIyJgXfkqPQRLwHaFD&pid=Api&rs=1&p=0"/></p>
+        <img src="./assets/images/bg.jpg" width="50">
         <b>数据内容</b>
         <i>具体内容具体内容，具体内容具体内容，具体内容具体内容。</i>
       </span>
@@ -164,7 +100,7 @@
   
     <li>
       <span>
-        <p><img src="https://cn.bing.com/th?id=OIP.QB_OjbhLFsmJUssSLjzdQgHaEo&pid=Api&rs=1&p=0"/></p>
+        <img src="./assets/images/bg.jpg" width="50">
         <b>数据内容</b>
         <i>具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。</i>
       </span>
@@ -172,7 +108,7 @@
   
     <li>
       <span>
-        <p><img src="https://cn.bing.com/th?id=OIP.2kexemAshzs-u4e-9_AnvwHaKc&pid=Api&rs=1&p=0"/></p>
+        <img src="./assets/images/bg.jpg" width="50">
         <b>数据内容</b>
         <i>具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。</i>
       </span>
@@ -180,7 +116,7 @@
 
     <li>
       <span>
-        <p><img src="https://cn.bing.com/th?id=OIP.s2L_4xYaGK6bGy33UidzkgHaEo&pid=Api&rs=1&p=0"/></p>
+        <img src="./assets/images/bg.jpg" width="50">
         <b>数据内容</b>
         <i>具体内容具体内容，具体内容具体内容，具体内容具体内容。</i>
       </span>
@@ -188,11 +124,24 @@
 
     <li>
       <span>
-        <p><img src="https://cn.bing.com/th?id=OIP.QB_OjbhLFsmJUssSLjzdQgHaEo&pid=Api&rs=1&p=0"/></p>
+        <img src="./assets/images/bg.jpg" width="50">
         <b>数据内容</b>
         <i>具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。具体内容具体内容，具体内容具体内容，具体内容具体内容。</i>
       </span>
     </li>
   </ul>
+
+  <script>
+    var box = document.querySelector('.box')
+    box.addEventListener('click', function(event) {
+      console.info('box boubble')
+      console.info(event.target, event.currentTarget)
+    }, false)
+
+    box.addEventListener('click', function(event) {
+      console.info('box catch')
+      console.info(event.target, event.currentTarget)
+    }, true)
+  </script>
 </body>
 </html>
