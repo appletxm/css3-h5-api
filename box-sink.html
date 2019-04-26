@@ -68,9 +68,33 @@
       background-color: gray;
       width: 50%;
     }
+    .test-sink {
+      width: 20%;
+      position: relative;
+      margin: .1rem;
+      overflow: hidden;
+      background: gray;
+    }
+
+    .test-sink::before{
+      padding-top: 141%; /*the pic's size is 474x668 px*/
+      content: " ";
+      display: block;
+    }
+
+    .test-sink img {
+      position: absolute;
+      top: 0;
+      background: gray;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
+  <div class="test-sink">
+    <img src="https://cn.bing.com/th?id=OIP.2kexemAshzs-u4e-9_AnvwHaKc&pid=Api&rs=1&p=0" />
+  </div>
+    
   <ul class="box">
     <li><img src="https://cn.bing.com/th?id=OIP.s2L_4xYaGK6bGy33UidzkgHaEo&pid=Api&rs=1&p=0" /></li>
     <li><img src="https://www.backgroundsy.com/file/preview/energy-flow.jpg" /></li>
