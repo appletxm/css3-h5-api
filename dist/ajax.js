@@ -4,6 +4,7 @@ import _classCallCheck from 'babel-runtime/helpers/classCallCheck';
 import _createClass from 'babel-runtime/helpers/createClass';
 import * as setParams from './ajax-set-params.js';
 import * as setHeaders from './ajax-set-headers.js';
+import * as ajaxStream from './ajax-get-stream.js';
 
 var defaultConfig = {
   method: 'GET',
@@ -58,14 +59,18 @@ var Ajax = function () {
       xhr.addEventListener('readystatechange', function () {
         // console.info(xhr.readyState, xhr.status)
         if (xhr.readyState === 4 && xhr.status === 200) {
-          var resObj = JSON.parse(xhr.responseText);
+          var resConType = xhr.getResponseHeader('content-type');
+          if (resConType.indexOf('application/octet-stream') >= 0 || resConType.indexOf('application/x-msdownload') >= 0) {
+            ajaxStream.doDownLoad(xhr.response);
+          } else {
+            var resObj = JSON.parse(xhr.responseText);
+            _this.destroyed(xhrId);
+            resolveCb(resObj);
+          }
+        } else if (xhr.readyState === 4 && xhr.status !== 200) {
           _this.destroyed(xhrId);
-          resolveCb(resObj);
+          rejectCb({ code: '9999', msg: 'get data failed' });
         }
-        // else if(xhr.readyState === 4 && xhr.status !== 200){
-        //   this.destroyed(xhrId)
-        //   rejectCb({code: '9999', msg: 'get data failed'})
-        // }
       });
 
       xhr.addEventListener('timeout', function () {
@@ -167,9 +172,32 @@ var Ajax = function () {
 
       return promise;
     }
-  }], [{
-    key: 'setDefault',
-    value: function setDefault(options) {}
+  }, {
+    key: 'getBinary',
+    value: function getBinary(_options) {
+      var params = void 0;
+
+      _options.method = 'GET';
+
+      var _prepareForAjax3 = this.prepareForAjax(_options),
+          options = _prepareForAjax3.options,
+          xhrObj = _prepareForAjax3.xhrObj,
+          promise = _prepareForAjax3.promise,
+          resolveCb = _prepareForAjax3.resolveCb,
+          rejectCb = _prepareForAjax3.rejectCb,
+          xhrId = _prepareForAjax3.xhrId;
+
+      if (options.method === 'GET' && xhrObj) {
+        params = setParams.getParamsForGet(options);
+      }
+      options.url = options.url + params;
+      // options.type = 'binary'
+      xhrObj.responseType = "arraybuffer";
+      this.addEventListener(xhrId, resolveCb, rejectCb, options);
+      this.doAjax(options, xhrObj);
+
+      return promise;
+    }
   }]);
 
   return Ajax;

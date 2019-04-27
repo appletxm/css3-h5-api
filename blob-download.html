@@ -15,6 +15,7 @@
 </head>
 
 <body>
+  <button id="getUserData">Get user data</button>
   <button id="outputExecl" click="doDowload">导出excel</button>
 </body>
 
@@ -23,24 +24,49 @@
 
 <script type="module">
   import Ajax from './src/ajax.js'
-  let ajax = new Ajax()
-  console.info(ajax)
-  ajax.get({
-    method: 'GET',
-    async: true,
-    url: '/download-excel',
-    params: {
-      a: 123,
-      b: 34
-    },
-    timeout: 30000,
-    headers: {
-      contentType: 'application/json; charset=UTF-8'
-    }
+  let ajax1 = new Ajax()
+  let ajax2 = new Ajax()
+
+  debugger
+
+  document.querySelector('#getUserData').addEventListener('click', () => {
+    ajax2.get({
+      method: 'GET',
+      async: true,
+      url: '/api/test3',
+      params: {
+        a: 123,
+        b: 34
+      },
+      timeout: 30000,
+      headers: {
+        contentType: 'application/json; charset=UTF-8'
+      }
+    }).then(res => {
+      console.info(res)
+    }).catch(err => {
+      console.error(err)
+    })
   })
 
   document.querySelector('#outputExecl').addEventListener('click', () => {
-    debugger
+    ajax1.getBinary({
+      method: 'GET',
+      async: true,
+      url: '/download-excel',
+      params: {
+        a: 123,
+        b: 34
+      },
+      timeout: 30000,
+      headers: {
+        contentType: 'application/json; charset=UTF-8'
+      }
+    }).then(res => {
+      console.info(res)
+    }).catch(err => {
+      console.error(err)
+    })
   })
 </script>
 

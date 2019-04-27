@@ -1,5 +1,6 @@
 import * as setParams from './ajax-set-params.js'
 import * as setHeaders from './ajax-set-headers.js'
+import * as ajaxStream from './ajax-get-stream.js'
 
 const defaultConfig = {
   method: 'GET',
@@ -16,10 +17,6 @@ const xhrList = {}
 const Ajax = class {
   constructor () {
     this.options = defaultConfig
-  }
-
-  static setDefault(options){
-
   }
 
   mergeOptions (options) {
@@ -50,15 +47,18 @@ const Ajax = class {
     xhr.addEventListener('readystatechange', () => {
       // console.info(xhr.readyState, xhr.status)
       if(xhr.readyState === 4 && xhr.status === 200){
-        let resObj = JSON.parse(xhr.responseText)
+        let resConType = xhr.getResponseHeader('content-type')
+        if (resConType.indexOf('application/octet-stream') >= 0 || resConType.indexOf('application/x-msdownload') >= 0) {
+          ajaxStream.doDownLoad(xhr.response)
+        } else {
+          let resObj = JSON.parse(xhr.responseText)
+          this.destroyed(xhrId)
+          resolveCb(resObj)
+        }
+      } else if(xhr.readyState === 4 && xhr.status !== 200){
         this.destroyed(xhrId)
-        resolveCb(resObj)
-        
-      } 
-      // else if(xhr.readyState === 4 && xhr.status !== 200){
-      //   this.destroyed(xhrId)
-      //   rejectCb({code: '9999', msg: 'get data failed'})
-      // }
+        rejectCb({code: '9999', msg: 'get data failed'})
+      }
     })
 
     xhr.addEventListener('timeout', () => {
@@ -137,6 +137,25 @@ const Ajax = class {
       options.paramsStr = params
     }
 
+    this.addEventListener(xhrId, resolveCb, rejectCb, options)
+    this.doAjax(options, xhrObj)
+
+    return promise
+  }
+
+  getBinary(_options) {
+    let params
+    
+
+    _options.method = 'GET'
+    let {options, xhrObj, promise, resolveCb, rejectCb, xhrId} = this.prepareForAjax(_options)
+    
+    if (options.method === 'GET' && xhrObj) {
+      params = setParams.getParamsForGet(options)
+    }
+    options.url = options.url + params
+    // options.type = 'binary'
+    xhrObj.responseType = "arraybuffer"
     this.addEventListener(xhrId, resolveCb, rejectCb, options)
     this.doAjax(options, xhrObj)
 

@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const getContentType = require('./server-get-content-type')
+const excelOpts = require('./excel-opts')
 
 function getGMTdate(){
   let date = new Date()
@@ -75,15 +76,7 @@ function getPdfFile (req, res) {
 }
 
 function getExcelFile (req, res) {
-  let filePath = decodeURIComponent(path.join(__dirname, '../uploads/订单列表-20190410144008.xlsx'))
-  let file = fs.readFileSync(filePath)
-  let contentType = getContentType('stream')
-
-  console.info(req.headers['user-agent'])
-
-  res.set('Content-Type', contentType + ';charset=utf-8')
-  res.send(file)
-  res.end()
+  excelOpts.downLoadExcel(req, res)
 }
 
 function routerAssets (req, res, logger) {
@@ -102,7 +95,8 @@ function routerAssets (req, res, logger) {
     getHtmlFile(req, res)
   } else if (req.originalUrl.indexOf('.pdf') >= 0) {
     getPdfFile(req, res)
-  } else if(req.originalUrl.indexOf('download-excel')) {
+  } else if(req.originalUrl.indexOf('download-excel') >= 0) {
+    debugger
     getExcelFile(req, res)
   } else {
     getHtmlFile(req, res)
