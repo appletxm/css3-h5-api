@@ -61,7 +61,7 @@ var Ajax = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
           var resConType = xhr.getResponseHeader('content-type');
           if (resConType.indexOf('application/octet-stream') >= 0 || resConType.indexOf('application/x-msdownload') >= 0) {
-            ajaxStream.doDownLoad(xhr.response);
+            ajaxStream.doDownLoad(xhr);
           } else {
             var resObj = JSON.parse(xhr.responseText);
             _this.destroyed(xhrId);

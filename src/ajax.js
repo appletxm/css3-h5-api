@@ -49,7 +49,7 @@ const Ajax = class {
       if(xhr.readyState === 4 && xhr.status === 200){
         let resConType = xhr.getResponseHeader('content-type')
         if (resConType.indexOf('application/octet-stream') >= 0 || resConType.indexOf('application/x-msdownload') >= 0) {
-          ajaxStream.doDownLoad(xhr.response)
+          ajaxStream.doDownLoad(xhr)
         } else {
           let resObj = JSON.parse(xhr.responseText)
           this.destroyed(xhrId)
