@@ -2,8 +2,9 @@ const fs = require('fs')
 const path = require('path')
 
 function getImageFile (req, res) {
-  let filename = path.join(__dirname, ('..' + req.baseUrl))
-  let fileType = (req.baseUrl).match(/.+\.(.+)/)
+  let url = req.baseUrl || req.originalUrl
+  let filename = path.join(__dirname, ('..' + url))
+  let fileType = (url).match(/.+\.(.+)/)
   let file = fs.readFileSync(filename)
 
   res.set('content-type', 'image/' + fileType[1])
