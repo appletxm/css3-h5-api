@@ -9,7 +9,9 @@
     "debug": "concurrently --kill-others \"npm run babel-watch\" \"node --inspect scripts/server.js\"",
     "babel": "babel src --out-dir dist --source-maps inline",
     "babel-watch": "babel src --out-dir dist --watch",
-    "server": "node scripts/server.js"
+    "server": "node scripts/server.js",
+    "http2": "node ./scripts/server-http2-native.js --inspect",
+    "http2-express": "node ./scripts/server-http2-express.js"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
