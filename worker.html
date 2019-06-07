@@ -13,20 +13,28 @@
   <link rel="icon" href="assets/images/logo.ico" type="image/png">
 </head>
 <body>
+  <button id="btn-test1">worker start</button>
+  <button id="btn-test2">can run during the worker running</button>
+
   <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
   <script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
-
   <script type="text/javascript">
-    let outerMax = 100000
+    let outerMax = 10000
     let mywork = new Worker('./dist/work.js')
-
-    mywork.postMessage(outerMax)
-    for(let i = 0; i < outerMax; i++) {
-      console.info('************', i)
-    }
+    // for(let i = 0; i < outerMax; i++) {
+    //   console.info('************', i)
+    // }
     mywork.onmessage = function(event) {
       console.info('@@@@@@@@@@@@@@@', event)
     }
+
+    document.querySelector('#btn-test1').addEventListener('click', () => {
+      mywork.postMessage(outerMax)
+    }, false)
+
+    document.querySelector('#btn-test2').addEventListener('click', () => {
+      alert('exce code')
+    }, false)
   </script>
 </body>
 </html>
