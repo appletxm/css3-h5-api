@@ -10,7 +10,7 @@
     "babel": "babel src --out-dir dist --source-maps inline",
     "babel-watch": "babel src --out-dir dist --watch",
     "server": "node scripts/server.js",
-    "http2": "node ./scripts/server-http2-native.js --inspect",
+    "http2": "node --inspect ./scripts/server-http2-native.js",
     "http2-express": "node ./scripts/server-http2-express.js"
   },
   "dependencies": {
