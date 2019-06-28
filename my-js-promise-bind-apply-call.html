@@ -22,61 +22,62 @@
     import initMyCall from './src/my-call.js'
     import initMyApply from './src/my-apply.js'
     import initBind from './src/my-bind.js'
+    import myNew from './src/my-new.js'
     
-    // let p1 = new Promise((resolve, reject) => {
-    //   setTimeout(() => {
-    //     resolve('time1')
-    //   }, 2000)
-    // })
+    let p1 = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('time1')
+      }, 2000)
+    })
 
-    // let p2 = new Promise((resolve, reject) => {
-    //   setTimeout(() => {
-    //     reject('time2')
-    //   }, 2000)
-    // })
+    let p2 = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject('time2')
+      }, 2000)
+    })
 
-    // p1.then(res => {
-    //   console.info('##1##', res)
-    //   return p2
-    // }).then(res => {
-    //   console.info('##2##', res)
-    // }).catch(err => {
-    //   console.info('##3##', err)
-    // }).finally(() => {
-    //   console.info('##4## finally')
-    // })
+    p1.then(res => {
+      console.info('##1##', res)
+      return p2
+    }).then(res => {
+      console.info('##2##', res)
+    }).catch(err => {
+      console.info('##3##', err)
+    }).finally(() => {
+      console.info('##4## finally')
+    })
 
-    // initMyCall()
-    // let obj = {
-    //   a: 1,
-    //   b: 2,
-    //   syaHi() {
-    //     console.info('say:', this.a, '===', this.b)
-    //   }
-    // }
-    // function testCall(name, age, job) {
-    //   console.info('content value:', name, age, job)
-    //   this.syaHi()
-    // }
-    // testCall.myCall(obj, 'mm', 30, 'worker')
+    initMyCall()
+    let obj2 = {
+      a: 1,
+      b: 2,
+      syaHi() {
+        console.info('say:', this.a, '===', this.b)
+      }
+    }
+    function testCall(name, age, job) {
+      console.info('content value:', name, age, job)
+      this.syaHi()
+    }
+    testCall.myCall(obj2, 'mm', 30, 'worker')
 
 
-    // initMyApply()
-    // let obj = {
-    //   a: 1,
-    //   b: 2,
-    //   syaHi() {
-    //     console.info('say:', this.a, '===', this.b)
-    //   }
-    // }
-    // function testApply(name, age, job) {
-    //   console.info('content value:', name, age, job)
-    //   this.syaHi()
-    // }
-    // testApply.myApply(obj, ['mm', 30, 'worker'])
+    initMyApply()
+    let obj = {
+      a: 1,
+      b: 2,
+      syaHi() {
+        console.info('say:', this.a, '===', this.b)
+      }
+    }
+    function testApply(name, age, job) {
+      console.info('content value:', name, age, job)
+      this.syaHi()
+    }
+    testApply.myApply(obj, ['mm', 30, 'worker'])
 
     initBind()
-    let obj = {
+    let obj3 = {
       a: 1,
       b: 2,
       syaHi() {
@@ -95,8 +96,18 @@
       console.info('content value:', arr, name, age, job)
       this.syaHi()
     }
-    testBind.myBind(obj, [1, 2, 3])('mm', 30, 'worker')
+    testBind.myBind(obj3, [1, 2, 3])('mm', 30, 'worker')
     testBind.myBind(boundFn, [1, 2, 3])('mm', 30, 'worker')
+
+    function testNew(a, b) {
+      this.a = a
+      this.b = b
+    }
+    testNew.prototype.syaHi = function() {
+      console.info('say:', this.a, '===', this.b)
+    }
+    let a = myNew(testNew, 5, 6)
+    a.syaHi()
   </script>
 </body>
 
