@@ -7,12 +7,9 @@ class PlaceholderBoxPainter {
     // console.info(ctx, size, props)
     let borderTopWidthProp = props.get('border-top-width');
     let borderTopColorProp = props.get('border-top-color');
-
     // console.info(borderTopWidthProp, borderTopColorProp, borderTopColorProp.toString())
-
     ctx.lineWidth = borderTopWidthProp ? borderTopWidthProp.value : 2;
     ctx.strokeStyle = borderTopColorProp ? borderTopColorProp.toString(): '#666';
-
     // draw line from top left to bottom right
     ctx.beginPath();
     ctx.moveTo(0, 0);

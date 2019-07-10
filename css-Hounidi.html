@@ -18,6 +18,8 @@
     :root{
       --color: red;
       --fontWeight: 200;
+      --toothWidth: 2rem;
+      --toothHeight: 1rem;
     }
 
     .f {
@@ -64,7 +66,32 @@
     }
 
     .placeholder {
+      display: inline-block;
       background-image: paint(placeholder-box);
+      background-color: white;
+      border: 5px solid purple;
+      width: .5rem;
+      height: .5rem;
+      vertical-align: middle;
+      border-radius: .3rem;
+      font-size: 50px;
+      line-height: .5rem;
+      text-align: center;
+      color: orangered;
+    }
+
+    .test-box {
+      width: var(--toothWidth);
+      height: var(--toothHeight);
+      background: orangered;
+      background-image: paint(jagged-edge);
+    }
+
+    .solid {
+      background-image: paint(solid-color);
+      color: #c0eb75;
+      width: var(--toothWidth);
+      height: var(--toothHeight);
     }
   </style>
 </head>
@@ -78,7 +105,12 @@
   <div class="box">
     <p class="inner">this is inner css style</p>
     <p class="inner inner-new"></p>
+    <span class="placeholder">1</span>
   </div>
+
+  <div class="test-box"></div>
+
+  <div class="solid"></div>
 
   <button id="getCss">get css</button>
 
@@ -98,13 +130,33 @@
   </script>
 
   <script>
-    if (CSS && CSS.paintWorklet) {
-      CSS.paintWorklet.addModule('css-hounidi/place-box-painter.js');
+    function setInitVal() {
+      if (CSS && CSS['registerProperty']) {
+        CSS.registerProperty({
+            name: '--tooth-width',
+            syntax: '<length>',
+            initialValue: '40px',
+            inherits: false
+        });
+        CSS.registerProperty({
+            name: '--tooth-height',
+            syntax: '<length>',
+            initialValue: '20px',
+            inherits: false
+        });
+      }
     }
 
-    // if (window.CSSUnitValue) {
+    function addPaint() {
+      if (CSS && CSS.paintWorklet) {
+        CSS.paintWorklet.addModule('css-hounidi/place-box-painter.js');
+        CSS.paintWorklet.addModule('css-hounidi/jagged-edge-painter.js');
+        CSS.paintWorklet.addModule('css-hounidi/solid-color-painter.js');
+      }  
+    }
 
-    // }
+    setInitVal()
+    addPaint()
   </script>
 </body>
 
