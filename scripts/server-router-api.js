@@ -41,7 +41,9 @@ function getParamsFromForm (body) {
   let keysValues = body.match(/([^&=]+)=([^&=]*)/g)
   let params = {}
 
-  keysValues.forEach(keyValue => {
+  // console.info(body, keysValues)
+
+  keysValues && keysValues.forEach(keyValue => {
     let splitObj = keyValue.split('=')
     let key = splitObj[0]
     params[key] = decodeURIComponent(splitObj[1])

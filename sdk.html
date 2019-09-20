@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+  </style>
+  <script type="text/javascript">
+    var appid = '1241132132';
+    var vn = 'name';
+    var vc = '1.0.1';
+    var TDRequestUrl = ' http://127.0.0.1:9000/app/v1';
+
+    (function(url) {
+      var _head = document.getElementsByTagName('head')[0];
+      var _script = document.createElement('script');
+      _script.type = 'text/javascript';
+      _script.src = url;
+      _script.addEventListener('load', function(){
+        $$.ajax.settings.contentType = 'application/json'
+      })
+      _head.appendChild(_script)
+    })('src/sdk-core.js')
+
+    setTimeout(function(){
+      var kv = {"广告内容": "电商双12大促", "促销品价格": "100~400RMB", "广告素材类型": "图片"};
+      TDAPP.onEvent("点击广告", "Banner广告位第一屏", kv);
+    }, 100)
+  </script>
+</head>
+<body>
+</body>
+</html>
