@@ -20,7 +20,8 @@
     var appid = '1241132132';
     var vn = 'name';
     var vc = '1.0.1';
-    var TDRequestUrl = ' http://127.0.0.1:9000/app/v1';
+    // var TDRequestUrl = 'http://127.0.0.1:9000/app/v1';
+    var TDRequestUrl = 'http://192.168.10.187:18080/web';
 
     (function(url) {
       var _head = document.getElementsByTagName('head')[0];
@@ -28,7 +29,9 @@
       _script.type = 'text/javascript';
       _script.src = url;
       _script.addEventListener('load', function(){
-        $$.ajax.settings.contentType = 'application/json'
+        // console.info($$.ajax.type = 'POST')
+        // $$.ajax.type = 'POST'
+        // $$.ajax.contentType = 'application/json'
       })
       _head.appendChild(_script)
     })('src/sdk-core.js')
@@ -36,7 +39,7 @@
     setTimeout(function(){
       var kv = {"广告内容": "电商双12大促", "促销品价格": "100~400RMB", "广告素材类型": "图片"};
       TDAPP.onEvent("点击广告", "Banner广告位第一屏", kv);
-    }, 100)
+    }, 1000)
   </script>
 </head>
 <body>
