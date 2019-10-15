@@ -24,6 +24,7 @@
       list-style: none;
       margin: 10px;
       border: 1px solid #bbb;
+      transition: all .5s ease;
     }
 
     li {
@@ -39,57 +40,127 @@
     .recieved-box {
       cursor: pointer;
     }
+
+    .recieved-box li {
+      background-color: #f0f0f0;
+      border-bottom: 1px solid #bbb;
+      transition: all .5s ease;
+    }
+
+    .recieved-box li:last-of-type {
+      border: 0;
+    }
   </style>
 </head>
 <body>
   <ul class="box">
-    <li draggable="true">a</li>
+    <li draggable="true"><img src="assets/images/rc-code.jpg" width="30" /></li>
     <li draggable="true">b</li>
     <li draggable="true">c</li>
   </ul>
 
-  <ul class="box recieved-box">
-    <li draggable="true">1</li>
-    <li draggable="true">2</li>
-    <li draggable="true">3</li>
+  <ul class="box recieved-box" droppable="true">
+    <li>1</li>
+    <li class="enable">2</li>
+    <li>3</li>
   </ul>
 
   <script>
     var dragDom = document.querySelector('.box')
     var recieveDom = document.querySelector('.recieved-box')
+
+    function isUpPos(ev) {
+      // console.info(ev.pageX, ev.pageY, ev.target.getClientRects(), ev.target.getBoundingClientRect(), ev.target.offsetLeft, ev.target.offsetTop)
+      const pageY = ev.pageY
+      const rect = ev.target.getBoundingClientRect()
+      const isUp = pageY - rect.top <= rect.height/2
+      // console.info(pageY, rect.top, pageY-rect.top, rect.height/2, isUp)
+      return isUp
+    }
+
+    function addDom(ev) {
+      let data = JSON.parse(ev.dataTransfer.getData('application/json'))
+      let newNoed = document.createElement('li')
+      const isUp = isUpPos(ev)
+
+      // console.info(data)
+
+      newNoed.innerHTML = data.html
+      if (isUp) {
+        ev.target.parentNode.insertBefore(newNoed, ev.target)
+      } else {
+        // console.info(ev.target.nextElementSibling, ev.target.previousElementSibling)
+        ev.target.parentNode.insertBefore(newNoed,ev.target.nextElementSibling)
+      }
+      ev.dataTransfer.clearData('application/json')
+    }
+
+    function setDragImage(ev) {
+      var img = new Image(); 
+      img.src = 'assets/images/logo.ico'; 
+      ev.dataTransfer.setDragImage(img, 10, 10);
+    }
   
+    function highlightLine(ev) {
+      const isUp = isUpPos(ev)
+      ev.target.style.backgroundColor = '#fff'
+      ev.target.style.border = '1px solid red'
+      if (isUp) {
+        ev.target.style.borderWidth = '1px 0 0 0'
+      } else {
+        ev.target.style.borderWidth = '0 0 0 1px'
+      }
+    }
+
+    function removeHighLight(ev) {
+      ev.target.removeAttribute('style')
+    }
+    
     dragDom.addEventListener('dragstart', function dragstart_handler(ev) {
-      console.log("dragStart:", ev.dataTransfer.setData("text/plain", ev.target.id));
+      // console.info(ev.dataTransfer.types)
+      // setDragImage(ev)
+      // ev.dataTransfer.setData("text/plain", '99999999999');
+      // ev.dataTransfer.setData("text/html", ev.target.outerHTML);
+      // ev.dataTransfer.setData("text/uri-list", ev.target.ownerDocument.location.href);
+      ev.dataTransfer.setData('application/json', JSON.stringify({a:1, b:2, html: ev.target.outerHTML}))
+      // console.log("dragStart:", ev);
     })
     dragDom.addEventListener('drag', function dragstart_handler(ev) {
-      console.log("drag:", ev.dataTransfer.setData("text/plain", ev.target.id));
+      // console.log("drag:", ev);
+      ev.preventDefault()
     })
     dragDom.addEventListener('dragend', function dragstart_handler(ev) {
-      console.log("dragend:");
+      // console.log("dragend:");
     })
     
     recieveDom.addEventListener('dragexit', function dragstart_handler(ev) {
-      console.log("dragexit");
-      // ev.dataTransfer.setData("text/plain", ev.target.id);
+      // console.log("dragexit");
+      ev.preventDefault()
     })
     recieveDom.addEventListener('dragenter', function dragstart_handler(ev) {
-      // ev.dataTransfer.setData("text/plain", ev.target.id);
-      console.log("dragenter");
+      // console.log("dragenter");
       ev.preventDefault()
     })
     recieveDom.addEventListener('dragleave', function dragstart_handler(ev) {
-      console.log("dragleave");
-      // ev.dataTransfer.setData("text/plain", ev.target.id);
-      console.log("dragenter");
+      // console.log("dragleave");
+      removeHighLight(ev)
+      ev.preventDefault()
     })
     recieveDom.addEventListener('dragover', function dragstart_handler(ev) {
-      // console.log("dragover");
-      // ev.dataTransfer.setData("text/plain", ev.target.id);
+      const className = ev.target.className
+      const isCanDrag = className.indexOf('enable') >= 0
+      ev.dataTransfer.dropEffect = isCanDrag ? 'copy' : 'none' // link move copy
+      if (isCanDrag) {
+        ev.target.style.cursor = "grapping"
+        highlightLine(ev)
+      }
       ev.preventDefault()
     })
     recieveDom.addEventListener('drop', function dragstart_handler(ev) {
-      console.log("drop");
-      // ev.dataTransfer.setData("text/plain", ev.target.id);
+      // console.log("drop")
+      addDom(ev)
+      removeHighLight(ev)
+      ev.preventDefault()
     })
   </script>
 </body>
