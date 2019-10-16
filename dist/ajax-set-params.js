@@ -1,14 +1,21 @@
-import _JSON$stringify from 'babel-runtime/core-js/json/stringify';
-import _Object$keys from 'babel-runtime/core-js/object/keys';
-export function setDefault(options) {}
+"use strict";
 
-export function getParamsForGet(options) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.setDefault = setDefault;
+exports.setParamsForGet = setParamsForGet;
+exports.setParamsForPost = setParamsForPost;
+
+function setDefault(options) {}
+
+function setParamsForGet(options) {
   var params = '?timer=' + new Date().getTime() + '&';
   var opP = options.params;
-  var keys = _Object$keys(opP);
+  var keys = Object.keys(opP);
 
   if (options.headers.contentType.indexOf('application/json') >= 0) {
-    params = params + 'params=' + encodeURIComponent(_JSON$stringify(opP));
+    params = params + 'params=' + encodeURIComponent(JSON.stringify(opP));
   } else {
     for (var i = 0; i < keys.length; i++) {
       params += keys[i] + '=' + opP[key[i]] + (i === keys.length - 1 ? '' : '&');
@@ -18,14 +25,13 @@ export function getParamsForGet(options) {
   return params;
 }
 
-export function getParamsForPost(options) {
+function setParamsForPost(options) {
   var params = '';
   var opP = options.params;
-  var keys = _Object$keys(opP);
+  var keys = Object.keys(opP);
 
   if (options.headers.contentType.indexOf('application/json') >= 0) {
-    params = params + 'params=' + _JSON$stringify(opP);
-    params = encodeURIComponent(params);
+    params = encodeURIComponent(JSON.stringify(opP));
   } else if (options.headers.contentType.indexOf('application/x-www-form-urlencoded') >= 0) {
     for (var i = 0; i < keys.length; i++) {
       params += keys[i] + '=' + encodeURIComponent(opP[keys[i]]) + (i === keys.length - 1 ? '' : '&');

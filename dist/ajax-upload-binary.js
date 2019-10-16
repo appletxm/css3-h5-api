@@ -1,9 +1,17 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.uploadFile = uploadFile;
+
 function compatiableSendBinary() {
   if (!XMLHttpRequest.prototype.sendAsBinary) {
     XMLHttpRequest.prototype.sendAsBinary = function (datastr) {
       function byteValue(x) {
         return x.charCodeAt(0) & 0xff;
       }
+
       var ords = Array.prototype.map.call(datastr, byteValue);
       var ui8a = new Uint8Array(ords);
       this.send(ui8a.buffer);
@@ -14,7 +22,9 @@ function compatiableSendBinary() {
 function sendAjax(binaryFile, url) {
   // 构造 XMLHttpRequest 对象，发送文件 Binary 数据
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', url /*, async, default to true */);
+  xhr.open('POST', url
+  /*, async, default to true */
+  );
   xhr.setRequestHeader('Content-Type', 'application/octet-stream');
   xhr.overrideMimeType('application/octet-stream');
   xhr.sendAsBinary(binaryFile);
@@ -29,7 +39,7 @@ function sendAjax(binaryFile, url) {
   };
 }
 
-export function uploadFile(binaryFile, url) {
+function uploadFile(binaryFile, url) {
   compatiableSendBinary();
   sendAjax(binaryFile, url);
 }

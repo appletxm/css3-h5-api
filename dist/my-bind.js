@@ -1,8 +1,15 @@
-export default function init() {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = init;
+
+function init() {
   Function.prototype.myBind = function (context) {
-    var ctx = context || window;
-    // let emptyFn = function() {}
-    var boundFn = void 0;
+    var ctx = context || window; // let emptyFn = function() {}
+
+    var boundFn;
     var ctxType = ctx.constructor.name.toLowerCase();
     var self = this;
     var params = Array.prototype.slice.call(arguments, 1);
@@ -10,13 +17,15 @@ export default function init() {
     if (typeof this !== 'function') {
       throw new Error('need a function to be callable');
     }
+
     if (ctxType === 'function') {
       ctx = new ctx();
     } else if (ctxType === 'array') {
       ctx = context.__proto__;
     }
+
     boundFn = function boundFn() {
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
 

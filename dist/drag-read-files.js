@@ -1,11 +1,14 @@
-import _Promise from "babel-runtime/core-js/promise";
-export function readFiles(file) {
-  var reader = new FileReader();
-  var promise = void 0,
-      resolveCb = void 0,
-      rejectCb = void 0;
+"use strict";
 
-  promise = new _Promise(function (resolve, reject) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.readFiles = readFiles;
+
+function readFiles(file) {
+  var reader = new FileReader();
+  var promise, resolveCb, rejectCb;
+  promise = new Promise(function (resolve, reject) {
     resolveCb = resolve;
     rejectCb = reject;
   });
@@ -16,7 +19,7 @@ export function readFiles(file) {
 
   reader.onerror = function () {
     console.log("onerror", reader.readyState);
-    rejectCb(new Error("reader file error " + file.name));
+    rejectCb(new Error("reader file error ".concat(file.name)));
   };
 
   reader.onprogress = function () {
@@ -25,16 +28,14 @@ export function readFiles(file) {
 
   reader.onload = function (event) {
     console.log("onload", reader.readyState);
-    resolveCb(event.target.result);
-    // resolveCb(reader.result)
+    resolveCb(event.target.result); // resolveCb(reader.result)
   };
 
   reader.onloadend = function () {
     console.log("onloadend", reader.readyState);
   };
 
-  reader.readAsBinaryString(file);
-  // reader.readAsArrayBuffer(file)
+  reader.readAsBinaryString(file); // reader.readAsArrayBuffer(file)
 
   return promise;
 }

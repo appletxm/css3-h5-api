@@ -2,3 +2,5 @@ node_modules
 .idea
 /logs
 /assets/books
+dist
+build

@@ -1,56 +1,67 @@
-import _classCallCheck from 'babel-runtime/helpers/classCallCheck';
-import _createClass from 'babel-runtime/helpers/createClass';
+"use strict";
 
-var MyPromise = function () {
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MyPromise = void 0;
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var MyPromise =
+/*#__PURE__*/
+function () {
   function MyPromise(asynFn) {
-    _classCallCheck(this, MyPromise);
-
+    (0, _classCallCheck2["default"])(this, MyPromise);
     this.pending = true;
     this.fullfilled = false;
     this.rejected = false;
     this.thenCb = null;
     this.catchCb = null;
     this.finalyCb = null;
-
     asynFn(resolve, reject);
   }
 
-  _createClass(MyPromise, [{
-    key: 'resolve',
+  (0, _createClass2["default"])(MyPromise, [{
+    key: "resolve",
     value: function resolve(data) {
       this.fullfilled = true;
       execCb(this.thenCb, data);
       execCb(this.finalyCb);
     }
   }, {
-    key: 'reject',
+    key: "reject",
     value: function reject(error) {
       this.rejected = true;
       execCb(this.catchCb, error);
       execCb(this.finalyCb);
     }
   }, {
-    key: 'then',
+    key: "then",
     value: function then(thenFn) {
       this.thenCb = thenFn;
     }
   }, {
-    key: 'catch',
+    key: "catch",
     value: function _catch(catchFn) {
       this.catchCb = catchFn;
     }
   }, {
-    key: 'finaly',
+    key: "finaly",
     value: function finaly(finalyFn) {
       this.finalyCb = finalyFn;
     }
   }], [{
-    key: 'execCb',
+    key: "execCb",
     value: function execCb(cb, parmas) {
-      var result = void 0;
+      var result;
 
       if (cb && typeof cb === 'function') {
         result = cb(parmas);
+
         if (result instanceof MyPromise) {
           return result;
         } else {
@@ -59,8 +70,7 @@ var MyPromise = function () {
       }
     }
   }]);
-
   return MyPromise;
 }();
 
-export { MyPromise };
+exports.MyPromise = MyPromise;

@@ -1,10 +1,23 @@
-import _Promise from 'babel-runtime/core-js/promise';
-import _Object$assign from 'babel-runtime/core-js/object/assign';
-import _classCallCheck from 'babel-runtime/helpers/classCallCheck';
-import _createClass from 'babel-runtime/helpers/createClass';
-import * as setParams from './ajax-set-params.js';
-import * as setHeaders from './ajax-set-headers.js';
-import * as ajaxStream from './ajax-get-stream.js';
+"use strict";
+
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var setParams = _interopRequireWildcard(require("./ajax-set-params.js"));
+
+var setHeaders = _interopRequireWildcard(require("./ajax-set-headers.js"));
+
+var ajaxStream = _interopRequireWildcard(require("./ajax-get-stream.js"));
 
 var defaultConfig = {
   method: 'GET',
@@ -18,23 +31,25 @@ var defaultConfig = {
 };
 var xhrList = {};
 
-var Ajax = function () {
-  function Ajax() {
-    _classCallCheck(this, Ajax);
-
-    this.options = defaultConfig;
+var Ajax =
+/*#__PURE__*/
+function () {
+  function Ajax(opts) {
+    (0, _classCallCheck2["default"])(this, Ajax);
+    this.options = Object.assign(defaultConfig, opts);
   }
 
-  _createClass(Ajax, [{
-    key: 'mergeOptions',
+  (0, _createClass2["default"])(Ajax, [{
+    key: "mergeOptions",
     value: function mergeOptions(options) {
-      options = _Object$assign(this.options, options);
+      var copyOpts = JSON.parse(JSON.stringify(this.options));
+      options = Object.assign(copyOpts, options);
       return options;
     }
   }, {
-    key: 'createXHR',
+    key: "createXHR",
     value: function createXHR(options) {
-      var xhr = void 0;
+      var xhr;
 
       if (window.ActiveXObject) {
         xhr = new ActiveXObject('Microsoft.XMLHTTP');
@@ -43,15 +58,15 @@ var Ajax = function () {
       }
 
       xhr.timeout = options.timeout;
-
       return xhr;
     }
   }, {
-    key: 'addEventListener',
+    key: "addEventListener",
     value: function addEventListener(xhrId, resolveCb, rejectCb, options) {
       var _this = this;
 
       var xhr = xhrList[xhrId]['xhr'];
+
       if (!xhr) {
         return false;
       }
@@ -60,22 +75,43 @@ var Ajax = function () {
         // console.info(xhr.readyState, xhr.status)
         if (xhr.readyState === 4 && xhr.status === 200) {
           var resConType = xhr.getResponseHeader('content-type');
+
           if (resConType.indexOf('application/octet-stream') >= 0 || resConType.indexOf('application/x-msdownload') >= 0) {
             ajaxStream.doDownLoad(xhr);
           } else {
             var resObj = JSON.parse(xhr.responseText);
+
             _this.destroyed(xhrId);
-            resolveCb(resObj);
+
+            resolveCb({
+              code: '200',
+              data: resObj
+            });
           }
         } else if (xhr.readyState === 4 && xhr.status !== 200) {
           _this.destroyed(xhrId);
-          rejectCb({ code: '9999', msg: 'get data failed' });
+
+          rejectCb({
+            code: '500',
+            msg: xhr.response
+          });
         }
       });
-
       xhr.addEventListener('timeout', function () {
         _this.destroyed(xhrId);
-        rejectCb({ code: '10000', msg: 'request timeout' });
+
+        rejectCb({
+          code: '10000',
+          msg: 'request timeout'
+        });
+      });
+      xhr.addEventListener('error', function (e) {
+        _this.destroyed(xhrId);
+
+        rejectCb({
+          code: '500',
+          msg: e
+        });
       });
 
       if (options.onProgress && typeof options.onProgress === 'function') {
@@ -85,21 +121,20 @@ var Ajax = function () {
       }
     }
   }, {
-    key: 'destroyed',
+    key: "destroyed",
     value: function destroyed(xhrId) {
       if (xhrList[xhrId]) {
         delete xhrList[xhrId];
       }
     }
   }, {
-    key: 'prepareForAjax',
+    key: "prepareForAjax",
     value: function prepareForAjax(options) {
-      var xhrObj = void 0;
-      var xhrId = void 0;
-      var resolveCb = void 0;
-      var rejectCb = void 0;
-      var promise = void 0;
-
+      var xhrObj;
+      var xhrId;
+      var resolveCb;
+      var rejectCb;
+      var promise;
       options = this.mergeOptions(options);
       xhrId = Math.random() + '';
       xhrList[xhrId] = {};
@@ -107,100 +142,99 @@ var Ajax = function () {
       xhrList[xhrId]['options'] = options;
       xhrList[xhrId]['xhrId'] = xhrId;
       xhrList[xhrId]['xhr'] = xhrObj;
-
-      promise = new _Promise(function (resolve, reject) {
+      promise = new Promise(function (resolve, reject) {
         // console.info(resolve, reject)
         rejectCb = reject;
         resolveCb = resolve;
       });
-
-      return { options: options, xhrId: xhrId, xhrObj: xhrObj, promise: promise, resolveCb: resolveCb, rejectCb: rejectCb };
+      return {
+        options: options,
+        xhrId: xhrId,
+        xhrObj: xhrObj,
+        promise: promise,
+        resolveCb: resolveCb,
+        rejectCb: rejectCb
+      };
     }
   }, {
-    key: 'doAjax',
+    key: "doAjax",
     value: function doAjax(options, xhrObj) {
       xhrObj.open(options.method, options.url, options.async);
-      setHeaders.doSetForGet(options, xhrObj);
-      xhrObj.send(options.paramsStr ? options.paramsStr : '');
+      setHeaders.doSet(options, xhrObj);
+      xhrObj.send(options.paramsStr);
     }
   }, {
-    key: 'get',
+    key: "get",
     value: function get(_options) {
-      var params = void 0;
-
+      var params;
       _options.method = 'GET';
 
-      var _prepareForAjax = this.prepareForAjax(_options),
-          options = _prepareForAjax.options,
-          xhrObj = _prepareForAjax.xhrObj,
-          promise = _prepareForAjax.promise,
-          resolveCb = _prepareForAjax.resolveCb,
-          rejectCb = _prepareForAjax.rejectCb,
-          xhrId = _prepareForAjax.xhrId;
+      var _this$prepareForAjax = this.prepareForAjax(_options),
+          options = _this$prepareForAjax.options,
+          xhrObj = _this$prepareForAjax.xhrObj,
+          promise = _this$prepareForAjax.promise,
+          resolveCb = _this$prepareForAjax.resolveCb,
+          rejectCb = _this$prepareForAjax.rejectCb,
+          xhrId = _this$prepareForAjax.xhrId;
 
       if (options.method === 'GET' && xhrObj) {
-        params = setParams.getParamsForGet(options);
+        params = setParams.setParamsForGet(options);
       }
+
       options.url = options.url + params;
       this.addEventListener(xhrId, resolveCb, rejectCb, options);
       this.doAjax(options, xhrObj);
-
       return promise;
     }
   }, {
-    key: 'post',
+    key: "post",
     value: function post(_options) {
-      var params = void 0;
-
       _options.method = 'POST';
 
-      var _prepareForAjax2 = this.prepareForAjax(_options),
-          options = _prepareForAjax2.options,
-          xhrObj = _prepareForAjax2.xhrObj,
-          promise = _prepareForAjax2.promise,
-          resolveCb = _prepareForAjax2.resolveCb,
-          rejectCb = _prepareForAjax2.rejectCb,
-          xhrId = _prepareForAjax2.xhrId;
+      var _this$prepareForAjax2 = this.prepareForAjax(_options),
+          options = _this$prepareForAjax2.options,
+          xhrObj = _this$prepareForAjax2.xhrObj,
+          promise = _this$prepareForAjax2.promise,
+          resolveCb = _this$prepareForAjax2.resolveCb,
+          rejectCb = _this$prepareForAjax2.rejectCb,
+          xhrId = _this$prepareForAjax2.xhrId;
 
       if (options.method === 'POST' && xhrObj) {
-        params = setParams.getParamsForPost(options);
-        options.paramsStr = params;
+        options.paramsStr = setParams.setParamsForPost(options);
       }
 
       this.addEventListener(xhrId, resolveCb, rejectCb, options);
       this.doAjax(options, xhrObj);
-
       return promise;
     }
   }, {
-    key: 'getBinary',
+    key: "getBinary",
     value: function getBinary(_options) {
-      var params = void 0;
-
+      var params;
       _options.method = 'GET';
 
-      var _prepareForAjax3 = this.prepareForAjax(_options),
-          options = _prepareForAjax3.options,
-          xhrObj = _prepareForAjax3.xhrObj,
-          promise = _prepareForAjax3.promise,
-          resolveCb = _prepareForAjax3.resolveCb,
-          rejectCb = _prepareForAjax3.rejectCb,
-          xhrId = _prepareForAjax3.xhrId;
+      var _this$prepareForAjax3 = this.prepareForAjax(_options),
+          options = _this$prepareForAjax3.options,
+          xhrObj = _this$prepareForAjax3.xhrObj,
+          promise = _this$prepareForAjax3.promise,
+          resolveCb = _this$prepareForAjax3.resolveCb,
+          rejectCb = _this$prepareForAjax3.rejectCb,
+          xhrId = _this$prepareForAjax3.xhrId;
 
       if (options.method === 'GET' && xhrObj) {
-        params = setParams.getParamsForGet(options);
+        params = setParams.setParamsForGet(options);
       }
-      options.url = options.url + params;
-      // options.type = 'binary'
+
+      options.url = options.url + params; // options.type = 'binary'
+
       xhrObj.responseType = "arraybuffer";
       this.addEventListener(xhrId, resolveCb, rejectCb, options);
       this.doAjax(options, xhrObj);
-
       return promise;
     }
   }]);
-
   return Ajax;
 }();
 
-export default Ajax;
+var _default = Ajax;
+exports["default"] = _default;

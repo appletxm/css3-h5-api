@@ -10,18 +10,23 @@
   <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <meta name="format-detection" content="telephone=no">
   <title>test css3 and h5 api</title>
-  <link rel="icon" href="assets/images/logo.ico" type="image/png">
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
   <style>
     body {
       font-size: .12rem;
     }
   </style>
-  <script type="text/javascript">
+</head>
+<body>
+  <button id="test-btn">send data to server side</button>
+
+  
+  <!-- <script type="text/javascript">
     var appid = '1241132132';
     var vn = 'name';
     var vc = '1.0.1';
     // var TDRequestUrl = 'http://127.0.0.1:9000/app/v1';
-    var TDRequestUrl = 'http://192.168.10.187:18080/web';
+    var TDRequestUrl = 'http://127.0.0.1:9000/web';
 
     (function(url) {
       var _head = document.getElementsByTagName('head')[0];
@@ -29,19 +34,27 @@
       _script.type = 'text/javascript';
       _script.src = url;
       _script.addEventListener('load', function(){
-        // console.info($$.ajax.type = 'POST')
-        // $$.ajax.type = 'POST'
-        // $$.ajax.contentType = 'application/json'
+        console.info('sdk loaded scuccess')
       })
       _head.appendChild(_script)
-    })('src/sdk-core.js')
+    })('../sdk-data-collection/sdk-core.js')
 
-    setTimeout(function(){
+    document.querySelector('#test-btn').addEventListener('click', function() {
       var kv = {"广告内容": "电商双12大促", "促销品价格": "100~400RMB", "广告素材类型": "图片"};
       TDAPP.onEvent("点击广告", "Banner广告位第一屏", kv);
-    }, 1000)
+    })
+  </script> -->
+ 
+
+  <script src="../build/hf-js-sdk.js"></script>
+  <script type="text/javascript">
+    HFAgent.init({
+      serviceUrl: 'http://192.168.10.125:18080/web',
+      appKey: '7ab928574cf24c0fa6cf55c8cfec26c1'
+    })
+    document.querySelector('#test-btn').addEventListener('click', function() {
+      HFAgent.onEvent("gradedHomework",'{"actorAgentOpenid":"d4618c23-d612-4709-8d9a-478d87808067","actorAgentAccountName":"18612345678","actorAgentAccountHomePage":"www.header.com.cn","actorAgentName":"陆老师"}');
+    })
   </script>
-</head>
-<body>
 </body>
 </html>

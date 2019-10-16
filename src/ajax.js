@@ -15,12 +15,13 @@ const defaultConfig = {
 const xhrList = {}
 
 const Ajax = class {
-  constructor () {
-    this.options = defaultConfig
+  constructor (opts) {
+    this.options = Object.assign(defaultConfig, opts)
   }
 
   mergeOptions (options) {
-    options = Object.assign(this.options, options)
+    const copyOpts = JSON.parse(JSON.stringify(this.options))
+    options = Object.assign(copyOpts, options)
     return options
   }
 
@@ -53,17 +54,22 @@ const Ajax = class {
         } else {
           let resObj = JSON.parse(xhr.responseText)
           this.destroyed(xhrId)
-          resolveCb(resObj)
+          resolveCb({code: '200', data: resObj})
         }
       } else if(xhr.readyState === 4 && xhr.status !== 200){
         this.destroyed(xhrId)
-        rejectCb({code: '9999', msg: 'get data failed'})
+        rejectCb({code: '500', msg: xhr.response})
       }
     })
 
     xhr.addEventListener('timeout', () => {
       this.destroyed(xhrId)
       rejectCb({code: '10000', msg: 'request timeout'})
+    })
+
+    xhr.addEventListener('error', (e) => {
+      this.destroyed(xhrId)
+      rejectCb({code: '500', msg: e})
     })
 
     if(options.onProgress && typeof options.onProgress === 'function'){
@@ -105,8 +111,8 @@ const Ajax = class {
 
   doAjax(options, xhrObj){
     xhrObj.open(options.method, options.url, options.async)
-    setHeaders.doSetForGet(options, xhrObj);
-    xhrObj.send(options.paramsStr ? options.paramsStr : '')
+    setHeaders.doSet(options, xhrObj)
+    xhrObj.send(options.paramsStr)
   }
 
   get (_options) {
@@ -117,7 +123,7 @@ const Ajax = class {
     let {options, xhrObj, promise, resolveCb, rejectCb, xhrId} = this.prepareForAjax(_options)
     
     if (options.method === 'GET' && xhrObj) {
-      params = setParams.getParamsForGet(options)
+      params = setParams.setParamsForGet(options)
     }
     options.url = options.url + params
     this.addEventListener(xhrId, resolveCb, rejectCb, options)
@@ -127,14 +133,11 @@ const Ajax = class {
   }
 
   post (_options) {
-    let params
-
     _options.method = 'POST'
     let {options, xhrObj, promise, resolveCb, rejectCb, xhrId} = this.prepareForAjax(_options)
 
     if (options.method === 'POST' && xhrObj) {
-      params = setParams.getParamsForPost(options)
-      options.paramsStr = params
+      options.paramsStr  = setParams.setParamsForPost(options)
     }
 
     this.addEventListener(xhrId, resolveCb, rejectCb, options)
@@ -151,7 +154,7 @@ const Ajax = class {
     let {options, xhrObj, promise, resolveCb, rejectCb, xhrId} = this.prepareForAjax(_options)
     
     if (options.method === 'GET' && xhrObj) {
-      params = setParams.getParamsForGet(options)
+      params = setParams.setParamsForGet(options)
     }
     options.url = options.url + params
     // options.type = 'binary'

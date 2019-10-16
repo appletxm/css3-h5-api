@@ -7,7 +7,7 @@ function getMockFiles (req, res) {
   let parseFile
 
   try {
-    filePath = path.resolve(__dirname, '../mocks/' + req['baseUrl'] + req['path'] + '.json')
+    filePath = path.resolve(__dirname, '../mocks/' + req['baseUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.json')
     file = fs.readFileSync(filePath, {encoding: 'utf-8'})
     parseFile = file ? JSON.parse(file) : {}
     parseFile.code = '200'
@@ -20,11 +20,11 @@ function getMockFiles (req, res) {
   parseFile = JSON.stringify(parseFile)
 
   res.set({
-    'Content-Type': 'application/json;charset=UTF-8'
-  // 'Content-Length': parseFile.length,
+    'Content-Type': 'application/json;charset=UTF-8',
+    'Content-Length': parseFile.length
   })
   res.send(parseFile)
-// res.end()
+  res.end()
 }
 
 function getAjaxGet (req, res) {
@@ -117,6 +117,8 @@ function getAjaxPost (req, res) {
   })
 
   req.on('end', () => {
+    console.info(`[HTTP ${req.method.toUpperCase()} params]`, body)
+
     if (isWWWreq === true) {
       params = getParamsFromForm(body)
       getMockFiles(req, res)
@@ -128,16 +130,15 @@ function getAjaxPost (req, res) {
     } else if (isFileReq === true) {
       handlePureFileUpload(body, req, res)
     } else {
-      params = (decodeURIComponent(body)).match(/params=(.+)/)[1]
-      params = JSON.parse(params)
+      params = JSON.parse(decodeURIComponent(body))
       getMockFiles(req, res)
     }
   })
 }
 
 function routerApi (req, res, logger) {
-  console.info(`[http ${req.method} api]`, req.baseUrl, req.originalUrl)
-  logger.info(`[http ${req.method} api]`, req.baseUrl, req.originalUrl)
+  console.info(`[HTTP ${req.method.toUpperCase()} api]`, req.baseUrl, req.originalUrl)
+  logger.info(`[HTTP ${req.method.toUpperCase()} api]`, req.baseUrl, req.originalUrl)
 
   // console.info(req.headers, req.method)
 
