@@ -34,7 +34,9 @@ const Ajax = class {
       xhr = new XMLHttpRequest()
     }
 
-    xhr.timeout = options.timeout
+    if (xhr.timeout) {
+      xhr.timeout = options.timeout
+    }
 
     return xhr
   }
@@ -45,14 +47,14 @@ const Ajax = class {
       return false
     }
 
-    xhr.addEventListener('readystatechange', () => {
+    xhr.onreadystatechange = () => {
       // console.info(xhr.readyState, xhr.status)
       if(xhr.readyState === 4 && xhr.status === 200){
         let resConType = xhr.getResponseHeader('content-type')
         if (resConType.indexOf('application/octet-stream') >= 0 || resConType.indexOf('application/x-msdownload') >= 0) {
           ajaxStream.doDownLoad(xhr)
         } else {
-          let resObj = JSON.parse(xhr.responseText)
+          let resObj = xhr.responseText && JSON.parse(xhr.responseText)
           this.destroyed(xhrId)
           resolveCb({code: '200', data: resObj})
         }
@@ -60,22 +62,24 @@ const Ajax = class {
         this.destroyed(xhrId)
         rejectCb({code: '500', msg: xhr.response})
       }
-    })
+    }
 
-    xhr.addEventListener('timeout', () => {
-      this.destroyed(xhrId)
-      rejectCb({code: '10000', msg: 'request timeout'})
-    })
-
-    xhr.addEventListener('error', (e) => {
-      this.destroyed(xhrId)
-      rejectCb({code: '500', msg: e})
-    })
-
-    if(options.onProgress && typeof options.onProgress === 'function'){
-      xhr.addEventListener('progress', (e) => {
-        options.onProgress(e)
+    if (xhr.addEventListener) {
+      xhr.addEventListener('timeout', () => {
+        this.destroyed(xhrId)
+        rejectCb({code: '10000', msg: 'request timeout'})
       })
+  
+      xhr.addEventListener('error', (e) => {
+        this.destroyed(xhrId)
+        rejectCb({code: '500', msg: e})
+      })
+  
+      if(options.onProgress && typeof options.onProgress === 'function'){
+        xhr.addEventListener('progress', (e) => {
+          options.onProgress(e)
+        })
+      }
     }
   }
 
@@ -101,7 +105,6 @@ const Ajax = class {
     xhrList[xhrId]['xhr'] = xhrObj
 
     promise = new Promise((resolve, reject) => {
-      // console.info(resolve, reject)
       rejectCb = reject
       resolveCb = resolve
     })

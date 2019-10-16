@@ -1,4 +1,15 @@
+function execCb(cb, parmas) {
+  let result
 
+  if (cb && typeof cb === 'function') {
+    result = cb(parmas)
+    if (result instanceof MyPromise) {
+      return result
+    } else {
+      return new MyPromise(result)
+    }
+  } 
+}
 class MyPromise {
   constructor(asynFn) {
     this.pending = true
@@ -8,20 +19,7 @@ class MyPromise {
     this.catchCb = null
     this.finalyCb = null
     
-    asynFn(resolve, reject)
-  }
-
-  static execCb(cb, parmas) {
-    let result
-
-    if (cb && typeof cb === 'function') {
-      result = cb(parmas)
-      if (result instanceof MyPromise) {
-        return result
-      } else {
-        return new MyPromise(result)
-      }
-    } 
+    asynFn && asynFn(this.resolve.bind(this), this.reject.bind(this))
   }
 
   resolve(data) {

@@ -47,6 +47,11 @@ function onEvent(schemeKey, jsonStr) {
 
 function onSend(dataList) {
   let { ajax }  = HFAgent
+  
+  if (arguments.length > 1 && typeof dataList === 'string') {
+    dataList = [formatData(arguments[0], arguments[1])]
+  }
+
   ajax.post({
     url: options.serviceUrl,
     params: dataList
