@@ -19,7 +19,7 @@ const plugins = [
 export default {
   input: 'src/hf-js-sdk.js',
   output: {
-    file: `build/hf-js-sdk${isProduction ? '.min.' : ''}.js`,
+    file: `build/hf-js-sdk${isProduction ? '.min' : ''}.js`,
     format: 'umd',
     name: 'HFAgent',
     sourceMap: 'inline'
