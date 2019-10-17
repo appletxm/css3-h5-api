@@ -12,7 +12,7 @@
     "server": "node scripts/server.js",
     "http2": "node --inspect ./scripts/server-http2-native.js",
     "http2-express": "node ./scripts/server-http2-express.js",
-    "rollup:build": "cross-env NODE_ENV=\"production\" && rollup --config rollup.config.js",
+    "rollup:build": "cross-env NODE_ENV=\"production\" rollup --config rollup.config.js",
     "rollup:watch": "rollup --config rollup.config.js --watch",
     "sdk:dev": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\""
   },
