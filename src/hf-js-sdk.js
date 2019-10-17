@@ -2,7 +2,7 @@ import { doPollyfil } from './hf-js-sdk-pollyfil'
 import Ajax from './ajax'
 
 let options = {
-  serviceUrl: 'http://192.168.16.206:8092/',
+  serviceUrl: 'http://192.168.10.125:18080/web',
   appKey: '7ab928574cf24c0fa6cf55c8cfec26c1'
 }
 let HFAgent = {}

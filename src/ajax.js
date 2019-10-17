@@ -48,13 +48,19 @@ const Ajax = class {
     }
 
     xhr.onreadystatechange = () => {
+      let resObj
+      let resText
+
       // console.info(xhr.readyState, xhr.status)
       if(xhr.readyState === 4 && xhr.status === 200){
         let resConType = xhr.getResponseHeader('content-type')
         if (resConType.indexOf('application/octet-stream') >= 0 || resConType.indexOf('application/x-msdownload') >= 0) {
           ajaxStream.doDownLoad(xhr)
         } else {
-          let resObj = xhr.responseText && JSON.parse(xhr.responseText)
+          resText = xhr.responseText.replace(/^[\s\t\r\n]+|[\s\t\r\n]+$/g, '')
+          if (resText) {
+            resObj = resText && JSON.parse(xhr.responseText)
+          }
           this.destroyed(xhrId)
           resolveCb({code: '200', data: resObj})
         }
