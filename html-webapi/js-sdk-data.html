@@ -4,8 +4,6 @@
 
 <head>
   <meta charset="UTF-8">
-  <!-- <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="expires" content="0"> -->
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <meta name="format-detection" content="telephone=no">
@@ -49,13 +47,30 @@
   <script src="../build/hf-js-sdk.min.js"></script>
   <script type="text/javascript">
     HFAgent.init({
-      // serviceUrl: 'http://192.168.10.125:18080/web',
-      serviceUrl: 'http://127.0.0.1:9000/web',
+      serviceUrl: 'http://192.168.10.125:18080/web',
       appKey: '7ab928574cf24c0fa6cf55c8cfec26c1'
     })
     document.querySelector('#test-btn').addEventListener('click', function() {
       HFAgent.onEvent("gradedHomework",'{"actorAgentOpenid":"d4618c23-d612-4709-8d9a-478d87808067","actorAgentAccountName":"18612345678","actorAgentAccountHomePage":"www.header.com.cn","actorAgentName":"陆老师"}');
     })
+    // document.querySelector('#test-btn').addEventListener('click', function() {
+    //   HFAgent.onSend([
+    //     {
+    //       "schemeKey": "gradedHomework",
+    //       "actorAgentOpenid":"d4618c23-d612-4709-8d9a-478d87808067", 
+    //       "actorAgentAccountName":"18612345678",
+    //       "actorAgentAccountHomePage":"www.header.com.cn",
+    //       "actorAgentName":"陆老师"
+    //     },
+    //     {
+    //       "schemeKey": "gradedHomework",
+    //       "actorAgentOpenid":"d4618c23-d612-4709-8d9a-478d87808067", 
+    //       "actorAgentAccountName":"18612345678",
+    //       "actorAgentAccountHomePage":"www.header.com.cn",
+    //       "actorAgentName":"欧老师"
+    //     }
+    //   ])
+    // })
   </script>
 </body>
 </html>
