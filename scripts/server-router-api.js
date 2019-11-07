@@ -12,6 +12,8 @@ function getMockFiles (req, res) {
     parseFile = file ? JSON.parse(file) : {}
     parseFile.code = '200'
     parseFile.msg = 'Get data success'
+    res.cookie('onlyItem', '123456789', { maxAge: 60000, httpOnly: true })
+    res.cookie('showItem', 'abcdefg', { maxAge: 60000 })
   } catch(e) {
     parseFile = {}
     parseFile.code = '999'
@@ -140,7 +142,7 @@ function routerApi (req, res, logger) {
   console.info(`[HTTP ${req.method.toUpperCase()} api]`, req.baseUrl, req.originalUrl)
   logger.info(`[HTTP ${req.method.toUpperCase()} api]`, req.baseUrl, req.originalUrl)
 
-  // console.info(req.headers, req.method)
+  // console.info(req)
 
   if (req.method === 'GET') {
     getAjaxGet(req, res)
