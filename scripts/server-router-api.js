@@ -7,7 +7,8 @@ function getMockFiles (req, res) {
   let parseFile
 
   try {
-    filePath = path.resolve(__dirname, '../mocks/' + req['baseUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.json')
+    filePath = path.resolve(__dirname, '../mocks/' + req['baseUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.txt')
+    console.log(`[HTTP GET MOCK FILE] `, filePath)
     file = fs.readFileSync(filePath, {encoding: 'utf-8'})
     parseFile = file ? JSON.parse(file) : {}
     parseFile.code = '200'
@@ -29,6 +30,35 @@ function getMockFiles (req, res) {
   res.end()
 }
 
+function getVideoFiles(req, res) {
+  let filePath
+  let file
+  let parseFile
+
+  try {
+    filePath = path.resolve(__dirname, '../mocks/' + req['baseUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.json')
+    console.log(`[HTTP GET MOCK FILE] `, filePath)
+    file = fs.readFileSync(filePath, {encoding: 'utf-8'})
+    parseFile = file
+    res.set({
+      'Content-Type': 'text/plain;charset=UTF-8',
+      'Content-Length': parseFile.length
+    })
+    res.status(200)
+  } catch(e) {
+    parseFile = {}
+    parseFile.code = '999'
+    parseFile.msg = 'Fail to get data'
+    res.set({
+      'Content-Type': 'application/json;charset=UTF-8',
+      'Content-Length': parseFile.length
+    })
+    parseFile = JSON.stringify(parseFile)
+  }
+  res.send(parseFile)
+  res.end()
+}
+
 function getAjaxGet (req, res) {
   let params
 
@@ -36,7 +66,12 @@ function getAjaxGet (req, res) {
     params = decodeURIComponent((req['_parsedUrl']['query'].match(/params=(.+)/))[1])
     params = JSON.parse(params)
   }
-  getMockFiles(req, res)
+
+  if (req.baseUrl.indexOf('video-data') >= 0) {
+    getVideoFiles(req, res)
+  } else {
+    getMockFiles(req, res)
+  }  
 }
 
 function getParamsFromForm (body) {

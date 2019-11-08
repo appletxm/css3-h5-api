@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test requestAnimationFrame</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    canvas {
+      border: 1px solid gray;
+      border-radius: 5px;
+      margin: 10px auto;
+      background-color: #eee;
+      display: block;
+    }
+
+    .hf-canvas {
+      position: relative;
+    }
+
+    .video-opt {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 30px;
+      text-align: center;
+    }
+
+    .video-opt button {
+      border: 1px solid gray;
+      line-height: 20px;
+      padding: 0 10px;
+      border-radius: 3px;
+    }
+
+    #test-box {
+      width: 20px;
+      height: 20px;
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+  <div id="test-box"></div>
+
+  <div class="hf-canvas" id="canvs" v-loading="isLoading">
+    <canvas id="cvs" class="pen-canvas"></canvas>
+    <div class="video-opt">
+      <button id="btn-play">播放</button>
+      <button id="btn-replay">重播</button>
+      <button id="btn-pause">暂停</button>
+      <button id="btn-stop">结束播放</button>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var canvasDom = document.getElementById('cvs');
+    var canvasCtx = canvasDom.getContext('2d');
+    var alreadyGetData = false
+    var worker = null
+    var videoData = null
+    var currentIndex = 0
+    var maxPointInline = 5000
+    var isPause = false
+    var requestID = 0
+
+    function getPixelRatio(context) {
+      return  window.devicePixelRatio || 1;
+    }
+
+    function initialCanvas() {
+      var defaultWidth = 306
+      var defaultHeight = 437
+      var ratio = getPixelRatio(canvasCtx);
+      canvasDom.style.width = defaultWidth + 'px';
+      canvasDom.style.height = defaultHeight + 'px';
+      canvasDom.width = defaultWidth * ratio;
+      canvasDom.height = defaultHeight * ratio;
+      canvasCtx.scale(ratio, ratio);
+    }
+
+    function initAnimate() {
+      window.requestAnimationFrame = window.requestAnimationFrame
+      ||  window.webkitRequestAnimationFrame
+      || window.mozRequestAnimationFrame
+      || window.oRequestAnimationFrame
+      || window.msRequestAnimationFrame
+
+      window.cancelAnimationFrame = window.cancelAnimationFrame
+        || window.cancelRequestAnimationFrame
+        || window.webkitCancelAnimationFrame
+        || window.webkitCancelRequestAnimationFrame
+        || window.mozCancelRequestAnimationFrame
+        || window.oCancelRequestAnimationFrame
+        || window.msCancelRequestAnimationFrame
+    }
+
+    function createWorker() {
+      worker = new Worker('../src/video-worker.js');
+
+      worker.postMessage({start: true, url: 'http://ceph.youkext.com/resbucket5/json.json'});
+      // worker.postMessage({start: true, url: '/api/video-data-2'});
+
+      worker.onmessage = function(event) {
+        console.info('get data success.')
+        alreadyGetData = true
+        videoData = event.data
+        videoPlay()
+        worker.terminate()
+      }
+    }
+
+    function videoPlay() {
+      console.info('isPause:', isPause)
+      if (isPause === true) {
+        isPause = false
+      } else {
+        canvasCtx.beginPath()
+        canvasCtx.moveTo(videoData[0]['pointX'], videoData[0]['pointY'])
+        // currentIndex = 1
+      }
+      draw()
+    }
+
+    function draw() {
+      if (isPause === true) {
+        return false
+      }
+      requestID = window.requestAnimationFrame(function() {
+        if (currentIndex ===  maxPointInline - 1 || currentIndex === videoData.length) {
+          canvasCtx.closePath()
+          window.cancelAnimationFrame(requestID)
+        } else {
+          var item = videoData[currentIndex]
+          if (videoData[currentIndex]['ntype'] === 1) {
+            canvasCtx.lineWidth = item.penWidth
+            canvasCtx.lineTo(item.pointX, item.pointY)
+            canvasCtx.fill()
+            canvasCtx.stroke()
+          } else if(item['ntype'] === 0) {
+            canvasCtx.moveTo(item['pointX'], item['pointY'])
+          }
+          currentIndex++
+          draw()
+        } 
+      })
+    }
+
+    function videoReplay() {
+      isPause = false
+      currentIndex = 0
+      clearCtx()
+      videoPlay()
+    }
+
+    function videoStop() {
+      clearPlay()
+    }
+
+    function clearPlay() {
+      alreadyGetData = false
+      worker = null
+      videoData = null
+      currentIndex = 0
+      maxPointInline = 200
+      clearCtx()
+    }
+
+    function clearCtx() {
+      window.cancelAnimationFrame(requestID)
+      canvasCtx.clearRect(0, 0, canvasDom.clientWidth, canvasDom.clientHeight)
+    }
+
+    function videoPause() {
+      isPause = true
+    }
+
+    document.querySelector('#btn-play').addEventListener('click', function() {
+      if (alreadyGetData !== true) {
+        createWorker()
+      } else {
+        videoPlay()
+      }
+    })
+
+    document.querySelector('#btn-replay').addEventListener('click', function() {
+      videoReplay()
+    })
+
+    document.querySelector('#btn-stop').addEventListener('click', function() {
+      videoStop()
+    })
+    
+    document.querySelector('#btn-pause').addEventListener('click', function() {
+      videoPause()
+    })
+
+    initialCanvas()
+    initAnimate()
+
+    var start = null;
+    var element = document.getElementById('test-box');
+    element.style.position = 'absolute';
+    function step(timestamp) {
+      if (!start) start = timestamp;
+      var progress = timestamp - start;
+      element.style.left = Math.min(progress / 10, 200) + 'px';
+      if (progress < 2000) {
+        window.requestAnimationFrame(step);
+      }
+    }
+    function testAnimation() {
+      window.requestAnimationFrame(step);
+    }
+    // testAnimation()
+  </script>
+</body>
+</html>
