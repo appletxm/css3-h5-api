@@ -7,7 +7,7 @@ const apiRouter = require('./server-router-api')
 const logger = require('./server-log')
 
 const port = 9000
-const host = '127.0.0.1'
+const host = '192.168.69.161'
 
 app.use(['/api', '/app/v1', '/web'], (req, res) => {
   apiRouter(req, res, logger)

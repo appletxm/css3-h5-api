@@ -37,6 +37,9 @@
     var res = ''
 
     function checkHint(checkArr, cIndex, mIndex) {
+      if (checkArr.length === 0) {
+        return
+      }
       hint = hint + 1
       checkArr.splice(cIndex, 1)
       checkArr.splice(mIndex - 1, 1)
@@ -64,16 +67,16 @@
 
           // console.info(char, str1, str2, str3)
 
-          if (matchedStr === str1) {
-            checkHint(strArr, i, index1)
+          if (matchedStr === str3) {
+            checkHint(strArr, i, index3)
           }
 
           if (matchedStr === str2) {
             checkHint(strArr, i, index2)
           }
 
-          if (matchedStr === str3) {
-            checkHint(strArr, i, index3)
+          if (matchedStr === str1) {
+            checkHint(strArr, i, index1)
           }
         }
       }
