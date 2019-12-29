@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    ul {
+      display: inline-block;
+    }
+
+    li {
+      display: inline-block;
+      width: 2rem;
+      height: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <ul id="test-ul">
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+  </ul>
+
+  <script>
+    var index = 0
+    function getPreviousElement(dom) {
+      // var preDom = dom.previousSibling
+      var preEl = dom.previousElementSibling
+
+      // console.info(preDom, preEl)
+
+      if (preEl) {
+        index ++
+        getPreviousElement(preEl)
+      } else {
+        return index
+      }
+    }
+
+    document.querySelector('#test-ul').addEventListener('click', (event) => {
+      var target = event.target
+      // target.nextSibling 兄弟节点下一个
+      // target.previousSibling 兄弟节点上一个
+      // target.getPreviousElement
+
+      // console.info('current:', target)
+
+      if (target.nodeName.toLowerCase() === 'li') {
+        index = 0
+        console.info(target.previousElementSibling, target.nextElementSibling)
+        getPreviousElement(target)
+        alert('index:' + index)
+      }
+    })
+
+    // document.querySelectorAll('li').forEach((item, index) => {
+    //   item.onclick = function() {
+    //     alert(index)
+    //   }
+    // })
+  </script>
+
+</body>
+</html>

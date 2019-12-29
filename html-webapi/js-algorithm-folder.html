@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  <input type="text" value="" maxlength="6" />
+  <button>check</button>
+  <div>matched result is: <b></b></div>
+
+  <script type="text/javascript">
+    var arr  = []
+    var max =  0
+    var hint = 0
+    var matched = {
+      '[': ']',
+      '{': '}',
+      '(': ')'
+    }
+    var res = ''
+
+    function checkHint(checkArr, cIndex, mIndex) {
+      hint = hint + 1
+      checkArr.splice(cIndex, 1)
+      checkArr.splice(mIndex - 1, 1)
+      check(checkArr)
+    }
+
+    function check(strArr) {
+      if (strArr.length === 0) {
+        res = hint === max
+      } else {
+          for(var i = 0; i < strArr.length; i++) {
+          var index1 = i + 1
+          var index2 = i + 3
+          var index3 = i + 5
+          var char = strArr[i]
+          var matchedStr = matched[char]
+
+          index1 = index1 >= arr.length ? -1 : index1
+          index2 = index2 >= arr.length ? -1 : index2
+          index3 = index3 >= arr.length ? -1 : index3
+
+          var str1 = index1 >= 0 ? arr[index1] : ''
+          var str2 = index2 >= 0 ? arr[index2] : ''
+          var str3 = index3 >= 0 ? arr[index3] : ''
+
+          // console.info(char, str1, str2, str3)
+
+          if (matchedStr === str1) {
+            checkHint(strArr, i, index1)
+          } 
+
+          if (matchedStr === str2) {
+            checkHint(strArr, i, index2)
+          } 
+
+          if (matchedStr === str3) {
+            checkHint(strArr, i, index3)
+          } 
+        }
+      }
+    }
+
+    document.querySelector('button').addEventListener('click', () => {
+      var text = document.querySelector('input').value
+
+      if (!text || text.length % 2 !== 0) {
+        alert('please input value')
+        return false
+      }
+
+      res = ''
+      arr = Array.from(text)
+      max = arr.length / 2
+      hint = 0
+      check(arr)
+      document.querySelector('b').textContent = !!res
+    })
+  </script>
+</body>
+</html>
