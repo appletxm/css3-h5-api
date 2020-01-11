@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api - error handle</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    function catchError(e) {
+      e.preventDefault()
+      console.info('catch error:', e)
+      return true
+    }
+
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.log('window.onerror', {message, source, lineno, colno, error})
+      return true
+    }
+
+    window.addEventListener('error', catchError, true)
+
+    window.addEventListener('unhandledrejection', (e) => {
+      e.preventDefault()
+      console.info('unhandledrejection:', e)
+      return true
+    })
+
+    function syncError() {
+      try {
+      let name = 'jartto'
+        console.info(nam)
+      } catch(e) {
+        console.info('error:', e)
+        throw e
+      }
+    }
+    function asyncError() {
+      setTimeout(() => {
+        undefined.map(v => v)
+      }, 500)
+    }
+
+    function loadImgError() {
+      let img = new Image()
+      img.src = './big.png'
+    }
+
+    function promiseError() {
+      return Promise.reject(333)
+    }
+
+    function iframeError() {
+      let iframe = document.createElement('iframe')
+      iframe.setAttribute('src', './iframe.html')
+      document.body.appendChild(iframe)
+    }
+
+    // syncError()
+    // asyncError()
+    loadImgError()
+    promiseError()
+    iframeError()
+
+    // try {
+    //   let name = 'jartto'
+    //   console.info(nam)
+    // } catch(e) {
+    //   console.info('error:', e)
+    // }
+
+    // try {
+    //   setTimeout(() => {
+    //     undefined.map(v => v)
+    //   }, 1000)
+    // } catch(e) {
+    //   console.log('error:', e)
+    // }
+  </script>
+</body>
+</html>
