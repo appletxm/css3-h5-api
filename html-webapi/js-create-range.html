@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+    .paste-area {
+      width: 300px;
+      height: 100px;
+      border: 1px dashed gray;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <input id="test-input" type="tel" autofocus />
+
+  <div class="selct-text">i'm select text</div>
+  <button id="doCopy">do copy</button>
+
+  <div class="paste-area">paste area</div>
+
+  <script>
+    const el = document.querySelector('.selct-text')
+    const range = document.createRange();
+    range.setStart(el, 0);
+    range.setEnd(el, el.childNodes.length);
+    const rangeWidth = range.getBoundingClientRect().width;
+    console.info(el.childNodes, rangeWidth)
+
+    function doCopy() {
+      let div = document.querySelector('.selct-text');
+      let selection = window.getSelection();
+      let range = document.createRange();
+      range.selectNode(div);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.execCommand('copy', false, null);
+
+      console.info('selection.rangeCount:', window.getSelection().rangeCount)
+    }
+
+    function doPaste() {
+      document.execCommand('paste', false, null)
+    }
+
+    function listenerPaste(e) {
+      console.info(e.clipboardData)
+      return false
+    }
+
+    document.querySelector('#doCopy').addEventListener('click', doCopy)
+    document.querySelector('#test-input').addEventListener('focus', doPaste)
+    document.querySelector('#test-input').addEventListener('paste', listenerPaste)
+
+    console.info('selection.rangeCount:', window.getSelection().rangeCount)
+  </script>
+
+</body>
+</html>
