@@ -21,6 +21,8 @@ function getContentType(extendsName){
       return 'application/json'
     case 'stream':
       return 'application/octet-stream' // 'application/octet-stream', 'application/x-msdownload'
+    case 'mp4':
+      return 'video/mpeg4'
     default:
       return 'text/plain'
   }

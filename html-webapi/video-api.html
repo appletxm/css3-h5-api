@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    #video-test {
+      position: absolute;
+      width: 640px;
+      height: 360px;
+      border: 1px solid gray;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      left: 50%;
+      top: 50%;
+      margin: -180px -320px;
+    }
+
+    video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .video-control {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background-color: rgba(0,0,0, .5);
+      display: flex;
+      font-size: 12px;
+      color: white;
+      line-height: 40px;
+      z-index: 1;
+    }
+
+    .duration {
+      display: flex;
+      flex: 1 1 auto;
+      margin: 0 20px;
+      position: relative;
+    }
+
+    .time-bar,.current-bar{
+      height: 4px;
+      width: 100%;
+      background-color: white;
+      border-radius: 2px;
+      position: absolute;
+      top: 50%;
+      margin-top: -2px;
+    }
+
+    .current-bar {
+      width: 0;
+      background-color: orange;
+    }
+
+    .ctl-btn {
+      flex-basis: 40px;
+      cursor: pointer;
+    }
+    :fullscreen::backdrop {
+      background-color: #006; /* dark blue */
+    }
+  </style>
+</head>
+<body>
+  <!-- <button onclick="play()">click</button> -->
+  <div id="video-test">
+    <!-- <video src="../assets/videos/SampleVideo_1280x720_5mb.mp4" poster="../assets/images/bg.jpg"></video> -->
+  </div>
+
+  <script>
+    function play() {
+      console.info('play')
+      document.querySelector('video').play().then(function(res) {
+        console.info('====', res)
+      }).catch(function(err) {
+        console.info('#####',err)
+      })
+    }
+  </script>
+
+  <script src="../bin/traceur.js"></script>
+  <!-- <script src="../bin/BrowserSystem.js"></script> -->
+  <script type="module">
+    import Video from '../src/video.js'
+    const video = new Video({
+      src: 'http://192.168.96.1:9000/assets/videos/SampleVideo_1280x720_5mb.mp4',
+      bindDom: document.querySelector('#video-test'),
+      poster: 'http://192.168.96.1:9000/assets/images/bg.jpg'
+    })
+  </script>
+
+</body>
+</html>
