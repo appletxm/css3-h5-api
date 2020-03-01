@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test page load and show event</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+
+    img {
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    nav {
+      line-height: 40px;
+    }
+
+    nav a {
+      margin-right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#pic-a">pic a</a>
+    <a href="#pic-b">pic b</a>
+    <a href="#pic-c">pic c</a>
+    <a href="./js-fullscreen.html">skip to another page</a>
+  </nav>
+
+  <a name="pic-a"></a>
+  <img src="http://regex.info/i/JF7_110143.jpg" width="600" />
+
+  <a name="pic-b"></a>
+  <!-- <img src="https://img1.southernliving.timeinc.net/sites/default/files/styles/medium_2x/public/image/2019/07/main/gettyimages-618959744.jpg?itok=9M5uidj5" width="600" /> -->
+
+  <a name="pic-c"></a>
+  <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Flower%2C_Hairy_Vetch_-_Flickr_-_nekonomania_%281%29.jpg"> -->
+
+  <input id="test-input" type="tel" autofocus />
+  <div class="test-div">
+    click me
+  </div>
+
+  <script>
+    // window.onload = function(){
+    //   console.info('=========window onload========')
+    //   document.querySelector('#test-input').focus()
+    // }
+
+    // window.onload = function(e) {
+    //   console.info('load.window event:', e)
+    // }
+
+    // will never call
+    document.addEventListener('load', function(e) {
+      console.info('load.document event:', e)
+    })
+    document.body.onload = function bodyLoad(e) {
+      console.info('load.body event:', e)
+    }
+    document.onready = function(e) {
+      console.info('onready.document event:', e)
+    }
+
+    document.addEventListener('DOMContentLoaded', function(e) {
+      console.info('document.DOMContentLoaded event:', e)
+    })
+
+    // will never call
+    window.onpageshow = function(e) {
+      console.info('pageshow.window event:', e)
+    }
+    // will never call
+    document.onpageshow = function(e) {
+      console.info('pageshow.document event:', e)
+    }
+    document.body.onpageshow = function(e) {
+      console.info('pageshow.body event:', e)
+    }
+
+    window.onpagehide = function(e) {
+      console.info('pagehide.window event:', e)
+    }
+    document.onpagehide = function(e) {
+      console.info('pagehide.document event:', e)
+    }
+    document.body.onpagehide = function(e) {
+      console.info('pagehide.body event:', e)
+    }
+
+    document.querySelector('.test-div').addEventListener('click', () => {
+      document.querySelector('#test-input').focus()
+    })
+  </script>
+
+</body>
+</html>
