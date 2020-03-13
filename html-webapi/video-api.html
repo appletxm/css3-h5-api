@@ -59,6 +59,7 @@
     }
 
     .time-bar,.current-bar{
+      cursor: pointer;
       height: 4px;
       width: 100%;
       background-color: white;
@@ -80,6 +81,17 @@
     :fullscreen::backdrop {
       background-color: #006; /* dark blue */
     }
+
+    .skip-show-time {
+      position: absolute;
+      top: 0;
+      line-height: 18px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      border-radius: 4px;
+      width: 50px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -88,7 +100,7 @@
     <!-- <video src="../assets/videos/SampleVideo_1280x720_5mb.mp4" poster="../assets/images/bg.jpg"></video> -->
   </div>
 
-  <script>
+  <!-- <script>
     function play() {
       console.info('play')
       document.querySelector('video').play().then(function(res) {
@@ -97,7 +109,7 @@
         console.info('#####',err)
       })
     }
-  </script>
+  </script> -->
 
   <script src="../bin/traceur.js"></script>
   <!-- <script src="../bin/BrowserSystem.js"></script> -->

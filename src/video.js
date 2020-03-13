@@ -14,6 +14,19 @@ const defaultConfig = {
   poster: ''
 }
 
+function formatTime(seconds) {
+  const hourStep = 60 * 60
+  const minStep = 60
+  let timer = ''
+  const hour = Math.floor(seconds / hourStep)
+  const min = Math.floor(seconds % hourStep / minStep)
+  const second = (seconds % hourStep) % minStep
+
+  timer = hour + ':' + min + ':' + second
+
+  return timer
+}
+
 const HAVE_ENOUGH_DATA = 4
 
 const Video = function (options) {
@@ -28,6 +41,10 @@ const Video = function (options) {
   this.isReady = false
   this.isPause = null
   this.isFull = false
+
+  this.hideBarTimer = 0;
+  this.hideStep = 2000
+
   this.init()
 }
 
@@ -80,6 +97,42 @@ Video.prototype = {
     this.fullBtn.addEventListener('click', () => {
       this.toggleScreen()
     })
+
+    div.addEventListener('mousemove', (e) => {
+      this.showTime(e)
+    })
+
+    div.addEventListener('click', (e) => {
+      this.skipTime(e)
+    })
+  },
+
+  showTime(e) {
+    if (e.target.className === 'time-bar' || e.target.className === 'current-bar') {
+      const rec = e.target.getBoundingClientRect()
+      const gap = e.screenX - rec.x
+      const skipBar = e.currentTarget.querySelector('.skip-show-time')
+      const skipBarRec = skipBar.getBoundingClientRect()
+      skipBar.innerHTML = formatTime(Math.ceil(gap / rec.width * this.player.duration))
+      skipBar.style.left = (gap - skipBarRec.width + skipBarRec.width / 2) + 'px'
+      // skipBar.style.display = 'block'
+
+      // clearTimeout(this.hideBarTimer)
+      // this.hideBarTimer = setTimeout(() => {
+      //   skipBar.style.display = 'none'
+      // })
+    }
+  },
+
+  skipTime(e) {
+    if (e.target.className === 'time-bar' || e.target.className === 'current-bar') {
+      const rec = e.target.getBoundingClientRect()
+      const gap = e.screenX - rec.x
+      const seconds = Math.ceil(gap / rec.width * this.player.duration)
+      const currentBarDom = e.currentTarget.querySelector('.current-bar')
+      currentBarDom.style.width = ((seconds / this.player.duration) * 100) + '%'
+      this.player.currentTime = seconds
+    }
   },
 
   createVideo() {
