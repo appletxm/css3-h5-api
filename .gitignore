@@ -6,3 +6,4 @@ dist
 build
 deploy
 documentserver
+.DS_Store
