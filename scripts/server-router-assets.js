@@ -75,6 +75,51 @@ function getPdfFile (req, res) {
   res.end()
 }
 
+function resRage(file, req, res, contentType) {
+  var range = req.headers.range
+  var total = file.length
+  var split = range.split(/[-=]/)
+  var ini = +split[1]
+  var end = split[2]? +split[2] : total-1
+  var chunkSize = end - ini + 1
+  if (parseInt(ini) >= total || parseInt(end) >= total) {
+    //Indicate the acceptable range.
+    res.status(416)
+    res.set("Content-Range",'bytes */' + total) // File size.
+    //Return the 416 'Requested Range Not Satisfiable'.
+      res.end()
+  }
+  res.status(206)
+  res.set('Connection', 'keep-alive')
+  res.set("Content-Range","bytes " + ini + "-" + end + "/" + total)
+  res.set("Accept-Ranges", "bytes")
+  res.set("Content-Length", chunkSize)
+  res.set("Content-Type", contentType)
+  res.end(file.slice(ini, chunkSize+ini))
+
+  // res.status(206);
+  // res.set('Connection', 'keep-alive');
+  // res.set("Content-Range","bytes " + ini + "-" + end + "/" + total);
+  // res.set("Accept-Ranges", "bytes");
+  // res.set("Content-Length", chunkSize);
+  // res.set("Content-Type", contentType);
+  // fs.createReadStream(filename, { start: ini, end: end }).pipe(res)
+}
+
+function getMp4File (req, res) {
+  let filePath = decodeURIComponent(path.join(__dirname, '../' + req.path))
+  let file = fs.readFileSync(filePath)
+  let contentType = getContentType('mp4')
+
+  res.set('Content-Type', contentType)
+  if (req.headers.range) {
+    resRage(file, req, res, contentType)
+  } else {
+    res.send(file)
+    res.end()
+  }
+}
+
 function getExcelFile (req, res) {
   excelOpts.downLoadExcel(req, res)
 }
@@ -96,8 +141,9 @@ function routerAssets (req, res, logger) {
   } else if (req.originalUrl.indexOf('.pdf') >= 0) {
     getPdfFile(req, res)
   } else if(req.originalUrl.indexOf('download-excel') >= 0) {
-    debugger
     getExcelFile(req, res)
+  } else if (req.originalUrl.indexOf('.mp4') >= 0) {
+    getMp4File(req, res)
   } else {
     getHtmlFile(req, res)
   }
