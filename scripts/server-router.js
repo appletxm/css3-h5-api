@@ -13,8 +13,12 @@ function getImageFile (req, res) {
 }
 
 function getHtmlFile (req, res) {
-  let htmlFilePath = path.join(__dirname, '../index.html')
-  let html = fs.readFileSync(htmlFilePath)
+  // let htmlFilePath = path.join(__dirname, '../index.html')
+  // let html = fs.readFileSync(htmlFilePath)
+
+  let filename = req.originalUrl === '/' ? '../index.html'  : req.originalUrl
+  filename = path.join(__dirname, '..' + req.originalUrl)
+  let html = fs.readFileSync(filename)
 
   res.set('content-type', 'text/html')
   res.send(html)
@@ -31,12 +35,26 @@ function getScriptFile (req, res) {
 }
 
 function getCssFile (req, res) {
-  console.info('====get css file')
+  let fileName = path.join(__dirname, '..' + req.originalUrl)
+  fs.readFile(fileName, function (err, result) {
+    if (err) {
+      res.send(err)
+    } else {
+      res.set('content-type', '	text/css')
+      res.send(result)
+    }
+    res.end()
+
+    if (next) {
+      next()
+    }
+  })
 }
 
 function assignRouter (req, res, next) {
+  debugger
   console.info('[http get]', req.baseUrl, req.originalUrl)
-  if (req.originalUrl.indexOf('assets/images') >= 0) {
+  if (req.originalUrl.indexOf('assets/images') >= 0 || (/^.+\.jpg|png|gif|jpeg]$/).test(req, originalUrl)) {
     getImageFile(req, res)
   } else if (req.originalUrl.indexOf('.js') >= 0) {
     getScriptFile(req, res)

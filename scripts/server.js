@@ -2,7 +2,7 @@ const express = require('express')
 // const path = require('path')
 // const open = require('open')
 const app = express()
-const assetsRouter = require('./server-router-assets')
+const assignRouter = require('./server-router-assets')
 const apiRouter = require('./server-router-api')
 const logger = require('./server-log')
 
@@ -13,8 +13,24 @@ app.use(['/api', '/app/v1', '/web'], (req, res) => {
   apiRouter(req, res, logger)
 })
 
+app.use('/*.html', function (req, res) {
+  assignRouter(req, res, logger)
+})
+
+app.use('/*.js', function (req, res) {
+  assignRouter(req, res, logger)
+})
+
+app.use('/*.css', function (req, res) {
+  assignRouter(req, res, logger)
+})
+
+app.use(['/.png', '/*.jpg', '/*.gif', '/*.jpeg'], function (req, res) {
+  assignRouter(req, res, logger)
+})
+
 app.use(['/', '/src', '/assets'], (req, res) => {
-  assetsRouter(req, res, logger)
+  assignRouter(req, res, logger)
 })
 
 app.use('*', (req, res) => {

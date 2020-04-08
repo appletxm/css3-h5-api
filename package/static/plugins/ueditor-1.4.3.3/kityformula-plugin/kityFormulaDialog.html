@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <link rel="stylesheet" href="kityformula/assets/styles/base.css">
+    <link rel="stylesheet" href="kityformula/assets/styles/ui.css">
+    <link rel="stylesheet" href="kityformula/assets/styles/scrollbar.css">
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        .kf-editor {
+            width: 780px;
+            height: 380px;
+        }
+
+        #loading {
+            height: 32px;
+            width: 340px;
+            line-height: 32px;
+            position: absolute;
+            top: 42%;
+            left: 50%;
+            margin-left: -170px;
+            font-family: arial, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+        }
+
+        #loading img {
+            position: absolute;
+        }
+
+        #loading p {
+            display: block;
+            position: absolute;
+            left: 40px;
+            top: 0px;
+            margin: 0;
+        }
+    </style>
+    <title></title>
+</head>
+
+<body>
+    <div id="kfEditorContainer" class="kf-editor">
+        <div id="tips" class="tips">
+            sorry! Beta版本仅支持IE9及以上版本的浏览器，正式版本将会支持低版本浏览器，谢谢您的关注！
+        </div>
+    </div>
+    <!--页面中一定要引入internal.js为了能直接使用当前打开dialog的实例变量-->
+    <!--internal.js默认是放到dialogs目录下的-->
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+
+    <script src="kityformula/js/jquery-1.11.0.min.js"></script>
+    <script src="kityformula/js/kitygraph.all.js"></script>
+    <script src="kityformula/js/kity-formula-render.all.js"></script>
+    <script src="kityformula/js/kity-formula-parser.all.min.js"></script>
+    <script src="kityformula/js/kityformula-editor.all.min.js"></script>
+    <script>
+        jQuery(function ($) {
+
+            if (document.body.addEventListener) {
+
+                $("#tips").html('<div id="loading"><img src="kityformula/loading.gif" alt="loading" /><p>正在加载，请耐心等待...</p></div>');
+
+                var factory = kf.EditorFactory.create($("#kfEditorContainer")[0], {
+                    render: {
+                        fontsize: 24
+                    },
+                    resource: {
+                        path: "./kityformula/resource/"
+                    }
+                });
+
+                factory.ready(function (KFEditor) {
+
+                    $("#tips").remove();
+
+                    // this指向KFEditor
+                    var rng = editor.selection.getRange(),
+                        img = rng.getClosedNode(),
+                        imgLatex = img && $(img).attr('data-latex');
+
+                    this.execCommand("render", imgLatex || "\\placeholder");
+                    this.execCommand("focus");
+
+                    window.kfe = this;
+
+                });
+
+                dialog.onok = function () {
+                    kfe.execCommand('get.image.data', function (data) {
+                        var latex = kfe.execCommand('get.source');
+                        function dataURLtoFile(dataurl, filename) {
+                            //将base64转换为文件  
+                            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                            while (n--) {
+                                u8arr[n] = bstr.charCodeAt(n);
+                            }
+                            return new File([u8arr], filename, { type: mime });
+                        }
+                        var formData = new FormData();
+                        formData.append("upfile", dataURLtoFile(data.img, new Date().getTime() + '' + Math.ceil(Math.random()*10000) + ".png"));
+                        var api = localStorage.getItem('ueditor');
+                        if(!api){
+                            alert('接口地址不存在');
+                            return;
+                        }
+                        $.ajax({
+                            url: api + '/ueditor/exec/?action=uploadimage',
+                            type: 'POST',
+                            data: formData,
+                            async: false,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            success: function (result) {
+                                if (!result) {
+                                    return;
+                                }
+                                result = JSON.parse(result);
+                                if (result.state === 'SUCCESS') {
+                                    editor.execCommand('inserthtml', '<img hf-image="image" class="kfformula" src="' + (api + result.url) + '" data-latex="' + latex + '" />');
+                                    dialog.close();
+                                } else {
+                                    alert('上传失败');
+                                }
+                            },
+                            error: function (result) {
+                                alert(result);
+                            }
+                        });
+                    });
+
+                    return false;
+                }
+
+            } else {
+                $("#tips").css("color", "black");
+                $("#tips").css("padding", "10px");
+            }
+
+        });
+    </script>
+</body>
+
+</html>
