@@ -1,11 +1,12 @@
 const express = require('express')
 // const path = require('path')
 // const open = require('open')
+const chalk = require('chalk')
 const app = express()
 const assignRouter = require('./server-router-assets')
 const apiRouter = require('./server-router-api')
 const logger = require('./server-log')
-
+const ipAddress = require('ip').address()
 const port = 9000
 const host = '0.0.0.0'
 
@@ -29,9 +30,9 @@ app.use(['/.png', '/*.jpg', '/*.gif', '/*.jpeg'], function (req, res) {
   assignRouter(req, res, logger)
 })
 
-app.use(['/', '/src', '/assets'], (req, res) => {
-  assignRouter(req, res, logger)
-})
+// app.use(['/', '/src', '/assets'], (req, res) => {
+//   assignRouter(req, res, logger)
+// })
 
 app.use('*', (req, res) => {
   logger.info('No Url Matched', req.originalUrl)
@@ -39,9 +40,11 @@ app.use('*', (req, res) => {
 })
 
 app.listen(port, host, function () {
-  let url = 'http://' + host + ':' + port
-  console.info('dev server started at: ', url)
-  logger.info('dev server started at: ', url)
+  const localUrl = `http://localhost:${port}`
+  const ipUrl = `http://${ipAddress}:${port}`
+  console.info(`${chalk.magenta('dev server started at: ')}`)
+  console.info(`loclhost: ${chalk.blue(localUrl)}`)
+  console.info(`ip: ${chalk.blue(ipUrl)}`)
 
 // setTimeout(function () {
 //   let openUrl = url

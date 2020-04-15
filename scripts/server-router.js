@@ -52,7 +52,6 @@ function getCssFile (req, res) {
 }
 
 function assignRouter (req, res, next) {
-  debugger
   console.info('[http get]', req.baseUrl, req.originalUrl)
   if (req.originalUrl.indexOf('assets/images') >= 0 || (/^.+\.jpg|png|gif|jpeg]$/).test(req, originalUrl)) {
     getImageFile(req, res)
