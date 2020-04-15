@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+  </style>
+</head>
+<body>
+  <input id="test-input" type="tel" autofocus />
+  <div class="test-div">
+    click me
+  </div>
+
+  <script type="text/javascript">
+    // var event = new Event('build');
+    // // Listen for the event.
+    // document.addEventListener('build', function (e) { 
+    //   console.info('====================')
+    // }, false);
+    // // Dispatch the event.
+    // document.querySelector('.test-div').addEventListener('click', function(e) {
+    //   document.dispatchEvent(event);
+    // })
+
+
+    if ( typeof window.CustomEvent === "function" ) {
+      console.info('support CustomEvent')
+    } else {
+      console.info('not support CustomEvent')
+    }
+
+    (function () {
+      if ( typeof window.CustomEvent === "function" ) return false
+
+      function CustomEvent ( event, params ) {
+        params = params || { bubbles: false, cancelable: false, detail: undefined }
+        var evt = document.createEvent( 'CustomEvent' )
+        evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail )
+        return evt;
+      }
+
+      CustomEvent.prototype = window.Event.prototype
+      window.CustomEvent = CustomEvent
+    })()
+
+    var event = new CustomEvent('build', { 'detail': {a:1, b:3, c:{d:function(){console.info('99999999')}}}})
+    document.addEventListener('build', function (e) { 
+      console.info('====================', e.detail)
+    }, false);
+    // Dispatch the event.
+    document.querySelector('.test-div').addEventListener('click', function(e) {
+      document.dispatchEvent(event);
+    })
+  </script>
+
+</body>
+</html>
