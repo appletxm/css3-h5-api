@@ -62,9 +62,10 @@
       console.info('====================', e.detail)
     }, false);
     // Dispatch the event.
-    document.querySelector('.test-div').addEventListener('click', function(e) {
-      document.dispatchEvent(event);
-    })
+    // document.querySelector('.test-div').addEventListener('click', function(e) {
+    //   document.dispatchEvent(event);
+    // })
+    document.dispatchEvent(event);
   </script>
 
 </body>
