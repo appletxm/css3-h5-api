@@ -7,7 +7,7 @@ function getMockFiles (req, res) {
   let parseFile
 
   try {
-    filePath = path.resolve(__dirname, '../mocks/' + req['baseUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.txt')
+    filePath = path.resolve(__dirname, '../mocks/' + req['originalUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.txt')
     console.log(`[HTTP GET MOCK FILE] `, filePath)
     file = fs.readFileSync(filePath, {encoding: 'utf-8'})
     parseFile = file ? JSON.parse(file) : {}
@@ -30,13 +30,32 @@ function getMockFiles (req, res) {
   res.end()
 }
 
+function getBinaryData (req, res) {
+  const filePath = path.resolve('./uploads/前端.zip')
+  // fs.createReadStream(filePath).pipe(res)
+  const file = fs.readFileSync(filePath)
+  console.info('====file:', file.length)
+  res.set({
+    'Content-Disposition': 'attachment; filename=' + encodeURIComponent('前端.zip'),
+    'Content-Type': 'application/octet-stream',
+    'Content-Length': file.length
+  })
+  res.send(file)
+  res.end()
+}
+
+function getBinaryPicData(req, res) {
+  const filePath = path.resolve('./assets/images/bg.jpg')
+  fs.createReadStream(filePath).pipe(res)
+}
+
 function getVideoFiles(req, res) {
   let filePath
   let file
   let parseFile
 
   try {
-    filePath = path.resolve(__dirname, '../mocks/' + req['baseUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.json')
+    filePath = path.resolve(__dirname, '../mocks/' + req['originalUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.json')
     console.log(`[HTTP GET MOCK FILE] `, filePath)
     file = fs.readFileSync(filePath, {encoding: 'utf-8'})
     parseFile = file
@@ -67,11 +86,15 @@ function getAjaxGet (req, res) {
     params = JSON.parse(params)
   }
 
-  if (req.baseUrl.indexOf('video-data') >= 0) {
+  if (req.originalUrl.indexOf('video-data') >= 0) {
     getVideoFiles(req, res)
+  } else if (req.originalUrl.indexOf('getBinaryData') >= 0) {
+    getBinaryData(req, res)
+  } else if (req.originalUrl.indexOf('getBinaryPicData') >= 0) {
+    getBinaryPicData(req, res)
   } else {
     getMockFiles(req, res)
-  }  
+  }
 }
 
 function getParamsFromForm (body) {
@@ -174,8 +197,8 @@ function getAjaxPost (req, res) {
 }
 
 function routerApi (req, res, logger) {
-  console.info(`[HTTP ${req.method.toUpperCase()} api]`, req.baseUrl, req.originalUrl)
-  logger.info(`[HTTP ${req.method.toUpperCase()} api]`, req.baseUrl, req.originalUrl)
+  console.info(`[HTTP ${req.method.toUpperCase()} api]`, req.originalUrl, req.originalUrl)
+  logger.info(`[HTTP ${req.method.toUpperCase()} api]`, req.originalUrl, req.originalUrl)
 
   // console.info(req)
 

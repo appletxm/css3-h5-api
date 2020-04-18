@@ -26,7 +26,7 @@ app.use('/*.css', function (req, res) {
   assignRouter(req, res, logger)
 })
 
-app.use(['/.png', '/*.jpg', '/*.gif', '/*.jpeg'], function (req, res) {
+app.use(['/.png', '/*.jpg', '/*.gif', '/*.jpeg', '/*.ico'], function (req, res) {
   assignRouter(req, res, logger)
 })
 

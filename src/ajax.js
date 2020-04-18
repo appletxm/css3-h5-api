@@ -52,10 +52,17 @@ const Ajax = class {
       let resText
 
       // console.info(xhr.readyState, xhr.status)
-      if(xhr.readyState === 4 && xhr.status === 200){
+      if (xhr.readyState === 4 && xhr.status === 200) {
         let resConType = xhr.getResponseHeader('content-type')
+
+        if (options.responseType === 'arraybuffer' || options.responseType === 'blob') {
+          resolveCb(xhr.response)
+          return false
+        }
+
         if (resConType.indexOf('application/octet-stream') >= 0 || resConType.indexOf('application/x-msdownload') >= 0) {
           ajaxStream.doDownLoad(xhr)
+          this.destroyed(xhrId)
         } else {
           resText = xhr.responseText.replace(/^[\s\t\r\n]+|[\s\t\r\n]+$/g, '')
           if (resText) {
@@ -64,10 +71,14 @@ const Ajax = class {
           this.destroyed(xhrId)
           resolveCb({code: '200', data: resObj})
         }
-      } else if(xhr.readyState === 4 && xhr.status !== 200){
+      } else if (xhr.readyState === 4 && xhr.status !== 200) {
         this.destroyed(xhrId)
         rejectCb({code: '500', msg: xhr.response})
       }
+    }
+
+    xhr.onload = () => {
+      console.info('load:', xhr.response.length)
     }
 
     if (xhr.addEventListener) {
@@ -75,13 +86,13 @@ const Ajax = class {
         this.destroyed(xhrId)
         rejectCb({code: '10000', msg: 'request timeout'})
       })
-  
+
       xhr.addEventListener('error', (e) => {
         this.destroyed(xhrId)
         rejectCb({code: '500', msg: e})
       })
-  
-      if(options.onProgress && typeof options.onProgress === 'function'){
+
+      if (options.onProgress && typeof options.onProgress === 'function') {
         xhr.addEventListener('progress', (e) => {
           options.onProgress(e)
         })
@@ -90,12 +101,12 @@ const Ajax = class {
   }
 
   destroyed(xhrId) {
-    if(xhrList[xhrId]) {
+    if (xhrList[xhrId]) {
       delete xhrList[xhrId]
     }
   }
 
-  prepareForAjax(options){
+  prepareForAjax(options) {
     let xhrObj
     let xhrId
     let resolveCb
@@ -118,7 +129,7 @@ const Ajax = class {
     return {options, xhrId, xhrObj, promise, resolveCb, rejectCb}
   }
 
-  doAjax(options, xhrObj){
+  doAjax(options, xhrObj) {
     xhrObj.open(options.method, options.url, options.async)
     setHeaders.doSet(options, xhrObj)
     xhrObj.send(options.paramsStr)
@@ -126,11 +137,15 @@ const Ajax = class {
 
   get (_options) {
     let params
-    
 
     _options.method = 'GET'
-    let {options, xhrObj, promise, resolveCb, rejectCb, xhrId} = this.prepareForAjax(_options)
-    
+    let { options, xhrObj, promise, resolveCb, rejectCb, xhrId } = this.prepareForAjax(_options)
+    let { responseType } = _options
+
+    if (responseType) {
+      xhrObj.responseType = responseType
+    }
+
     if (options.method === 'GET' && xhrObj) {
       params = setParams.setParamsForGet(options)
     }
@@ -144,30 +159,16 @@ const Ajax = class {
   post (_options) {
     _options.method = 'POST'
     let {options, xhrObj, promise, resolveCb, rejectCb, xhrId} = this.prepareForAjax(_options)
+    let { responseType } = _options
+
+    if (responseType) {
+      xhrObj.responseType = responseType
+    }
 
     if (options.method === 'POST' && xhrObj) {
-      options.paramsStr  = setParams.setParamsForPost(options)
+      options.paramsStr = setParams.setParamsForPost(options)
     }
 
-    this.addEventListener(xhrId, resolveCb, rejectCb, options)
-    this.doAjax(options, xhrObj)
-
-    return promise
-  }
-
-  getBinary(_options) {
-    let params
-    
-
-    _options.method = 'GET'
-    let {options, xhrObj, promise, resolveCb, rejectCb, xhrId} = this.prepareForAjax(_options)
-    
-    if (options.method === 'GET' && xhrObj) {
-      params = setParams.setParamsForGet(options)
-    }
-    options.url = options.url + params
-    // options.type = 'binary'
-    xhrObj.responseType = "arraybuffer"
     this.addEventListener(xhrId, resolveCb, rejectCb, options)
     this.doAjax(options, xhrObj)
 

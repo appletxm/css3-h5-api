@@ -1,4 +1,4 @@
-export function setDefault(options){
+export function setDefault(options) {
 }
 
 export function setParamsForGet (options) {
@@ -10,7 +10,7 @@ export function setParamsForGet (options) {
     params = params + 'params=' + encodeURIComponent(JSON.stringify(opP))
   } else {
     for (let i = 0; i < keys.length; i++) {
-      params += (keys[i] + '=' + opP[key[i]] + (i === keys.length - 1 ? '' : '&'))
+      params += (keys[i] + '=' + opP[keys[i]] + (i === keys.length - 1 ? '' : '&'))
     }
   }
 

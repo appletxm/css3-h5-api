@@ -24,8 +24,8 @@ function cacheControl(res){
 }
 
 function getImageFile (req, res) {
-  let filename = path.join(__dirname, ('..' + req.path))
-  let fileType = (req.path).match(/.+\.(.+)/)
+  let filename = path.join(__dirname, ('..' + req.originalUrl))
+  let fileType = (req.originalUrl).match(/.+\.(.+)/)
   let file = fs.readFileSync(filename)
   let contentType = getContentType(fileType[1])
 
@@ -129,7 +129,7 @@ function routerAssets (req, res, logger) {
   logger.info('[http get]', req.baseUrl, req.originalUrl)
 
   cacheControl(res)
-  
+
   if (req.originalUrl.indexOf('assets/images') >= 0) {
     getImageFile(req, res)
   } else if (req.originalUrl.indexOf('.js') >= 0) {
