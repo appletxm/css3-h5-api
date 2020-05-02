@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+    .test-div {
+      /* width: 100px; */
+      /* height: 50px; */
+    }
+    .test-span {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-div">
+    thisdk sis kksksksksk ks sdfsdfsdf
+    sthis skdsflks df
+    <p>dkkkkkdkdkdkdkdkdkdkdkdkdkdkdkdk</p>
+    <span>8 888888888888 88 8888</span>
+  </div>
+
+  <span class="test-span">
+      <span>8 888889999998888888 88 8888</span>
+      <span>8 888888888888 88 8888</span>
+      <span>8 888899999999999999999988888888 88 8888</span>
+      <p style="display:none;">999999</p>
+  </span>
+
+  <script>
+    var panel = document.querySelector('.test-div')
+    var span = document.querySelector('.test-span')
+    console.info(span.getClientRects())
+    console.info(panel.getBoundingClientRect())
+    console.info(span.textContent, ' ---- ',span.innerText)
+  </script>
+
+</body>
+</html>

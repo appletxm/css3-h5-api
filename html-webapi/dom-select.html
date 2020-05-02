@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>Range Select</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    button {
+      display: block;
+    }
+
+    .test-span {
+      margin: 10px;
+      border: 1px solid #eee;
+      padding: 10px;
+    }
+
+    .test-span p {
+      display: inline;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-span"><p style="color: red;">11111111</p><p>33333333</p><p>88888</p></div>
+  <div class="test-surround"></div>
+
+  <button id="removeAllRanges">removeAllRanges</button>
+  <button id="setBaseAndExtent">setBaseAndExtent</button>
+  <button id="selectAllChildren">selectAllChildren</button>
+
+  <div id="insert"></div>
+
+  <script>
+    const testSpan = document.querySelector('.test-span')
+    const insertPanel = document.querySelector('#insert')
+
+    testSpan.addEventListener('mouseup', function(event) {
+      console.info('==mouseup===', event)
+      handelSelection()
+    })
+    // testSpan.addEventListener('selectstart', function(event) {
+    //   console.info('===selectstart==', event)
+    // })
+
+    function handelSelection() {
+      const selection = document.getSelection()
+      if (selection.rangeCount === 0) {
+        return false
+      }
+      const startNode = selection.anchorNode
+      const endNode = selection.focusNode
+      const range = selection.getRangeAt(0)
+      const contents = range.cloneContents()
+
+      console.info(startNode, endNode, contents)
+
+      insertPanel.appendChild(contents)
+    }
+
+    // document.addEventListener('selectionchange', function(event) {
+    //   // console.info('==selection change==', event, document.getSelection().toString())
+    //   handelSelection(event)
+    // })
+
+    document.querySelector('#removeAllRanges').addEventListener('click', function(){
+      document.getSelection().removeAllRanges()
+    })
+
+    document.querySelector('#setBaseAndExtent').addEventListener('click', function(){
+      document.getSelection().setBaseAndExtent(testSpan.firstChild.firstChild, 0, testSpan.querySelectorAll('p')[1].firstChild, 4)
+    })
+
+    document.querySelector('#selectAllChildren').addEventListener('click', function(){
+      document.getSelection().selectAllChildren(testSpan)
+    })
+  </script>
+
+</body>
+</html>

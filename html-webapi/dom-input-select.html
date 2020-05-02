@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>Range Select</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    button {
+      display: block;
+    }
+
+    .test-span {
+      margin: 10px;
+      padding: 10px;
+    }
+
+    .test-span input{
+      font-size: .14rem;
+      height: .32rem;
+      width: 3rem;
+      line-height:  .32rem;
+      outline: none;
+      transition: all .2s ease;
+      border: 1px solid #eee;
+    }
+
+    .test-span input:focus {
+      font-size: .2rem;
+      caret-color: red;
+    }
+
+    div {
+      margin: .2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-span">
+    <input type="text" value="test" />
+  </div>
+  <div class="test-surround"></div>
+
+  <button id="removeAllRanges">removeAllRanges</button>
+  <button id="setBaseAndExtent">setBaseAndExtent</button>
+  <button id="selectAllChildren">selectAllChildren</button>
+
+  <div id="insert"></div>
+
+  <div>
+    <textarea id="area" style="width:80%;height:60px">
+    Selecting in this text updates values below.
+    </textarea>
+    <br>
+    From <input id="from" disabled> – To <input id="to" disabled>
+  </div>
+
+  <div>
+    <input id="input2" style="width:200px" value="Select here and click the button">
+    <button id="button2">Wrap selection in stars *...*</button>
+  </div>
+
+  <div>
+    <input id="input3" style="width:200px" value="Replace THIS in text">
+    <button id="button3">Replace THIS</button>
+  </div>
+
+  <div>
+    <textarea id="area2" style="width:80%;height:60px">Focus on me, the cursor will be at position 10.</textarea>
+  </div>
+
+  <script>
+    const testSpan = document.querySelector('.test-span')
+    const input = document.querySelector('input')
+
+    input.addEventListener('select', function(){
+      console.info('==select==')
+    })
+
+    document.querySelector('#removeAllRanges').addEventListener('click', function(){
+      document.getSelection().removeAllRanges()
+    })
+
+    document.querySelector('#setBaseAndExtent').addEventListener('click', function(){
+      input.setSelectionRange(1, 3)
+      input.focus()
+      // input.select()
+      // input.setRangeText('888', 0, 3)
+      // const range = new Range
+      // range.setStart(input.firstChild, 0)
+      // range.setEnd(input.firstChild, 2)
+      // document.getSelection().addRange(range)
+
+      // input.selectionStart = 0
+      // input.selectionEnd = 3
+      // input.focus()
+    })
+
+    document.querySelector('#selectAllChildren').addEventListener('click', function(){
+      document.getSelection().selectAllChildren(testSpan)
+    })
+
+    area.onselect = function() {
+      from.value = area.selectionStart;
+      to.value = area.selectionEnd;
+
+      setTimeout(() => {
+        // we can set any selection
+        // if start=end, the cursor it exactly at that place
+        area.selectionStart = area.selectionEnd = 10;
+      });
+    };
+
+    button2.onclick = () => {
+      if (input2.selectionStart == input2.selectionEnd) {
+        return; // nothing is selected
+      }
+
+      let selected = input2.value.slice(input2.selectionStart, input2.selectionEnd);
+      input2.setRangeText(`*${selected}*`);
+    };
+
+    button3.onclick = () => {
+      let pos = input3.value.indexOf("THIS");
+      if (pos >= 0) {
+        input3.setRangeText("*THIS*", pos, pos + 4, "select");
+        input3.focus(); // focus to make selection visible
+      }
+    };
+
+    area2.onfocus = () => {
+      // zero delay setTimeout to run after browser "focus" action finishes
+      setTimeout(() => {
+        area2.selectionStart = area2.selectionEnd = 10;
+      });
+    };
+  </script>
+
+</body>
+</html>
