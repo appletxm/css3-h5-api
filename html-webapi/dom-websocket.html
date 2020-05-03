@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>websocket test</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+
+    .websocket {
+      margin: 50px;
+      border: 1px solid #eee;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="websocket">
+    <div id="output"></div>
+    <button id="open-websocket">websocket create websocket server</button>
+  </div>
+
+  <div class="websocket">
+    <div id="output-socket-io"></div>
+    <button id="open-websocket-io">socketIo create websocket server</button>
+  </div>
+
+  <script src="../assets/libs/socket.io.js"></script>
+  <script>
+    function websocket2() {
+      function checkBrowser() {
+        if (window.WebSocket) {
+          log("This browser supports WebSocket!");
+        } else {
+          log("This browser does not support WebSocket.");
+        }
+      }
+
+      function setup() {
+        var wsServer = 'ws://localhost:3001';
+        var ws = new WebSocket(wsServer);
+
+        ws.onopen = function (e) {
+          btn1.setAttribute('disabled', 'true')
+          log("Connected to WebSocket server.", e);
+          sendMessage("Conan");
+        };
+
+        ws.onclose = function (e) {
+          btn1.removeAttribute('disabled')
+          log("Disconnected", e);
+        };
+
+        ws.onmessage = function (e) {
+          let timer = 0
+          // log("RECEIVED: " + e.data, e);
+          console.info('*****', JSON.parse(e.data).data.needClose)
+
+          if (JSON.parse(e.data).data.needClose) {
+            clearTimeout(timer)
+            ws.close()
+          }
+
+          // ws.close();
+          timer = setTimeout(() => {
+            sendMessage("Conan again");
+          }, 5000);
+        }
+
+        ws.onerror = function (e) {
+          btn1.removeAttribute('disabled')
+          log('Error occured: ' + e.data, e);
+        };
+
+        var sendMessage = function (msg) {
+          ws.send(msg);
+          log("SEND : " + msg);
+        }
+      }
+
+      function log(s, e) {
+        var output = document.getElementById("output");
+        var p = document.createElement("p");
+        p.style.wordWrap = "break-word";
+        p.style.padding = "10px";
+        p.style.background = "#eee";
+        p.textContent = "LOG : " + s;
+        output.appendChild(p);
+        console.log("LOG : " + s, e);
+      }
+
+      checkBrowser();
+      setup();
+    }
+    const btn1 = document.querySelector('#open-websocket')
+    btn1.addEventListener('click', function() {
+      websocket2()
+    })
+
+    const btn2 = document.querySelector('#open-websocket-io')
+    function websocketIo() {
+      if (window.WebSocket) {
+        console.log("This browser supports WebSocket!");
+      } else {
+        console.log("This browser does not support WebSocket.");
+      }
+
+      const socket = io('http://127.0.0.1:3001/');
+      socket.on('connected', (data) => {
+        console.info('web socket server connected:', data)
+        btn2.setAttribute('disabled', true)
+        // socket.close()
+      })
+      socket.on('total-connected', (data) => {
+        console.info('total connected:', data)
+      })
+      // socket.on('new', (data) => {
+      //   console.log(data);
+      //   socket.emit('my other event', { my: 'data' });
+      // });
+
+      // socket.emit('my other event', {otherEvent: { name: 'txm'}})
+
+      const socketNews = io('http://127.0.0.1:3001/news')
+      socketNews.on('connected', (data) => {
+        console.info('***socketNews***')
+      })
+      socketNews.on('news-connected', (data) => {
+        console.info('news-connected', data)
+      })
+      socketNews.on('news-another', (data) => {
+        console.info('=======news-another====', data)
+      })
+      setTimeout(() => {
+        console.info('===timer message send===')
+        socketNews.emit('news-timer', {
+          name: 'txm',
+          age: 38
+        })
+      }, 5000);
+
+      const socketChat = io('http://127.0.0.1:3001/chat')
+      socketChat.on('connected', (data) => {
+        console.info('######socketChat######', data)
+      })
+      socketChat.on('connected-chat', (data) => {
+        console.info('#########connected-chat####', data)
+      })
+      socketChat.on('news-another', (data) => {
+        console.info('=======news-another====', data)
+      })
+    }
+    btn2.addEventListener('click', function() {
+      websocketIo()
+    })
+  </script>
+</body>
+
+</html>
