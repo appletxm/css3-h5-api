@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>Range Select</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    button {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-span"><p>11111111</p><p>33333333</p><p>88888</p></div>
+  <div class="test-surround"></div>
+
+  <button id="select-some">select some node</button>
+  <button id="select-text">select some text</button>
+  <button id="select-cross">select cross</button>
+  <button id="select-node">select node</button>
+  <button id="select-node-content">select node content</button>
+  <button id="delete-content">delete content</button>
+  <button id="clone-content">clone content</button>
+  <button id="insert-node">insert node</button>
+  <button id="surround">surround content</button>
+
+  <div id="insert"></div>
+
+  <script>
+    document.querySelector('#select-some').addEventListener('click', function(event) {
+      const range = new Range()
+      const testSpan = document.querySelector('.test-span')
+      range.setStart(testSpan, 0)
+      range.setEnd(testSpan, 2)
+
+      console.info('range:', range)
+
+      document.getSelection().removeAllRanges()
+      const selection = document.getSelection().addRange(range)
+      // console.info(selection)
+    })
+
+    document.querySelector('#select-text').addEventListener('click', function(event) {
+      const range = new Range()
+      const testSpan = document.querySelector('.test-span')
+      const p = testSpan.querySelectorAll('p')
+      range.setStart(p[0], 0)
+      range.setEnd(p[1], 0)
+
+      console.info('range:', range)
+
+      document.getSelection().removeAllRanges()
+      const selection = document.getSelection().addRange(range)
+      // console.info(selection)
+    })
+
+    document.querySelector('#select-cross').addEventListener('click', function(event) {
+      const range = new Range()
+      const testSpan = document.querySelector('.test-span')
+      const p = testSpan.querySelectorAll('p')
+      range.setStart(p[0].firstChild, 2)
+      range.setEnd(p[2].firstChild, 3)
+
+      console.info('range:', range)
+
+      document.getSelection().removeAllRanges()
+      const selection = document.getSelection().addRange(range)
+      // console.info(selection)
+
+      // range.deleteContents()
+
+      console.info(range.startContainer, range.startOffset, range.endContainer, range.endOffset, range.commonAncestorContainer)
+    })
+
+    document.querySelector('#select-node').addEventListener('click', function(event) {
+      const range = new Range()
+      const testSpan = document.querySelector('.test-span')
+      const p = testSpan.querySelectorAll('p')
+      range.selectNode(testSpan)
+      console.info('range:', range)
+
+      document.getSelection().removeAllRanges()
+      const selection = document.getSelection().addRange(range)
+      // console.info(selection)
+
+      console.info(range.startContainer, range.startOffset, range.endContainer, range.endOffset, range.commonAncestorContainer)
+    })
+
+    document.querySelector('#select-node-content').addEventListener('click', function(event) {
+      const range = new Range()
+      const testSpan = document.querySelector('.test-span')
+      const p = testSpan.querySelectorAll('p')
+      range.selectNodeContents(testSpan)
+      console.info('range:', range)
+
+      document.getSelection().removeAllRanges()
+      const selection = document.getSelection().addRange(range)
+      // console.info(selection)
+
+      setTimeout(() => {
+        range.collapse(true)
+      }, 2000)
+
+      console.info(range.startContainer, range.startOffset, range.endContainer, range.endOffset, range.commonAncestorContainer)
+    })
+
+    document.querySelector('#delete-content').addEventListener('click', function(event) {
+      const range = new Range()
+      const testSpan = document.querySelector('.test-span')
+      const p = testSpan.querySelectorAll('p')
+      range.selectNodeContents(testSpan)
+      console.info('range:', range)
+
+      document.getSelection().removeAllRanges()
+      const selection = document.getSelection().addRange(range)
+      // console.info(selection)
+
+      // range.deleteContents()
+
+      console.info(range.startContainer, range.startOffset, range.endContainer, range.endOffset, range.commonAncestorContainer)
+    })
+
+    document.querySelector('#clone-content').addEventListener('click', function(event) {
+      const range = new Range()
+      const testSpan = document.querySelector('.test-span')
+      const p = testSpan.querySelectorAll('p')
+      range.setStart(p[0].firstChild, 2)
+      range.setEnd(p[2].firstChild, 3)
+
+      console.info('range:', range)
+
+      document.getSelection().removeAllRanges()
+      const selection = document.getSelection().addRange(range)
+      // console.info(selection)
+
+      setTimeout(() => {
+        // document.querySelector('#insert').appendChild(range.cloneContents())
+        document.querySelector('#insert').appendChild(range.extractContents())
+      }, 2000)
+
+      console.info(range.startContainer, range.startOffset, range.endContainer, range.endOffset, range.commonAncestorContainer)
+    })
+
+    document.querySelector('#insert-node').addEventListener('click', function(event) {
+      const range = new Range()
+      const testSpan = document.querySelector('.test-span')
+      const p = testSpan.querySelectorAll('p')
+      range.setStart(p[0].firstChild, 2)
+      range.setEnd(p[2].firstChild, 3)
+
+      console.info('range:', range)
+
+      document.getSelection().removeAllRanges()
+      const selection = document.getSelection().addRange(range)
+      // console.info(selection)
+
+      setTimeout(() => {
+        // document.querySelector('#insert').appendChild(range.cloneContents())
+        range.insertNode(document.createTextNode('abcd'))
+      }, 2000)
+
+      console.info(range.startContainer, range.startOffset, range.endContainer, range.endOffset, range.commonAncestorContainer)
+    })
+
+    document.querySelector('#surround').addEventListener('click', function(event) {
+      const range = new Range()
+      const testSpan = document.querySelector('.test-surround')
+      range.selectNodeContents(testSpan)
+
+      console.info('range:', range)
+
+      document.getSelection().removeAllRanges()
+      const selection = document.getSelection().addRange(range)
+      // console.info(selection)
+
+      setTimeout(() => {
+        // document.querySelector('#insert').appendChild(range.cloneContents())
+        const span = document.createElement('span')
+        range.surroundContents(span)
+        span.textContent = 'abc'
+      }, 2000)
+
+      console.info(range.startContainer, range.startOffset, range.endContainer, range.endOffset, range.commonAncestorContainer)
+    })
+    
+  </script>
+
+</body>
+</html>
