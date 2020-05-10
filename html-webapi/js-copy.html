@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+  <script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
+
+  <script type="module">
+    import deepCopy from '../src/object-deep-copy.js'
+    import arrayToTree from '../src/array-to-tree.js'
+
+    let symbol = Symbol('test symbol')
+    let test = {
+      num: 0,
+      str: '',
+      boolean: true,
+      unf: undefined,
+      nul: null,
+      obj: {
+        name: '我是一个对象',
+        id: 1
+      },
+      arr: [0, 1, 2],
+      func() {
+        console.log('我是一个函数', this.num)
+      },
+      date: new Date('2020-01-20'),
+      reg: new RegExp('\\d{3}我是一个正则', 'ig'),
+      err: new Error('我是一个错误'),
+      testSetGet: {
+        get() {
+          console.log('调用了get')
+          return this.num
+        },
+        set(value) {
+          console.log('调用了set')
+          this.num = value
+        }
+      },
+      [symbol]: '6689'
+    }
+
+    let newObj = deepCopy(test)
+    console.log(newObj[symbol], test)
+    newObj.num = 6
+    test.func()
+    newObj.func()
+
+
+    let arr = [
+      ["hello", "bill"],
+      ["hello", "jack"],
+      ["world", "foo", "jerry"],
+      ["world", "foo", "peter", "tom"],
+      ["world", "bar"]
+    ]
+    let tree = arrayToTree(arr)
+    console.info(tree)
+  </script>
+
+</body>
+</html>
