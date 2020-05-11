@@ -7,12 +7,12 @@ function getMockFiles (req, res) {
   let parseFile
 
   try {
-    filePath = path.resolve(__dirname, '../mocks/' + req['originalUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.txt')
+    filePath = path.resolve(__dirname, '../mocks/' + req['originalUrl'].replace(/\?.*/, '') + '.json')
     console.log(`[HTTP GET MOCK FILE] `, filePath)
     file = fs.readFileSync(filePath, {encoding: 'utf-8'})
     parseFile = file ? JSON.parse(file) : {}
-    parseFile.code = '200'
-    parseFile.msg = 'Get data success'
+    // parseFile.code = '200'
+    // parseFile.msg = 'Get data success'
     res.cookie('onlyItem', '123456789', { maxAge: 60000, httpOnly: true })
     res.cookie('showItem', 'abcdefg', { maxAge: 60000 })
   } catch(e) {
@@ -196,16 +196,25 @@ function getAjaxPost (req, res) {
   })
 }
 
+function allCrossAccess(res) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With');
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+}
+
 function routerApi (req, res, logger) {
   console.info(`[HTTP ${req.method.toUpperCase()} api]`, req.originalUrl, req.originalUrl)
   logger.info(`[HTTP ${req.method.toUpperCase()} api]`, req.originalUrl, req.originalUrl)
 
   // console.info(req)
+  allCrossAccess(res)
 
   if (req.method === 'GET') {
     getAjaxGet(req, res)
   } else if (req.method === 'POST') {
     getAjaxPost(req, res)
+  } else if (req.method === 'OPTIONS') {
+    res.send(200)
   }
 
 // if (next && typeof next === 'function') {

@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn add websocket-server
+  /usr/local/bin/node /usr/local/bin/yarn add cookie-parse -D
 
 PATH: 
   /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/mongodb/bin:/usr/local/mongodb/bin
@@ -14,10 +14,7 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: http://172.30.0.176:4873/websocket-server: ETIMEDOUT
-      at Timeout._onTimeout (/usr/local/lib/node_modules/yarn/lib/cli.js:141124:19)
-      at listOnTimeout (internal/timers.js:531:17)
-      at processTimers (internal/timers.js:475:7)
+  Error: ENOENT: no such file or directory, copyfile '/Users/txm/Library/Caches/Yarn/v4/npm-ms-2.1.2-d09d1f357b443f493382a8eb3ccd183872ae6009/node_modules/ms/index.js' -> '/Users/txm/Desktop/test/css3-h5-api/node_modules/engine.io-client/node_modules/ms/index.js'
 
 npm manifest: 
   {
@@ -42,15 +39,18 @@ npm manifest:
       "@babel/runtime": "^7.6.3",
       "babel-polyfill": "^6.26.0",
       "babel-standalone": "^6.26.0",
+      "chalk": "2.3.0",
       "express": "^5.0.0-alpha.7",
       "formidable": "^1.2.1",
-      "log4js": "^3.0.5",
-      "spdy": "^4.0.0",
       "ip": "^1.1.5",
+      "log4js": "^3.0.5",
+      "node-websocket-server": "^1.1.4",
       "open": "0.0.5",
       "ora": "1.3.0",
       "rimraf": "2.6.2",
-      "chalk": "2.3.0"
+      "socket.io": "^2.3.0",
+      "spdy": "^4.0.0",
+      "websocket": "^1.0.31"
     },
     "devDependencies": {
       "@babel/cli": "^7.6.4",
@@ -59,6 +59,7 @@ npm manifest:
       "@babel/plugin-transform-runtime": "^7.6.2",
       "@babel/preset-env": "^7.6.3",
       "babel-eslint": "8.0.1",
+      "bufferutil": "^4.0.1",
       "concurrently": "^3.5.1",
       "cross-env": "^6.0.3",
       "eslint": "4.10.0",
@@ -72,7 +73,8 @@ npm manifest:
       "rollup-plugin-babel": "^4.3.3",
       "rollup-plugin-commonjs": "^10.1.0",
       "rollup-plugin-node-resolve": "^5.2.0",
-      "rollup-plugin-uglify": "^6.0.3"
+      "rollup-plugin-uglify": "^6.0.3",
+      "utf-8-validate": "^5.0.2"
     },
     "nodejs": {
       "version": ">=8.0"

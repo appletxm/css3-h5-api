@@ -19,7 +19,7 @@ const server = http2.createSecureServer(options, (req, res) => {
   // res.end('<h1>Hello World!</h1>')
   if (path === '/') {
     res.set('content-type', 'text/html')
-    res.send(fs.readFileSync(path.resolve(__dirname, '../http2.html')))
+    res.send(fs.readFileSync(path.resolve(__dirname, '../html-webapi/js-http2.html')))
     res.end()
   } else {
     routerAssets(req, res, logger)

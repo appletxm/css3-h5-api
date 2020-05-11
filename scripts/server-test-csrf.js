@@ -1,17 +1,14 @@
 const express = require('express')
 // const path = require('path')
 // const open = require('open')
-const cookieParser = require('cookie-parser')
 const chalk = require('chalk')
 const app = express()
 const assignRouter = require('./server-router-assets')
 const apiRouter = require('./server-router-api')
 const logger = require('./server-log')
 const ipAddress = require('ip').address()
-const port = 9000
-const host = '0.0.0.0'
-
-app.use(cookieParser())
+const port = 8000
+const host = '127.0.0.1'
 
 app.use(['/api', '/app/v1', '/web'], (req, res) => {
   apiRouter(req, res, logger)
@@ -43,10 +40,10 @@ app.use('*', (req, res) => {
 })
 
 app.listen(port, host, function () {
-  const localUrl = `http://localhost:${port}`
-  const ipUrl = `http://${ipAddress}:${port}`
+  // const localUrl = `http://localhost:${port}`
+  const ipUrl = `http://${host}:${port}`
   console.info(`${chalk.magenta('dev server started at: ')}`)
-  console.info(`loclhost: ${chalk.blue(localUrl)}`)
+  // console.info(`loclhost: ${chalk.blue(localUrl)}`)
   console.info(`ip: ${chalk.blue(ipUrl)}`)
 
 // setTimeout(function () {

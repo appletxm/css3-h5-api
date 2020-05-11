@@ -21,7 +21,7 @@ app.get('/assets/images/*', (req, res) => {
 app.get('/', (req, res) => {
   // res.status(200).sendFile(fs.readFileSync(path.resolve(__dirname, '../http2.html')))
   res.set('content-type', 'text/html')
-  res.send(fs.readFileSync(path.resolve(__dirname, '../http2.html')))
+  res.send(fs.readFileSync(path.resolve(__dirname, '../html-webapi/js-http2.html')))
   res.end()
 })
 
