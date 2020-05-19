@@ -11,7 +11,16 @@ const ipAddress = require('ip').address()
 const port = 9000
 const host = '0.0.0.0'
 
+const compression = require('compression')
+
 app.use(cookieParser())
+
+app.use(compression({ filter: function(req, res) {
+  if (req.originalUrl.indexOf('/assets/images/') >= 0) {
+    return true
+  }
+  return false
+}}))
 
 app.use(['/api', '/app/v1', '/web'], (req, res) => {
   apiRouter(req, res, logger)
@@ -29,7 +38,7 @@ app.use('/*.css', function (req, res) {
   assignRouter(req, res, logger)
 })
 
-app.use(['/.png', '/*.jpg', '/*.gif', '/*.jpeg', '/*.ico'], function (req, res) {
+app.use(['/*.png', '/*.jpg', '/*.gif', '/*.jpeg', '/*.ico'], function (req, res) {
   assignRouter(req, res, logger)
 })
 
