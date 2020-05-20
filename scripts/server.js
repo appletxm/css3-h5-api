@@ -15,12 +15,15 @@ const compression = require('compression')
 
 app.use(cookieParser())
 
-app.use(compression({ filter: function(req, res) {
-  if (req.originalUrl.indexOf('/assets/images/') >= 0) {
-    return true
-  }
-  return false
-}}))
+// set a filter for compression
+// app.use(['/*.js', '/*.css', '/*.html'], compression({ filter: function(req, res) {
+//   // if (req.originalUrl.indexOf('/assets/images/') >= 0 || req.originalUrl.indexOf('/assets/images/') >= 0) {
+//   //   return true
+//   // }
+//   // return false
+//   return true
+// }}))
+app.use(['/*.js', '/*.css', '/*.html'], compression())
 
 app.use(['/api', '/app/v1', '/web'], (req, res) => {
   apiRouter(req, res, logger)

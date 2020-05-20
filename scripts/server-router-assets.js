@@ -2,30 +2,13 @@ const fs = require('fs')
 const path = require('path')
 const getContentType = require('./server-get-content-type')
 const excelOpts = require('./excel-opts')
-
-function getGMTdate(){
-  let date = new Date()
-  let mileSecondes = date.getTime()
-  let gmtDate
-
-  // mileSecondes = mileSecondes + 1 * 1000 * 5
-  gmtDate = (new Date(mileSecondes)).toGMTString()
-
-  return gmtDate
-}
-
-function cacheControl(res){
-  // res.set('Cache-Control', 'max-age=600') //http 1.1 all response request html
-  // res.set('Pragma', 'no-cache') //http1.0  all response request html
-  // res.set('Expires', getGMTdate()) //http1.0  all response request html
-
-  res.set('Last-Modified', getGMTdate()) //http1.1 response
-  res.set('ETag', '1234567890') //http1.1 response
-}
+const { cacheControl } = require('./server-cache-control')
+const { gzip } = require('./server-gzip-zlib')
 
 function getImageFile (req, res) {
   let filename = path.join(__dirname, ('..' + req.originalUrl))
   let fileType = (req.originalUrl).match(/.+\.(.+)/)
+
   let file = fs.readFileSync(filename)
   let contentType = getContentType(fileType[1])
 
@@ -52,6 +35,14 @@ function getScriptFile (req, res) {
   res.set('Content-Type', contentType)
   res.send(script)
   res.end()
+
+  // let scriptFilePath = path.join(__dirname, '..' + req.originalUrl)
+  // // let stats = fs.statSync(scriptFilePath)
+  // res.set('Content-Type', getContentType('js'))
+  // // res.set('Content-Length', (stats.size / 1000) + 'kb')
+
+  // const stream = gzip(scriptFilePath)
+  // stream.pipe(res)
 }
 
 function getCssFile (req, res) {
