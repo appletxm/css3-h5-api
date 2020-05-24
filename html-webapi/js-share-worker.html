@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>share worker</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  <button>open page b</button>
+  <button>post message</button>
+
+  page parent received: <span id="message"></span>
+
+  <script type="module">
+    const btns = document.querySelectorAll('button')
+    const sharedWorker = new SharedWorker('../workers/share.worker.js', 'txm-group')
+
+    btns[0].addEventListener('click', function() {
+      window.open('js-share-worker-b.html')
+    })
+    btns[1].addEventListener('click', function() {
+      sharedWorker.port.postMessage({from: 'parent', value: [112, 223]});
+    })
+
+    sharedWorker.port.addEventListener('message', function(e){
+      console.info(`parent message: ${event.data}`)
+      // if (event.data.from === 'child') {
+      //   document.querySelector('#message').textContent = event.data.value
+      // }
+      document.querySelector('#message').textContent = event.data.value || event.data
+    }, false);
+
+    sharedWorker.port.addEventListener('error', function(e){
+      throw new Error('WorkerIO Error: could not open SharedWorker', e);
+    }, false);
+
+    sharedWorker.port.start()
+
+    // var WorkerIO = new SharedWorker('../workers/share.worker.js', 'NDN-Worker');
+
+    // console.log('WorkerIO:', WorkerIO);
+
+    // WorkerIO.port.addEventListener('message', function(eventM){
+    //   console.log('OnMessage:', eventM.data);
+    // }, false);
+
+    // WorkerIO.port.addEventListener('error', function(e){
+    //   throw new Error('WorkerIO Error: could not open SharedWorker', e);
+    // }, false);
+
+    // WorkerIO.port.start();
+    // WorkerIO.port.postMessage('This is a message from the client!');
+  </script>
+
+</body>
+</html>

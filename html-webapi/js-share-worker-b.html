@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>share worker <bdo dir="rtl"></bdo></title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  <button>send message</button>
+  <button>close worker</button>
+  page parent received: <span id="message"></span>
+
+  <script type="module">
+    const sharedWorker = new SharedWorker('../workers/share.worker.js', 'txm-group')
+    let timer = 0
+
+    const btns = document.querySelectorAll('button')
+    btns[0].addEventListener('click', function() {
+      sharedWorker.port.postMessage({from: 'child', value: [555, 666]});
+    })
+    btns[1].addEventListener('click', function() {
+      clearInterval(timer)
+      sharedWorker.port.close()
+    })
+
+    // 定时轮询，发送 get 指令的消息
+    // timer = setInterval(function () {
+    //     sharedWorker.port.postMessage({get: true});
+    // }, 1000);
+
+    // 监听 get 消息的返回数据
+    sharedWorker.port.addEventListener('message', (e) => {
+      console.log('child message:', e.data);
+      document.querySelector('#message').textContent = event.data.value || event.data
+      // if (e.data.from === 'parent') {
+      //   document.querySelector('#message').textContent = event.data.value
+      // }
+    }, false);
+
+    sharedWorker.port.start();
+  </script>
+
+</body>
+</html>
