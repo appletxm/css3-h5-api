@@ -1,0 +1,37 @@
+{
+  "data":[
+    {
+      "title": "测试列表项1",
+      "img": "http://192.168.21.109:9000/assets/images/child/1.jpg",
+      "url": "https://www.baidu.com",
+      "det": "这是一段描述文字，用来说明的一些文字，再来一些说明的文字"
+    },
+
+    {
+      "title": "测试列表项2",
+      "img": "http://192.168.21.109:9000/assets/images/child/2.jpg",
+      "url": "https://www.baidu.com",
+      "det": "这是一段描述文字，用来说明的一些文字，再来一些说明的文字"
+    },
+    {
+      "title": "测试列表项3",
+      "img": "http://192.168.21.109:9000/assets/images/child/3.jpg",
+      "url": "https://www.baidu.com",
+      "det": "这是一段描述文字，用来说明的一些文字，再来一些说明的文字"
+    },
+
+    {
+      "title": "测试列表项4",
+      "img": "http://192.168.21.109:9000/assets/images/child/4.jpg",
+      "url": "https://www.baidu.com",
+      "det": "这是一段描述文字，用来说明的一些文字，再来一些说明的文字"
+    },
+
+    {
+      "title": "测试列表项5",
+      "img": "http://192.168.21.109:9000/assets/images/child/5.jpg",
+      "url": "https://www.baidu.com",
+      "det": "这是一段描述文字，用来说明的一些文字，再来一些说明的文字"
+    }
+  ]
+}

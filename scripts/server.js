@@ -25,7 +25,7 @@ app.use(cookieParser())
 // }}))
 app.use(['/*.js', '/*.css', '/*.html'], compression())
 
-app.use(['/api', '/app/v1', '/web'], (req, res) => {
+app.use(['/api', '/app/v1', '/web', '*/videos/*'], (req, res) => {
   apiRouter(req, res, logger)
 })
 

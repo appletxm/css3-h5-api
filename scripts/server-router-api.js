@@ -54,28 +54,58 @@ function getVideoFiles(req, res) {
   let file
   let parseFile
 
-  try {
-    filePath = path.resolve(__dirname, '../mocks/' + req['originalUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.json')
-    console.log(`[HTTP GET MOCK FILE] `, filePath)
-    file = fs.readFileSync(filePath, {encoding: 'utf-8'})
-    parseFile = file
-    res.set({
-      'Content-Type': 'text/plain;charset=UTF-8',
-      'Content-Length': parseFile.length
-    })
-    res.status(200)
-  } catch(e) {
-    parseFile = {}
-    parseFile.code = '999'
-    parseFile.msg = 'Fail to get data'
-    res.set({
-      'Content-Type': 'application/json;charset=UTF-8',
-      'Content-Length': parseFile.length
-    })
-    parseFile = JSON.stringify(parseFile)
+  // try {
+  //   filePath = path.resolve(__dirname, '../mocks/' + req['originalUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.json')
+  //   console.log(`[HTTP GET MOCK FILE] `, filePath)
+  //   file = fs.readFileSync(filePath, {encoding: 'utf-8'})
+  //   parseFile = file
+  //   res.set({
+  //     'Content-Type': 'text/plain;charset=UTF-8',
+  //     'Content-Length': parseFile.length
+  //   })
+  //   res.status(200)
+  // } catch(e) {
+  //   parseFile = {}
+  //   parseFile.code = '999'
+  //   parseFile.msg = 'Fail to get data'
+  //   res.set({
+  //     'Content-Type': 'application/json;charset=UTF-8',
+  //     'Content-Length': parseFile.length
+  //   })
+  //   parseFile = JSON.stringify(parseFile)
+  // }
+  // res.send(parseFile)
+  // res.end()
+
+  const path = './assets/videos/SampleVideo_1280x720_5mb.mp4'
+  const stat = fs.statSync(path)
+  const fileSize = stat.size
+  const range = req.headers.range
+  
+  if (range) {
+    const parts = range.replace(/bytes=/, "").split("-")
+    const start = parseInt(parts[0], 10)
+    const end = parts[1] ? parseInt(parts[1], 10): fileSize-1
+  
+    const chunksize = (end-start)+1
+    const file = fs.createReadStream(path, {start, end})
+    const head = {
+      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': chunksize,
+      'Content-Type': 'video/mp4',
+    }
+  
+    res.writeHead(206, head)
+    file.pipe(res)
+  } else {
+    const head = {
+      'Content-Length': fileSize,
+      'Content-Type': 'video/mp4',
+    }
+    res.writeHead(200, head)
+    fs.createReadStream(path).pipe(res)
   }
-  res.send(parseFile)
-  res.end()
 }
 
 function getAjaxGet (req, res) {
@@ -86,7 +116,7 @@ function getAjaxGet (req, res) {
     params = JSON.parse(params)
   }
 
-  if (req.originalUrl.indexOf('video-data') >= 0) {
+  if (req.originalUrl.indexOf('videos') >= 0) {
     getVideoFiles(req, res)
   } else if (req.originalUrl.indexOf('getBinaryData') >= 0) {
     getBinaryData(req, res)
