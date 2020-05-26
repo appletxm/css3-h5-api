@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>post message</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    h1{
+      font-size: .1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- <iframe width="800" height="500" sc="http://192.168.10.236:9091/#/home?token=c4464f14-b3d7-43ea-adb0-3c2ceedb3280&accessToken=c4464f14-b3d7-43ea-adb0-3c2ceedb3280&HF_Auth_Token=c4464f14-b3d7-43ea-adb0-3c2ceedb3280&userId=1254582858230583297&orgId=1130312683483066369&encodeLoginUrl=http%3A%2F%2F172.30.0.23%3A8088%2Fportal%2F%23%2Fportal%2F125513%2Flogin&loginUrl=http%3A%2F%2F172.30.0.23%3A8088%2Fportal%2F%23%2Fportal%2F125513%2Flogin"></iframe> -->
+  <button id="open">open new window</button>
+  
+  <script>
+    document.querySelector('#open').addEventListener('click', function() {
+      var h5window = window.open('http://192.168.21.109:8087/#/')
+      setTimeout(function() {
+        console.info('==send==')
+        h5window.postMessage({a: '123', b: '999'}, '*')
+      }, 3000)
+    })
+
+    window.addEventListener("message", function(event) {
+      console.info('-------------parent recieve-------------', event)
+    }, false)
+  </script>
+</body>
+</html>
