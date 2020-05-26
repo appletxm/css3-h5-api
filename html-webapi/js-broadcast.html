@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>broadcast page parent</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  <button>open page a</button>
+  <button>open page c</button>
+  <button>send message</button>
+
+  page parent received: <span id="message"></span>
+
+  <script type="module">
+    var bc = new BroadcastChannel('TXM-ABC')
+
+    var btns = document.querySelectorAll('button')
+
+    btns[0].addEventListener('click', function() {
+      window.open('js-broadcast-a.html')
+    })
+    btns[1].addEventListener('click', function() {
+      window.open('js-broadcast-c.html')
+    })
+    btns[2].addEventListener('click', function() {
+      bc.postMessage({
+        message: '2233'
+      })
+    })
+
+    bc.addEventListener('message', function(event) {
+      console.info('the parent page:', event)
+      document.querySelector('#message').textContent = event.data.message
+    })
+  </script>
+
+</body>
+</html>

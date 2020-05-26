@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>broadcast page c</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  page c received: <span id="message"></span>
+  <button>send message</button>
+
+  <script type="module">
+    var bc = new BroadcastChannel('TXM-ABC')
+
+    var btns = document.querySelectorAll('button')
+
+    btns[0].addEventListener('click', function() {
+      bc.postMessage({
+        message: '66666'
+      })
+    })
+
+    bc.addEventListener('message', function(event) {
+      console.info('the c page:', event)
+      document.querySelector('#message').textContent = event.data.message
+    })
+  </script>
+
+</body>
+</html>
