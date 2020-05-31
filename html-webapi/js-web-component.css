@@ -1,0 +1,17 @@
+:host {
+  color: purple;
+  border: 1px solid #eee;
+  margin: .2rem !important;
+  background-color: #f5f5f5;
+  display: inline-block;
+  height: 3rem;
+  vertical-align: middle;
+  padding: .1rem !important;
+}
+.wrapper {
+  width: 200px;
+}
+
+.wrapper img {
+  width: 100%;
+}

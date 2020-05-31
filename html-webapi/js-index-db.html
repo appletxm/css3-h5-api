@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    name: <input type="text" value="" />
+    age: <input type="text" value="" />
+    email: <input type="email" value="" />
+  </div>
+  <button>add</button>
+  <button>get</button>
+  <button>get all</button>
+  <button>update</button>
+  <button>remove</button>
+
+  <script>
+    window.indexedDB = window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB
+    window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+    window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
+
+    if (!window.indexedDB) {
+      window.alert("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.")
+    }
+
+    var dbName = 'txmTestDb'
+    var dbVersion = null
+    var request = window.indexedDB.open(dbName)
+    var db = null
+    var table = 'person'
+
+    request.onerror = function (event) {
+      console.log('数据库打开报错');
+    };
+
+    request.onsuccess = function (event) {
+      db = request.result;
+      console.log('数据库打开成功');
+      createStore()
+    };
+
+    request.onupgradeneeded = function (event) {
+      db = event.target.result;
+      createStore()
+    }
+
+    function createStore() {
+      if (!db.objectStoreNames.contains(table)) {
+        var objectStore = db.createObjectStore(table, { keyPath: 'id' });
+        objectStore.createIndex('name', 'name', { unique: false });
+        objectStore.createIndex('email', 'email', { unique: true });
+      }
+    }
+
+    function getStore(way) {
+      return db.transaction([table], way).objectStore(table)
+    }
+    function add(record) {
+      var request = getStore('readwrite').add(record);
+      request.onsuccess = function (event) {
+        console.log('数据写入成功');
+      };
+      request.onerror = function (event) {
+        console.log('数据写入失败');
+      }
+    }
+
+    function read(id) {
+      var request = getStore().get(id);
+
+      request.onerror = function(event) {
+        console.log('事务失败');
+      };
+
+      request.onsuccess = function( event) {
+          if (request.result) {
+            console.log('Name: ' + request.result.name);
+            console.log('Age: ' + request.result.age);
+            console.log('Email: ' + request.result.email);
+          } else {
+            console.log('未获得数据记录');
+          }
+      };
+    }
+
+    function readAll() {
+      var store = getStore()
+
+      store.openCursor().onsuccess = function (event) {
+        var cursor = event.target.result;
+
+        if (cursor) {
+          console.log('Id: ' + cursor.key);
+          console.log('Name: ' + cursor.value.name);
+          console.log('Age: ' + cursor.value.age);
+          console.log('Email: ' + cursor.value.email);
+          cursor.continue();
+        } else {
+          console.log('没有更多数据了！');
+        }
+      };
+    }
+
+    function update() {
+      var store = getStore('readwrite').put({ id: 1590935230044, name: '李九', age: 35, email: 'lisi@example.com' });
+
+      store.onsuccess = function (event) {
+        console.log('数据更新成功');
+      };
+
+      store.onerror = function (event) {
+        console.log('数据更新失败');
+      }
+    }
+
+    function remove(id) {
+      var request = getStore('readwrite').delete(id);
+
+      request.onsuccess = function (event) {
+        console.log('数据删除成功');
+      };
+    }
+
+    const btns = document.querySelectorAll('button')
+    btns[0].onclick = function () {
+      const inputs = document.querySelectorAll('input')
+
+      if (!inputs[0].value || !inputs[1].value || !inputs[2].value) {
+        console.info('some field wrong')
+      } else {
+        const record = { id: new Date().getTime(), name: inputs[0].value, age: Number(inputs[1].value), email: inputs[2].value }
+        add(record)
+      }
+    }
+
+    btns[1].onclick = function () {
+      read(1590934586262)
+    }
+
+    btns[2].onclick = function () {
+      readAll();
+    }
+
+    btns[3].onclick = function () {
+      update();
+    }
+
+    btns[4].onclick = function () {
+      remove(1590935152103);
+    }
+  </script>
+</body>
+</html>

@@ -46,8 +46,7 @@ function getScriptFile (req, res) {
 }
 
 function getCssFile (req, res) {
-  console.info('====get css file')
-  let filePath = path.join(__dirname, '../' + req.path)
+  let filePath = path.join(__dirname, '../' + req.originalUrl)
   let file = fs.readFileSync(filePath)
   let contentType = getContentType('css')
 
@@ -57,7 +56,7 @@ function getCssFile (req, res) {
 }
 
 function getPdfFile (req, res) {
-  let filePath = decodeURIComponent(path.join(__dirname, '../' + req.path))
+  let filePath = decodeURIComponent(path.join(__dirname, '../' + req.originalUrl))
   let file = fs.readFileSync(filePath)
   let contentType = getContentType('pdf')
 
@@ -98,7 +97,7 @@ function resRage(file, req, res, contentType) {
 }
 
 function getMp4File (req, res) {
-  let filePath = decodeURIComponent(path.join(__dirname, '../' + req.path))
+  let filePath = decodeURIComponent(path.join(__dirname, '../' + req.originalUrl))
   let file = fs.readFileSync(filePath)
   let contentType = getContentType('mp4')
 

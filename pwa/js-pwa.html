@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="图书搜索">
+  <link rel="apple-touch-icon" href="../assets/images/icons/rc-code.jpg">
+  <link rel="icon" href="../assets/images/fav.ico">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+  </style>
+</head>
+<body>
+  <input id="test-input" type="tel" autofocus />
+  <div class="test-div">
+    click me
+  </div>
+
+  <script>
+    // window.onload = function(){
+    //   document.querySelector('#test-input').focus()
+    // }
+
+    document.querySelector('.test-div').addEventListener('click', () => {
+      document.querySelector('#test-input').focus()
+    })
+  </script>
+
+</body>
+</html>
