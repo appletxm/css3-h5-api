@@ -30,6 +30,7 @@
   <button>get</button>
   <button>get all</button>
   <button>update</button>
+  <button>get from index</button>
   <button>remove</button>
 
   <script>
@@ -103,11 +104,15 @@
 
     function readAll() {
       var store = getStore()
+      var boundKeyRange = IDBKeyRange.lowerBound(1590934586262, false)
+      var count = 0
 
-      store.openCursor().onsuccess = function (event) {
+      store.openCursor(boundKeyRange, 'prev').onsuccess = function (event) {
         var cursor = event.target.result;
+        count++
 
         if (cursor) {
+          console.log(`************* record ${count} *************`)
           console.log('Id: ' + cursor.key);
           console.log('Name: ' + cursor.value.name);
           console.log('Age: ' + cursor.value.age);
@@ -139,6 +144,15 @@
       };
     }
 
+    function getFromIndex(field, value) {
+      var request = getStore('readonly').index(field).get(value);
+
+      request.onsuccess = function (event) {
+        var result = event.target.result;
+        console.info('find value according index:', result)
+      };
+    }
+
     const btns = document.querySelectorAll('button')
     btns[0].onclick = function () {
       const inputs = document.querySelectorAll('input')
@@ -164,6 +178,10 @@
     }
 
     btns[4].onclick = function () {
+      getFromIndex('name', '李九');
+    }
+
+    btns[5].onclick = function () {
       remove(1590935152103);
     }
   </script>
