@@ -23,6 +23,43 @@
 
 <body>
   <input type="text" value="" inputmode="numeric" pattern="\d+\(\.\d{1,2})?" />
+  <input type="file" vlaue="" id="file" name="file" onchange="uploadFile" />
+
+  <script src="../bin/traceur.js"></script>
+  <script src="../bin/BrowserSystem.js"></script>
+  <script type="module">
+    import Ajax from './src/ajax.js'
+    
+    let ajax1 = new Ajax()
+
+    function uploadFile() {
+      var formData = new FormData()
+      formData.append("file", document.querySelector('input[type="file"]').files[0])
+
+      var request = new XMLHttpRequest();
+
+      request.onload = function() {
+        console.info('*******dddd**********')
+      }
+      request.open("POST", "/api/upload");
+      request.send(formData); 
+
+      // document.querySelector('#getUserData').addEventListener('click', () => {
+      //   ajax1.post({
+      //     method: 'POST',
+      //     async: true,
+      //     url: '/api/upload',
+      //     timeout: 30000,
+      //     type: 'binary',
+      //     data: formData,
+      //   }).then(res => {
+      //     console.info(res)
+      //   }).catch(err => {
+      //     console.error(err)
+      //   })
+      // })
+    }
+  </script>
 </body>
 
 </html>
