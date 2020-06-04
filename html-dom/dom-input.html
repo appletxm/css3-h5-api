@@ -10,7 +10,7 @@
   <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <meta name="format-detection" content="telephone=no">
   <title>test css3 and h5 api</title>
-  <link rel="icon" href="/assets/images/logo.ico" type="image/png">
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
   <style>
     * {
       margin: 0;
@@ -23,16 +23,16 @@
 
 <body>
   <input type="text" value="" inputmode="numeric" pattern="\d+\(\.\d{1,2})?" />
-  <input type="file" vlaue="" id="file" name="file" onchange="uploadFile" />
+  <input type="file" vlaue="" id="file" name="file" />
 
   <script src="../bin/traceur.js"></script>
   <script src="../bin/BrowserSystem.js"></script>
   <script type="module">
-    import Ajax from './src/ajax.js'
+    import Ajax from '../src/ajax.js'
     
     let ajax1 = new Ajax()
 
-    function uploadFile() {
+    document.querySelector('#file').addEventListener('change', function() {
       var formData = new FormData()
       formData.append("file", document.querySelector('input[type="file"]').files[0])
 
@@ -58,7 +58,7 @@
       //     console.error(err)
       //   })
       // })
-    }
+    })
   </script>
 </body>
 

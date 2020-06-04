@@ -6,12 +6,15 @@ const chalk = require('chalk')
 const app = express()
 const assignRouter = require('./server-router-assets')
 const apiRouter = require('./server-router-api')
+const { routerUploadSingleFile } = require('./server-router-handle')
 const logger = require('./server-log')
 const ipAddress = require('ip').address()
 const port = 9000
 const host = '0.0.0.0'
 
 const compression = require('compression')
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 app.use(cookieParser())
 
@@ -23,7 +26,13 @@ app.use(cookieParser())
 //   // return false
 //   return true
 // }}))
+
 app.use(['/*.js', '/*.css', '/*.html'], compression())
+
+// single file
+app.use(['/api/upload'], upload.single('file'), function (req, res) {
+  routerUploadSingleFile(req, res)
+})
 
 app.use(['/api', '/app/v1', '/web', '*/videos/*'], (req, res) => {
   apiRouter(req, res, logger)
