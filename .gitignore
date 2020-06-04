@@ -9,3 +9,4 @@ documentserver
 .DS_Store
 yarn.lock
 package-lock.json
+*.apk
