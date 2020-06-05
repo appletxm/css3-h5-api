@@ -10,3 +10,4 @@ documentserver
 yarn.lock
 package-lock.json
 *.apk
+uploads

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+</head>
+
+<body>
+  <script src="../bin/traceur.js"></script>
+  <script src="../bin/BrowserSystem.js"></script>
+
+  <script type="module">
+    import redux from '../src/my-redux.js'
+    import loggerMiddleWare from '../src/my-redux-logger-middleware.js'
+    import exceptionMiddleWare from '../src/my-redux-exception-middleware.js'
+    import timeMiddleware from '../src/my-redux-time-middleware.js'
+
+    const { createStore, combineReducers, applyMiddleWare, compose } = redux
+
+    function getCounterReducer() {
+      const initialState = {
+        count: 0
+      }
+
+      return function counterReducer(state = initialState, action) {
+        switch (action.type) {
+          case 'INCREMENT':
+            return {
+              count: state.count + 1
+            }
+          case 'DECREMENT':
+            return {
+              count: state.count - 1
+            }
+          default:
+            return state
+        }
+      }
+    }
+
+    function getInfoReducer() {
+      const initialState = {
+        name: '',
+        description: ''
+      }
+
+      return function InfoReducer(state = initialState, action) {
+        switch (action.type) {
+          case 'SET_NAME':
+            return {
+              ...state,
+              name: action.name
+            }
+          case 'SET_DESCRIPTION':
+            return {
+              ...state,
+              description: action.description
+            }
+          default:
+            return state
+        }
+      }
+    }
+
+    const reducers = combineReducers({
+      counter: getCounterReducer(),
+      info: getInfoReducer()
+    })
+
+    // const store = createStore(reducers)
+    // const newCreateStore = applyMiddleWare(exceptionMiddleWare, timeMiddleware, loggerMiddleWare)(createStore)
+    // const store = newCreateStore(reducers, rewriteCreateStoreFunc)
+    const rewriteCreateStore = applyMiddleWare(exceptionMiddleWare, timeMiddleware, loggerMiddleWare)
+    const store = createStore(reducers, rewriteCreateStore)
+
+    console.info('=======init state=====')
+    store.dispatch({ type: Symbol('init state')})
+    // const unsubscribe = store.subscribe(() => {
+    //   let state = store.getState()
+    //   console.log(state.counter.count, state.info.name, state.info.description)
+    // })
+    // unsubscribe()
+
+    console.info('=======set increment=====')
+    store.dispatch({
+      type: 'INCREMENT'
+    })
+    console.info('=======set name=====')
+    store.dispatch({
+      type: 'SET_NAME',
+      name: '前端九部2号'
+    })
+  
+  
+    function fna(){console.info('1==', arguments)}
+    function fnb(){console.info('2==', arguments)}
+    function fnc(){console.info('3==', arguments)}
+
+    const fns = compose(fna, fnb, fnc)
+    fns(1)
+  </script>
+</body>
+
+</html>
