@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>service worker</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  page parent received: <span id="message"></span>
+
+  <script type="module">
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.info(`from window.onerror:`, message, source, lineno, colno, error)
+      return true
+    }
+
+    function test() {
+      try {
+        console.info(qq)
+        // return 666
+      } catch(err) {
+        console.info('do catch')
+        throw new ReferenceError('the qq variable undefined')
+      } finally {
+        // return 555
+        console.info('do finally')
+      }
+
+      return 123
+    }
+    var value = test()
+    console.info('value:', value)
+  </script>
+
+</body>
+</html>
