@@ -104,7 +104,7 @@
 
     function readAll() {
       var store = getStore()
-      var boundKeyRange = IDBKeyRange.lowerBound(1590934586262, false)
+      var boundKeyRange = IDBKeyRange.lowerBound(1590934586262, false) 
       var count = 0
 
       store.openCursor(boundKeyRange, 'prev').onsuccess = function (event) {
