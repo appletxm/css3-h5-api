@@ -11,101 +11,69 @@
   <meta name="format-detection" content="telephone=no">
   <title>test css3 and h5 api</title>
   <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+    .progress {
+      margin-top: .1rem;
+      width: 3rem;
+      height: .06rem;
+      background: #eee;
+    }
+
+    .progress p {
+      width: 0;
+      height: 100%;
+      background: green;
+      transition: width .5s ease-in-out;
+    }
+  </style>
 </head>
 
 <body>
   <script src="../bin/traceur.js"></script>
   <script src="../bin/BrowserSystem.js"></script>
 
+  <button id="outputExecl">click me for download</button>
+
+  <div>
+    <!-- <input type="file" vlaue="" id="file" name="file" multiple/> -->
+    <input type="file" vlaue="" id="file" name="file"/>
+    <div class="progress"><p></p></div>
+  </div>
+  
   <script type="module">
-    import redux from '../src/my-redux.js'
-    import loggerMiddleWare from '../src/my-redux-logger-middleware.js'
-    import exceptionMiddleWare from '../src/my-redux-exception-middleware.js'
-    import timeMiddleware from '../src/my-redux-time-middleware.js'
-
-    const { createStore, combineReducers, applyMiddleWare, compose } = redux
-
-    function getCounterReducer() {
-      const initialState = {
-        count: 0
-      }
-
-      return function counterReducer(state = initialState, action) {
-        switch (action.type) {
-          case 'INCREMENT':
-            return {
-              count: state.count + 1
-            }
-          case 'DECREMENT':
-            return {
-              count: state.count - 1
-            }
-          default:
-            return state
-        }
-      }
+    function downLoadExcel() {
+      fetch('/api/list').then(response => {
+        return response.json()
+      }).then(data => {
+        console.info(data)
+      }).catch(err => {
+        console.info('err:', err)
+      })
     }
-
-    function getInfoReducer() {
-      const initialState = {
-        name: '',
-        description: ''
-      }
-
-      return function InfoReducer(state = initialState, action) {
-        switch (action.type) {
-          case 'SET_NAME':
-            return {
-              ...state,
-              name: action.name
-            }
-          case 'SET_DESCRIPTION':
-            return {
-              ...state,
-              description: action.description
-            }
-          default:
-            return state
-        }
-      }
-    }
-
-    const reducers = combineReducers({
-      counter: getCounterReducer(),
-      info: getInfoReducer()
+    document.querySelector('#outputExecl').addEventListener('click', function() {
+      downLoadExcel()
     })
 
-    // const store = createStore(reducers)
-    // const newCreateStore = applyMiddleWare(exceptionMiddleWare, timeMiddleware, loggerMiddleWare)(createStore)
-    // const store = newCreateStore(reducers, rewriteCreateStoreFunc)
-    const rewriteCreateStore = applyMiddleWare(exceptionMiddleWare, timeMiddleware, loggerMiddleWare)
-    const store = createStore(reducers, rewriteCreateStore)
+    document.querySelector('#file').addEventListener('change', function() {
+      var progress = document.querySelector('.progress')
+      var inner = progress.querySelector('p')
 
-    console.info('=======init state=====')
-    store.dispatch({ type: Symbol('init state')})
-    // const unsubscribe = store.subscribe(() => {
-    //   let state = store.getState()
-    //   console.log(state.counter.count, state.info.name, state.info.description)
-    // })
-    // unsubscribe()
+      var formData = new FormData()
+      formData.append("file", document.querySelector('input[type="file"]').files[0])
 
-    console.info('=======set increment=====')
-    store.dispatch({
-      type: 'INCREMENT'
+      fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      }).then(response => response.json())
+      .then(response => console.log('Success:', JSON.stringify(response)))
+      .catch(error => console.error('Error:', error));
     })
-    console.info('=======set name=====')
-    store.dispatch({
-      type: 'SET_NAME',
-      name: '前端九部2号'
-    })
-  
-  
-    function fna(){console.info('1==', arguments)}
-    function fnb(){console.info('2==', arguments)}
-    function fnc(){console.info('3==', arguments)}
-
-    const fns = compose(fna, fnb, fnc)
-    fns(1)
   </script>
 </body>
 
