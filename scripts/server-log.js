@@ -4,7 +4,18 @@ const log4js = require('log4js')
 
 let date = new Date()
 let dirPath =  path.resolve(__dirname, '../logs')
-let filePath = path.resolve(__dirname, '../logs/' + (date.getFullYear() + '' + (date.getMonth() + 1) + '' + date.getDate()) + '.log')
+let month = date.getMonth() + 1
+let day = date.getDate()
+
+if (month <  10) {
+  month = '0' + month
+}
+
+if (day <  10) {
+  day = '0' + day
+}
+
+let filePath = path.resolve(__dirname, '../logs/' + (date.getFullYear() + '' + month + '' + day) + '.log')
 let logger
 
 function doSet(){

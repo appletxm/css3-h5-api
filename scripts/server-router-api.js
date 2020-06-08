@@ -1,6 +1,19 @@
 const fs = require('fs')
 const path = require('path')
 
+function getFileSize(filePath, needChange) {
+  var stats = fs.statSync(filePath)
+  var fileSizeInBytes = stats['size']
+
+  console.info('****bytes***', fileSizeInBytes)
+
+  //Convert the file size to megabytes (optional)
+  if (needChange === true) {
+    fileSizeInBytes = fileSizeInBytes / 1000000.0
+  }
+  return fileSizeInBytes
+}
+
 function getMockFiles (req, res) {
   let filePath
   let file
@@ -31,12 +44,40 @@ function getMockFiles (req, res) {
 }
 
 function getBinaryData (req, res) {
-  const filePath = path.resolve('./uploads/前端.zip')
+  const filePath = path.resolve('./assets/doc/save as pdf.docx')
+  const fileSize = getFileSize(filePath, false)
+
+  // console.info('****mb***', fileSize)
+
+  res.set({
+    'Content-Length': fileSize,
+    'Content-Disposition': 'attachment; filename=' + encodeURIComponent('save as pdf.docx'),
+    'Content-Type': 'application/octet-stream'
+  })
+
+  const stream = fs.createReadStream(filePath)
+  stream.pipe(res)
+
+  // const file = fs.readFileSync(filePath)
+  // console.info('====file:', file.length)
+  // res.set({
+  //   'Content-Disposition': 'attachment; filename=' + encodeURIComponent('前端.zip'),
+  //   'Content-Type': 'application/octet-stream',
+  //   'Content-Length': file.length
+  // })
+  // res.send(file)
+  // res.end()
+
+
+}
+
+function getBinaryDataForDownload(req, res) {
+  const filePath = path.resolve('./uploads/订单列表-20190410144008.xlsx')
   // fs.createReadStream(filePath).pipe(res)
   const file = fs.readFileSync(filePath)
   console.info('====file:', file.length)
   res.set({
-    'Content-Disposition': 'attachment; filename=' + encodeURIComponent('前端.zip'),
+    'Content-Disposition': 'attachment; filename=' + encodeURIComponent('订单列表-20190410144008.xlsx'),
     'Content-Type': 'application/octet-stream',
     'Content-Length': file.length
   })
@@ -111,15 +152,19 @@ function getVideoFiles(req, res) {
 function getAjaxGet (req, res) {
   let params
 
-  if(req['_parsedUrl']['query'] ){
+  if(!req['query'] ){
     params = decodeURIComponent((req['_parsedUrl']['query'].match(/params=(.+)/))[1])
     params = JSON.parse(params)
+  } else {
+    params = req.query
   }
 
   if (req.originalUrl.indexOf('videos') >= 0) {
     getVideoFiles(req, res)
-  } else if (req.originalUrl.indexOf('getBinaryData') >= 0) {
+  } else if (req.originalUrl.indexOf('download-pdf') >= 0) {
     getBinaryData(req, res)
+  } else if(req.originalUrl.indexOf('download-excel') >= 0) {
+    getBinaryDataForDownload(req, res)
   } else if (req.originalUrl.indexOf('getBinaryPicData') >= 0) {
     getBinaryPicData(req, res)
   } else {

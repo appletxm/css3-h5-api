@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+    .progress {
+      margin-top: .1rem;
+      width: 3rem;
+      height: .06rem;
+      background: #eee;
+    }
+
+    .progress p {
+      width: 0;
+      height: 100%;
+      background: green;
+      transition: width .5s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <img src="../assets/images/bg.jpg" width="100">
+  <button id="outputExecl">click me for download</button>
+  <div class="progress"><p></p></div>
+</body>
+
+<script type="text/javascript">
+  function downLoad(xhr) {
+    var resConType = xhr.getResponseHeader('content-type')
+    if (resConType.indexOf('application/octet-stream') >= 0 || resConType.indexOf('application/x-msdownload') >= 0) {
+      var blob = new Blob([xhr.response], {type: "application/vnd.ms-excel"})
+      var contentDisposition = xhr.getResponseHeader('content-disposition')
+      var matchedObj = contentDisposition.match(/filename=([^;]+)/)
+      var fileName = matchedObj && matchedObj[1] ? decodeURIComponent(matchedObj[1]) : 'download.excel'
+
+      if (window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveOrOpenBlob(blob, fileName)
+        return false
+      }
+
+      var url = URL.createObjectURL(blob)
+      // window.open(url)
+      var a = document.createElement('a')
+      var body = document.querySelector('body')
+
+      console.info('before:', url)
+
+      if (url.indexOf(window.location.host) < 0) {
+        url = url.replace(/^(blob:)(.+)$/, function(str, $1, $2) {
+          return $1 + (window.location.protocol + '//' + window.location.host + '/') + $2
+        })
+      }
+
+      console.info('after:', url)
+
+      a.href = url
+      a.download = fileName
+      body.appendChild(a)
+      a.click()
+      body.removeChild(a)
+    } else {
+      resObj = JSON.parse(xhr.responseText)
+    }
+  }
+
+  document.querySelector('#outputExecl').addEventListener('click', function() {
+    var progress = document.querySelector('.progress')
+    var inner = progress.querySelector('p')
+
+    // var formData = new FormData()
+    // formData.append("file", document.querySelector('input[type="file"]').files[0])
+
+    var request = new XMLHttpRequest();
+
+      /** status
+     * 输出如下：
+     *
+     * UNSENT（未发送） 0
+     * OPENED（已打开） 0
+     * LOADING（载入中） 200
+     * DONE（完成） 200
+     */
+
+    /** statusText
+       * 输出如下:
+       *
+       * 0 UNSENT
+       * 1 OPENED
+       * 3 LOADING OK
+       * 4 DONE OK
+       */
+
+
+    /** readyState
+    0	UNSENT	代理被创建，但尚未调用 open() 方法。
+    1	OPENED	open() 方法已经被调用。
+    2	HEADERS_RECEIVED	send() 方法已经被调用，并且头部和状态已经可获得。
+    3	LOADING	下载中； responseText 属性已经包含部分数据。
+    4	DONE	下载操作已完成。
+      */
+
+    request.onreadystatechange = function(e) {
+      console.info('*******readystatechange**********', request.readyState, request.status, request.statusText, e)
+      inner.style.width = '0'
+    }
+    request.onloadstart = function(e) {
+      console.info('*******loadstart**********', request.status, request.statusText, e)
+      inner.style.width = '0'
+    }
+    // request.upload.onloadstart = function(e) {
+    //   console.info('*******upload loadstart**********', request.status, request.statusText, e)
+    // }
+    request.onprogress = function(e) {
+      console.info('*******progress**********', request.status, request.statusText, e)
+    }
+    request.upload.onprogress = function(e) {
+      console.info('*******upload progress**********', request.status, request.statusText, e)
+      var percentage = (e.loaded / e.total) * 100
+      inner.style.width = percentage + '%';
+    }
+    request.onload = function(e) {
+      console.info('*******load**********', request.status, request.statusText, e)
+      inner.style.width = '100%';
+      downLoad(request)
+    }
+    request.open('GET', '/api/download-pdf?' + 'timestamp=' + new Date().getTime(), true)
+    try {
+      request.timeout = 10000
+      request.setRequestHeader('responseType', 'arrayBuffer')
+      request.responseType = "arraybuffer"
+    } catch(err) {
+      console.error('init ajax error', err)
+    }
+    request.send(null);
+  })
+</script>
+
+</html>
