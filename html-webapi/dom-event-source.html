@@ -35,31 +35,31 @@
 
   <script src="../assets/libs/eventsource.min.js"></script>
   <script>
-    const openBtn = document.querySelector('#openSource')
-    const closeBtn = document.querySelector('#closeSource')
-    let source = null
-    openBtn.addEventListener('click', (event) => {
+    var openBtn = document.querySelector('#openSource')
+    var closeBtn = document.querySelector('#closeSource')
+    var source = null
+    openBtn.addEventListener('click', function(event) {
       console.info('========btn click========')
       source = new EventSource('http://127.0.0.1:3001/stream', { withCredentials: true })
 
-      source.addEventListener('open', (event) => {
+      source.addEventListener('open', function(event) {
         console.info('*****source open:', event)
       })
 
-      source.addEventListener('message', (event) => {
+      source.addEventListener('message', function(event) {
         console.info('*****source message:', event.data)
       })
 
-      source.addEventListener('error', (event) => {
+      source.addEventListener('error', function(event) {
         console.info('*****source error:', event)
       })
 
-      source.addEventListener('foo', (event) => {
+      source.addEventListener('foo', function(event) {
         console.info('####customize foo event:', event)
       })
     })
   
-    closeBtn.addEventListener('click', () => {
+    closeBtn.addEventListener('click', function() {
       source.close()
     })
   </script>

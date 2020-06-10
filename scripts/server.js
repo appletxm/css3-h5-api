@@ -9,7 +9,7 @@ const apiRouter = require('./server-router-api')
 const { routerUploadSingleFile } = require('./server-router-handle')
 const logger = require('./server-log')
 const ipAddress = require('ip').address()
-const port = 9000
+const port = 8000
 const host = '0.0.0.0'
 
 const compression = require('compression')

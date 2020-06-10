@@ -74,6 +74,7 @@
     function getStore(way) {
       return db.transaction([table], way).objectStore(table)
     }
+    
     function add(record) {
       var request = getStore('readwrite').add(record);
       request.onsuccess = function (event) {
