@@ -15,7 +15,6 @@ const plugins = [
   isProduction && uglify()
 ]
 
-
 export default {
   input: 'src/hf-js-sdk.js',
   output: {
