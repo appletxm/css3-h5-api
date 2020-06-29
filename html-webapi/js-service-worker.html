@@ -31,15 +31,12 @@
     //   console.log('Service Worker 注册失败')
     // });
 
-<<<<<<< HEAD
     navigator.serviceWorker.register('../workers/service.worker.new.js').then(function (registration) {
       console.log('Service Worker 注册成功', registration.scope);
     }).catch(function(err) {
       console.log('Service Worker 注册失败')
-=======
     navigator.serviceWorker.register('../workers/service.worker.js').then(function () {
       console.log('Service Worker 注册成功');
->>>>>>> 000ec99a5fe12b6fbeade361f29969d04faaae28
     });
   </script>
 
