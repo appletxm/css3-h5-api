@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+<link rel="icon" href="../assets/images/logo.ico" type="image/png">
 </head>
 
 <body>
@@ -11,7 +12,7 @@ var db;
 var dbname = "bighonkingtest2";
 var storename = "crap_new";
 
-imgurl = "baby.jpg";
+imgurl = "../assets/images/child/1.jpg";
 
 function urlTo64(u, cb) {
   var xhr = new XMLHttpRequest();
@@ -43,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	//No support? Go in the corner and pout.
 	if(!indexedDBOk()) return;
 
-	var openRequest = indexedDB.open(dbname,1);
+	var openRequest = indexedDB.open(dbname, 1);
 
 	openRequest.onupgradeneeded = function(e) {
 		var thisDB = e.target.result;
@@ -85,17 +86,17 @@ function addData(e) {
   	//default for OS list is all, default for type is read
   	var transaction = db.transaction([storename],"readwrite");
 
-	transaction.oncomplete = function(e) {
-		console.log("transaction onsucc");
-		console.dir(e);
-	}
+    transaction.oncomplete = function(e) {
+      console.log("transaction onsucc");
+      console.dir(e);
+    }
 
-	transaction.onerror = function(e) {
-		console.log("transaction onerr");
-		console.dir(e);
-	}
+    transaction.onerror = function(e) {
+      console.log("transaction onerr");
+      console.dir(e);
+    }
 
-	//Ask for the objectStore
+    //Ask for the objectStore
   	var store = transaction.objectStore(storename);
 
   	//Define data

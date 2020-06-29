@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test dom 2.0 querySelector</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .14rem;
+      margin: 0;
+      padding: 0;
+    }
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+
+    div {
+      margin: .1rem;
+    }
+
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      margin: .1rem;
+      border: 1px solid #eee;
+    }
+    table td {
+      width: .3rem;
+      height: .3rem;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+      -webkit-appearance: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="big">
+    <h1>11111</h1>
+    i am the first big one
+    <p>22222</p>
+  </div>
+
+  <div class="a-list">
+    <a href="https:///www.baidu.com">baidu</a>
+    <a href="#test">test</a>
+    <a href="https://qq.com">qq.com</a>
+  </div>
+
+  <div class="big">
+    <input id="test-input" type="tel" autofocus />
+    <div class="test-div">
+      click me
+    </div>
+  </div>
+  
+  <ul>
+    <li>11111</li>
+    <li>22222</li>
+    <li>333333</li>
+    <li>444444</li>
+  </ul>
+
+  <table>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+    </tr>
+  </table>
+
+  <script>
+    // window.onload = function(){
+    //   document.querySelector('#test-input').focus()
+    // }
+
+    document.querySelector('.test-div').addEventListener('click', () => {
+      document.querySelector('#test-input').focus()
+    })
+
+    var isThatA = document.querySelector('a').matches('a[href$="com"]')
+    console.info('isThatA:', isThatA)
+
+    var closestDom = document.querySelector('.test-div').closest('.big')
+    console.info('closestDom:', closestDom.innerText)
+
+    console.info('getElementsByClassName:', document.getElementsByClassName('big'))
+    console.info('children:', document.querySelector('.big').children)
+    console.info('childNodes:', document.querySelector('.big').childNodes)
+    console.info('firstChild:', document.querySelector('.big').firstChild)
+    console.info('firstElementChild:', document.querySelector('.big').firstElementChild)
+    console.info('lastChild:', document.querySelector('.big').lastChild)
+    console.info('lastElementChild:', document.querySelector('.big').lastElementChild)
+    console.info('nextSibling:', document.querySelector('.big').nextSibling)
+    console.info('nextElementSibling:', document.querySelector('.big').nextElementSibling)
+    console.info('previousSibling:', document.querySelector('.big').previousSibling)
+    console.info('previousElementSibling:', document.querySelector('.big').previousElementSibling)
+
+    var table = document.querySelector('table')
+    var rows = Array.from(table.rows)
+    console.info(rows)
+    rows.forEach(function(row, index) {
+      var cells = Array.from(row.cells)
+      cells[index].style.backgroundColor = 'orange'
+    })
+  </script>
+
+</body>
+</html>

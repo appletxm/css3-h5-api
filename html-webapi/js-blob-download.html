@@ -59,7 +59,8 @@
       timeout: 30000,
       headers: {
         contentType: 'application/json; charset=UTF-8'
-      }
+      },
+      responseType: 'arraybuffer'
     }).then(res => {
       console.info(res)
     }).catch(err => {
