@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>event source</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+
+    .websocket {
+      margin: 50px;
+      border: 1px solid #eee;
+    }
+
+  </style>
+</head>
+
+<body>
+  <button id="openSource">open source event</button>
+  <button id="closeSource">open source event</button>
+
+  <script src="../assets/libs/eventsource.min.js"></script>
+  <script>
+    var openBtn = document.querySelector('#openSource')
+    var closeBtn = document.querySelector('#closeSource')
+    var source = null
+    openBtn.addEventListener('click', function(event) {
+      console.info('========btn click========')
+      source = new EventSource('http://127.0.0.1:3001/stream', { withCredentials: true })
+
+      source.addEventListener('open', function(event) {
+        console.info('*****source open:', event)
+      })
+
+      source.addEventListener('message', function(event) {
+        console.info('*****source message:', event.data)
+      })
+
+      source.addEventListener('error', function(event) {
+        console.info('*****source error:', event)
+      })
+
+      source.addEventListener('foo', function(event) {
+        console.info('####customize foo event:', event)
+      })
+    })
+  
+    closeBtn.addEventListener('click', function() {
+      source.close()
+    })
+  </script>
+</body>
+
+</html>
