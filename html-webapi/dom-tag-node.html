@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>Node tag</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    button {
+      display: block;
+    }
+
+    .test-span {
+      margin: 10px;
+      border: 1px solid #eee;
+      padding: 10px;
+    }
+
+    .test-span p {
+      display: inline;
+    }
+
+    .box-warp {
+      margin: 10px;
+      background-color: #eee;
+    }
+    .box-example {
+      padding: 10px;
+      border: 5px solid purple;
+      width: 100px;
+      height: 100px;
+      overflow: auto;
+      box-sizing: content-box;
+      /* box-sizing: border-box; */
+      /* position: absolute; */
+      margin: 20px;
+    }
+
+    .test-pos {
+      width: 200px;
+      height: 200px;
+      background-color: brown;
+      position: fixed;
+      bottom: 50px;
+      right: 50px;
+    }
+  </style>
+</head>
+<body>
+  <!--comment-->
+  <div style="display: none;">node value</div>
+  <div class="has-style-1 style-2 style-3" txm="name">style list</div>
+  <button>toggle</button>
+  <button>scroll by</button>
+  <button>scroll to</button>
+  <button>scroll into view</button>
+
+  <div class="box-warp">
+    <div class="box-example">
+      text.....text.....text.....text.....text.....text.....<br/>
+      text.....
+      text.....<br/>
+      text.....<br/>
+      text.....<br/>
+      text.....<br/>
+      text.....<br/>
+      text.....text.....text.....text.....text.....text.....<br/>
+      text.....
+      text.....text.....text.....text.....text.....text.....<br/>
+      text.....
+      text.....<br/>
+      text.....<br/>
+    </div>
+  </div>
+  text.....text.....text.....text.....text.....text.....<br/>
+    text.....
+    text.....<br/>
+    text.....<br/>
+    text.....<br/>
+    text.....<br/>
+    <div class="test-coordinate"><button>get pos</button>text.....<br/>999999</div>
+    text.....text.....text.....text.....text.....text.....<br/>
+    text.....
+    text.....text.....text.....text.....text.....text.....<br/>
+    text.....
+    text.....<br/>
+    text.....<br/>
+
+    <p>scroll into view</p>
+
+    <div class="test-pos"></div>
+
+    text.....
+    text.....<br/>
+    text.....<br/>
+
+  <script>
+    console.info(document.body.childNodes, document.children, document.body.firstElementChild)
+    var div = document.body.firstElementChild.nextElementSibling
+    console.info(div.hasAttribute('txm'), div.className, div.classList, div.classList.contains('style-2'))
+    div.classList.add('style-4')
+    div.classList.toggle('style-5')
+    document.querySelector('button').addEventListener('click', function(){
+      div.classList.toggle('style-5')
+      div.classList.remove('style-4')
+    })
+
+    var divSample = document.querySelector('.box-example')
+    console.info('clientHeight:', divSample.clientHeight, 'offsetHeight:', divSample.offsetHeight, 'scrollHeight:', divSample.scrollHeight)
+    console.info('clientTop:', divSample.clientTop, 'offsetTop:', divSample.offsetTop)
+    console.info('offsetParent:', divSample.offsetParent)
+
+    var btns = document.querySelectorAll('button')
+    btns[1].addEventListener('click', function(event) {
+      console.info('scrollBy before:', document.documentElement.scrollTop)
+      window.scrollBy(0, 20)
+      console.info('scrollBy after:', document.documentElement.scrollTop)
+    })
+
+    btns[2].addEventListener('click', function(event) {
+      console.info('scrollTo before:', document.documentElement.scrollTop)
+      window.scrollTo(0, 20)
+      console.info('scrollTo after:', document.documentElement.scrollTop)
+    })
+
+    btns[3].addEventListener('click', function(event) {
+      document.querySelector('p').scrollIntoView(false)
+    })
+
+    btns[4].addEventListener('click', function(event) {
+      console.info(window.scrollY, document.documentElement.scrollTop, event.pageY, event.clientY)
+      console.info(document.querySelector('.box-example').getBoundingClientRect())
+      console.info(document.querySelector('.test-pos').getBoundingClientRect())
+      console.info(document.elementFromPoint(100, 100))
+    })
+  </script>
+</body>
+</html>

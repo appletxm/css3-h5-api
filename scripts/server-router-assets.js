@@ -120,7 +120,8 @@ function routerAssets (req, res, logger) {
 
   cacheControl(res)
 
-  if (req.originalUrl.indexOf('assets/images') >= 0) {
+  // if (req.originalUrl.indexOf('assets/images') >= 0) {
+  if ((/^.+\.(png|jpg|jpeg|gif|ico)$/).test(req.originalUrl)) {
     getImageFile(req, res)
   } else if (req.originalUrl.indexOf('.js') >= 0) {
     getScriptFile(req, res)
