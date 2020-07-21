@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>tab index</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+
+    .user-custom-guide {
+      display: block;
+      list-style: none;
+    }
+
+    .user-custom-guide li {
+      display: inline-block;
+      line-height: 32px;
+      width: 48px;
+      text-align: center;
+      padding:2px;
+    }
+
+    .user-custom-guide li:focus {
+      border: 1px dashed rosybrown;
+      padding: 1px;
+      outline: 0;
+    }
+
+    form{
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid gray;
+      width: 200px;
+    }
+
+    form input {
+      margin-bottom: 5px;
+    }
+
+    form input:focus {
+      border: 1px solid red;
+      outline: 0;
+    }
+
+    .focus {
+      border: 1px solid red;
+    }
+  </style>
+</head>
+
+<body>
+  <ul class="user-custom-guide">
+    <li tabindex="0">zero</li>
+    <li tabindex="1">one</li>
+    <li tabindex="2">two</li>
+    <li tabindex="3">three</li>
+    <li tabindex="-1">-1</li>
+  </ul>
+
+  <form>
+    <input id="test-text" type="text" value="">
+    <input type="email" value="">
+  </form>
+
+  <script>
+    var liNode = document.querySelector('.user-custom-guide li[tabindex="-1"]')
+    setTimeout(function(){
+      liNode.focus()
+    }, 5000)
+
+    // var textNode = document.querySelector('#test-text')
+    // textNode.focus()
+    var form = document.querySelector('form')
+
+    form.addEventListener('focus', function() {
+      form.classList.add('focus')
+    }, true)
+
+    form.addEventListener('blur', function() {
+      form.classList.remove('focus')
+    }, true)
+  </script>
+
+  <!-- <script type="module">
+    import Ajax from '../src/ajax.js'
+    
+    let ajax1 = new Ajax()
+
+   console.info(ajax1)
+  </script> -->
+</body>
+
+</html>
