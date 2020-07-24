@@ -27,29 +27,32 @@
 </head>
 
 <body>
-  <div class="info-panel"> </div>
-  <input type="text" value="" inputmode="numeric" pattern="\d+\(\.\d{1,2})?" />
+  <form id="test-form">
+    <input id="test-text" type="text" value="" inputmode="numeric" pattern="\d+\(\.\d{1,2})?" />
+  </form>
 
   <script>
-    var text = document.querySelector('input')
-
+    var text = document.querySelector('#test-text')
+    var form = document.querySelector('#test-form')
 
     text.addEventListener('focusin', function(event){
-      console.info('focusin:', event)
+      console.info('text focusin:', event)
+    })
+    text.addEventListener('focusout', function(event){
+      console.info('text focusout:', event)
     })
 
-    text.addEventListener('focusout', function(event){
-      console.info('focusout:', event)
+    form.addEventListener('focusin', function(event){
+      console.info('form focusin:', event)
+    })
+    form.addEventListener('focusout', function(event){
+      console.info('form focusout:', event)
     })
 
     window.addEventListener('error', function(err) {
       console.info(err)
       return false
     })
-
-    window.onerror = function() {
-      console.info('================')
-    }
   </script>
 </body>
 

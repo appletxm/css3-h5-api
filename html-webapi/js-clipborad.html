@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test clipborad</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+    .info-panel {
+      margin: 10px;
+      font-size: .14rem;
+      border: 1px solid #eee;
+      min-height: 2rem;
+      border-radius: 4px;
+    }
+
+    .info-panel:focus {
+      outline: none;
+      border: 1px solid rosybrown;
+    }
+
+    .copy-area {
+      margin: 10px
+    }
+
+    .copy-area::before {
+      content: " ";
+      display: block;
+      height: 10px;
+      width: 100%;
+    }
+
+    .hidden-info {
+      display: none;
+    }
+
+    .custom-copy {
+      margin: .1rem;
+      font-size: .14rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="info-panel" contenteditable="true"></div>
+
+  <div class="hidden-info"></div>
+
+  <div class="custom-copy">defined customize copy source</div>
+
+  <div class="copy-area">
+    <span>
+      <input id="demoInput" value="hello world">
+      <button id="btn">点我复制</button>
+    </span>
+
+    <p> A Promise that resolves with a DataTransfer object containing the clipboard's contents. The promise is rejected if permission to access the clipboard is not granted. </p>
+
+    <img src="../assets/images/child/1.jpg" width="200"/>
+
+    <img src="../assets/images/child/2.jpg" width="200"/>
+
+    <img src="../assets/images/child/3.jpg" width="200" id="test-img"/>
+  </div>
+
+  <canvas id="test-canvas"></canvas>
+
+  <script>
+    var infoPanel = document.querySelector('.info-panel')
+    var inputArea = document.querySelector('.hidden-info')
+    var copyArea = document.querySelector('.copy-area')
+    var customizeCopyArea = document.querySelector('.custom-copy')
+
+    var img = document.querySelector('#test-img')
+    img.addEventListener('load', function(){
+      // console.info(img.clientHeight, img.clientWidth)
+      var canvas = document.querySelector('#test-canvas')
+      var context = canvas.getContext('2d')
+      // console.info(img.clientHeight, img.clientWidth, canvas, context)
+      canvas.setAttribute('style', `width: ${img.clientWidth}px; height: ${img.clientHeight}px;`)
+      context.drawImage(img, 0 ,0, img.naturalWidth, img.naturalHeight, 0, 0, img.clientWidth, img.clientHeight)
+    })
+
+    customizeCopyArea.addEventListener('copy', function(event) {
+      // console.info(navigator.clipboard, event.clipboardData)
+     
+      // navigator.permissions.query({name: "clipboard-read"}).then(result => {
+      //   // If permission to read the clipboard is granted or if the user will
+      //   // be prompted to allow it, we proceed.
+
+      //   if (result.state == "granted" || result.state == "prompt") {
+      //     navigator.clipboard.read().then(data => {
+      //       console.info(data)
+      //     });
+      //   }
+      // });
+
+      navigator.permissions.query({name:'clipboard-write'}).then(function(result) {
+        if (result.state === 'granted') {
+          console.info('=======granted========')
+          // just want to control user's clipboard data
+          // navigator.clipboard.writeText('9999999999999999999999')
+
+          var canvas = document.querySelector('#test-canvas')
+          var ctx = canvas.getContext('2d')
+          
+          var buffer = ctx.getImageData(0,0, 200, 133)
+          var url = URL.createObjectURL(new Blob([buffer], {type: 'image/png'}))
+          console.info(url)
+
+          var base64 = canvas.toDataURL('image/jpg', 1)
+
+          canvas.toBlob(function(blob) {
+            console.info(blob)
+            var textBlob = new Blob(['6666666'], {type: 'text/plain'})
+            // var data = [new ClipboardItem({ 'image/png': blob}), new ClipboardItem({ 'text/plain': textBlob})]
+            var data = [new ClipboardItem({ 'image/png': blob})]
+
+            navigator.clipboard.write(data).then(function() {
+              console.log("Copied to clipboard successfully!");
+            }, function() {
+              console.error("Unable to write to clipboard. :-(");
+            });
+          }, 'image/png', 1);
+        } else if (result.state === 'prompt') {
+          console.info('=======prompt========')
+        } else if (result.state === 'denied') {
+          console.info('=======prompt========')
+        }
+        // Don't do anything if the permission was denied.
+      })
+    })
+
+    infoPanel.addEventListener('paste', function(event) {
+      // console.info(event.clipboardData)
+      // console.info(navigator.clipboard)
+      // event.clipboardData.clearData()
+      // event.preventDefault()
+
+      // console.info(event.clipboardData, event.clipboardData.getData('text/plain'))
+      // var items = event.clipboardData.items || event.clipboardData
+      // var file = null
+
+      // if (items && items.length) {
+      //   for (var i = 0; i < items; i++) {
+      //     if (items[i].type.indexOf('image') !== 1) {
+      //       file = items[i].getAsFile()
+      //       break
+      //     }
+      //   } 
+      // }
+
+      event.stopPropagation()
+    })
+
+    document.addEventListener('paste', function(event) {
+      var items = (event.clipboardData || window.clipboardData).items
+      var file = []
+      var text = []
+      console.info(items)
+
+      if (items && items.length) {
+        for (var i = 0; i < items.length; i++) {
+          console.info(items[i].type, items[i])
+          if (items[i].type.indexOf('image') !== -1) {
+            file.push(items[i].getAsFile())
+          } else if(items[i].type.indexOf('text') >= 0) {
+            items[i].getAsString(function(data) {
+              console.info('data:', data)
+            })
+          }
+        }
+      }
+
+      console.info(file, text)
+
+      // var clipboardData = navigator.clipboard
+      // navigator.clipboard.read().then(data => {
+      //   var items = data.items
+      //   console.info(items)
+      //   for (let i = 0; i < data.items.length; i++) {
+      //     if (data.items[i].type != "text/plain") {
+      //       alert("Clipboard contains non-text data. Unable to access it.");
+      //     } else {
+      //       textElem.innerText = data.items[i].getAs("text/plain");
+      //     }
+      //   }
+      // })
+    })
+    
+    window.addEventListener('error', function(err) {
+      console.info(err)
+      return false
+    })
+
+    const btn = document.querySelector('#btn');
+    btn.addEventListener('click',() => {
+      // const input = document.createElement('input');
+      // document.body.appendChild(input);
+
+      // // input.setAttribute('readonly', 'readonly');
+      // input.setAttribute('value', 'hello world');
+      // // input.setSelectionRange(0, 9999);
+      // input.select()
+
+      // if (document.execCommand('copy')) {
+      //   document.execCommand('copy');
+      //   console.log('复制成功');
+      // }
+      // document.body.removeChild(input);
+
+      var inputArea = document.querySelector('.hidden-info')
+      var input = document.querySelector('#demoInput')
+
+      inputArea.innerHTML = input.value + `<br/>
+        this is the extra info:<br/>
+        this is the extra info: 1234566<br/>
+      `
+      
+      inputArea.style.display = 'block'
+      let selection = window.getSelection();
+      let range = document.createRange();
+      range.selectNode(inputArea);
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      document.execCommand('copy')
+      inputArea.style.display = 'none'
+    })
+
+  </script>
+</body>
+
+</html>

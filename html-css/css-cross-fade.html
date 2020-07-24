@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../../assets/images/logo.ico" type="image/png">
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+    .dark {
+      /* 兜底，IE和Firefox浏览器 */
+      background-image: url('../../assets/images/child/1.jpg');
+      --transparent: url(data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);
+      /* Safari最近版本已经不需要私有前缀了 */
+      background-image: cross-fade(var(--transparent), url('../../assets/images/child/2.jpg'), 40%);
+      /* 如使用自定义属性，-webkit-语句需要放在没有私有前缀语句的下面 */
+      background-image: -webkit-cross-fade(var(--transparent), url('../../assets/images/child/1.jpg'), 40%);
+
+      background-size: cover;
+
+      width: 2rem;
+      height: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="dark"></div>
+</body>
+</html>

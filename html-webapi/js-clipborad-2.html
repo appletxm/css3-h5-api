@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test clipborad</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+    .info-panel {
+      margin: 10px;
+      font-size: .14rem;
+      border: 1px solid #eee;
+      min-height: 2rem;
+      border-radius: 4px;
+    }
+
+    .info-panel:focus {
+      outline: none;
+      border: 1px solid rosybrown;
+    }
+
+    .copy-area {
+      margin: 10px
+    }
+
+    .copy-area::before {
+      content: " ";
+      display: block;
+      height: 10px;
+      width: 100%;
+    }
+
+    .hidden-info {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="info-panel" contenteditable="false"></div>
+
+  <script>
+    var infoPanel = document.querySelector('.info-panel')
+
+
+    function getCopyImage(file) {
+      var reader = new FileReader()
+      reader.onload = function(event) {
+        console.info()
+        var url = event.target.result
+        var img = document.createElement('img')
+        img.setAttribute('src', url)
+        document.querySelector('.info-panel').appendChild(img)
+      }
+
+      reader.readAsDataURL(file)
+    }
+
+    document.addEventListener('paste', function(event) {
+      // console.info(event.clipboardData)
+      // console.info(navigator.clipboard, document.clipboardData)
+      // console.info(event.clipboardData, event.clipboardData.getData('text/plain'))
+
+      var items = (event.clipboardData || window.clipboardData).items
+      var file = []
+      var text = []
+
+      if (items && items.length) {
+        for (var i = 0; i < items.length; i++) {
+
+          // console.info(items[i].type)
+
+          if (items[i].type.indexOf('image') >= 0) {
+            file.push(items[i].getAsFile())
+          } else if (items[i].type.indexOf('text') >= 0) {
+            items[i].getAsString(function(data) {
+              text.push(data)
+            })
+          }
+        } 
+      }
+
+      // console.info(file, text)
+      getCopyImage(file[0])
+    })
+  </script>
+</body>
+
+</html>

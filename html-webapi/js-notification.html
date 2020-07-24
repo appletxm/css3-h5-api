@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test clipborad</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    function sendNotification() {
+      var not = new Notification('Notifaction Title', {
+        body: 'this is the body message',
+        icon: '../assets/images/rc-code.jpg', 
+        tag: "song",
+        data: {
+          a: 1,
+          b: 3
+        },
+        requireInteraction: true
+      });
+
+      not.onerror = function() {
+        console.info('onerror:', this)
+      };
+
+      not.onclick = function() {
+        console.info('onclick:', this)
+      };
+
+      not.onshow = function() {
+        console.info('onshow:', this)
+      };
+
+      not.onclose = function() {
+        console.info('onclose:', this)
+      };
+    }
+
+    function requestPermission() {
+      Notification.requestPermission().then(function(permission) { 
+        console.info('permission:', permission)
+        if (permission === 'default') {
+          console.info('user set default')
+        } else if (permission === 'denied') {
+          console.info('user set denied')
+        } else {
+          console.info('user set accept')
+          sendNotification()
+        }
+      })
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // permission: granted, denied, default
+      var permission = Notification.permission
+      console.info('permission:', permission)
+
+      if (permission === 'default') {
+        requestPermission()
+      } else if (permission === 'granted') {
+        sendNotification()
+      }
+    })
+    
+  </script>
+</body>
+
+</html>
