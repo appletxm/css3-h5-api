@@ -67,8 +67,6 @@ function getBinaryData (req, res) {
   // })
   // res.send(file)
   // res.end()
-
-
 }
 
 function getBinaryDataForDownload(req, res) {
