@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>tab index</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+
+    .user-custom-guide {
+      display: block;
+      list-style: none;
+    }
+
+    .user-custom-guide li {
+      display: inline-block;
+      line-height: 32px;
+      width: 48px;
+      text-align: center;
+      padding:2px;
+    }
+
+    .user-custom-guide li:focus {
+      border: 1px dashed rosybrown;
+      padding: 1px;
+      outline: 0;
+    }
+
+    form{
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid gray;
+      width: 200px;
+    }
+
+    form input {
+      margin-bottom: 5px;
+    }
+
+    form input:focus {
+      border: 1px solid red;
+      outline: 0;
+    }
+
+    .focus {
+      border: 1px solid red;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="./dom-page-load-a.js" async></script>
+  <script src="./dom-page-load-b.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.info('******content loaded')
+    })
+  </script>
+  <script>
+    window.addEventListener('load', function() {
+      console.info('******window onloaded')
+    })
+  </script>
+  <script src="../../bin/BrowserSystem.js"></script>
+  <script>
+    document.write("\x3Cscript>console.info('----document.write----')\x3C/script>")
+  </script>
+</body>
+
+</html>
