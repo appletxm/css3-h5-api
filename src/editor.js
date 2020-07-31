@@ -1,6 +1,7 @@
 import * as editorUI from './editor-ui.js'
 import { doDomObserver, disableObserver } from './editor-observer-dom.js'
 import { toggleBold } from './editor-font-bold.js'
+import { toggleItalic } from './editor-font-italic.js'
 
 const defaultConfig = {
   bindObj: document.body
@@ -34,12 +35,21 @@ const Editor = class {
     editorIconPanel.addEventListener('click', (event) => {
       const eventName = event.target.getAttribute('event')
       const selection = document.getSelection()
+
+      if (selection.isCollapsed) {
+        return false
+      }
+
       const range = selection.getRangeAt(0)
 
-      console.dir(eventName)
+      // console.dir(eventName)
 
       if(eventName === 'text-bold') {
         toggleBold(range, selection)
+      } else if (eventName === 'text-italic') {
+        toggleItalic(range, selection)
+      } else if (eventName === 'text-change-size') {
+        event.target.parentNode.classList.toggle('show-list')
       }
     })
   }

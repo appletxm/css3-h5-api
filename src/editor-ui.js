@@ -21,7 +21,14 @@ export const optListHtml = `
 <div class="editor-opt">
   <button><span class="c3h5-bold" event="text-bold"></span></button>
   <button><span class="c3h5-italic" event="text-italic"></span></button>
-  <button><span class="c3h5-a" event="text-change-size"></span></button>
+  <button class="change-text-size">
+    <span class="c3h5-a" event="text-change-size"></span>
+    <ul class="font-size-list">
+      <li>大号</li>
+      <li>中号</li>
+      <li>小号</li>
+    </ul>
+  </button>
 
   <button><span class="c3h5-alignleft" event="text-align-left"></span></button>
   <button><span class="c3h5-alignmiddle" event="text-align-center"></span></button>

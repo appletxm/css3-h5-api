@@ -1,6 +1,6 @@
-export const toggleBold = function(range, selection) {
+export const fontSize = function(dom, range, selection) {
   // console.info(range, selection)
-  const cssText = 'span[bold-attr="bold"]'
+  const cssText = 'span[italic-attr="italic"]'
 
   // var nodes = range.cloneContents()
   const nodes = range.extractContents()
@@ -10,8 +10,8 @@ export const toggleBold = function(range, selection) {
 
   if(!alreadyBoldNode) {
     const span = document.createElement('span')
-    span.style.fontWeight = 'bold'
-    span.setAttribute('bold-attr', 'bold')
+    span.style.fontStyle = 'italic'
+    span.setAttribute('italic-attr', 'italic')
 
     span.appendChild(nodes)
     range.insertNode(span)

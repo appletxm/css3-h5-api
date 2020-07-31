@@ -10,78 +10,13 @@
   <title>mutation observer</title>
   <link rel="icon" href="../assets/images/logo.ico" type="image/png">
   <link rel="stylesheet" href="../assets/fonts/iconfont.css">
+  <link rel="stylesheet" href="../assets/editor-style.css">
   <style>
     body {
       font-size: .14rem;
     }
-
-    .editor-panel {
-      width: 5rem;
-      position: relative;
-    }
-
-    #editor {
-      outline: none;
-      border: .01rem solid #eee;
-      padding: .1rem;
-      border-radius: .04rem;
-      transition: all .5s ease;
-      min-height: 1rem;
-      width: 100%;
-    }
-
-    #editor:focus {
-      border-color: rgb(223, 108, 14, .5);
-    }
-
-    .editor-opt {
-      position: absolute;
-      bottom: -.35rem;
-      left: 0;
-    }
-
-    .editor-opt ul {
-      display: inline-block;
-      list-style: none;
-      font-size: 0;
-      padding: 0;
-    }
-
-    .editor-opt button {
-      display: inline-block;
-      width: .3rem;
-      height: .3rem;
-      line-height: .3rem;
-      text-align: center;
-      font-size: .18rem;
-      cursor: pointer;
-      transition: all .2s ease;
-      border: 0;
-      background-color: transparent;
-    }
-
-    .editor-opt button:nth-of-type(4) span,
-    .editor-opt button:nth-of-type(5) span,
-    .editor-opt button:nth-of-type(6) span,
-    .editor-opt button:nth-of-type(7) span,
-    .editor-opt button:nth-of-type(8) span,
-    .editor-opt button:nth-of-type(9) span,
-    .editor-opt button:nth-of-type(10) span {
-      font-size: .2rem;
-    }
-
-    .editor-opt button:hover {
-      background-color: rgba(231, 96, 18, 0.1);
-      border-radius: .02rem;
-      color: rgba(231, 96, 18, 1);
-    }
-    .editor-opt button:focus {
-      background-color: rgba(231, 96, 18, 0.1);
-      border-radius: .02rem;
-      color: rgba(231, 96, 18, 1);
-      outline: none;
-    }
   </style>
+  
 </head>
 
 <body>
