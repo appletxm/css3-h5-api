@@ -50,6 +50,10 @@ app.use('/*.css', function (req, res) {
   assignRouter(req, res, logger)
 })
 
+app.use('/*.pdf', function (req, res) {
+  assignRouter(req, res, logger)
+})
+
 app.use(['/*.png', '/*.jpg', '/*.gif', '/*.jpeg', '/*.ico'], function (req, res) {
   assignRouter(req, res, logger)
 })

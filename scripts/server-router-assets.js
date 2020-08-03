@@ -3,6 +3,7 @@ const path = require('path')
 const getContentType = require('./server-get-content-type')
 const excelOpts = require('./excel-opts')
 const { cacheControl } = require('./server-cache-control')
+const serverAccessControl = require('./server-access-control')
 const { gzip } = require('./server-gzip-zlib')
 
 function getImageFile (req, res) {
@@ -118,6 +119,7 @@ function routerAssets (req, res, logger) {
   console.info('[http get]', req.baseUrl, req.originalUrl)
   logger.info('[http get]', req.baseUrl, req.originalUrl)
 
+  serverAccessControl(res)
   cacheControl(res)
 
   // if (req.originalUrl.indexOf('assets/images') >= 0) {
