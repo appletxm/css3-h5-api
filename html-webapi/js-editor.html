@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>mutation observer</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <link rel="stylesheet" href="../assets/fonts/iconfont.css">
+  <link rel="stylesheet" href="../assets/editor-style.css">
+  <style>
+    body {
+      font-size: .14rem;
+    }
+  </style>
+  
+</head>
+
+<body>
+  <div class="editor-panel"></div>
+
+  <script src="../bin/BrowserSystem.js"></script>
+
+  <script type="module">
+    import Editor from '../src/editor.js'
+    var editor = new Editor({
+      bindObj: document.querySelector('.editor-panel')
+    })
+    // var doc = document.querySelector("#editor");
+    // var editorOpts = document.querySelector('.editor-opt')
+  </script>
+</body>
+
+</html>

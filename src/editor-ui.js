@@ -24,9 +24,9 @@ export const optListHtml = `
   <button class="change-text-size">
     <span class="c3h5-a" event="text-change-size"></span>
     <ul class="font-size-list">
-      <li>大号</li>
-      <li>中号</li>
-      <li>小号</li>
+      <li size="28">大号</li>
+      <li size="18">中号</li>
+      <li size="14">小号</li>
     </ul>
   </button>
 

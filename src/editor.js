@@ -2,6 +2,7 @@ import * as editorUI from './editor-ui.js'
 import { doDomObserver, disableObserver } from './editor-observer-dom.js'
 import { toggleBold } from './editor-font-bold.js'
 import { toggleItalic } from './editor-font-italic.js'
+import { init as fontSizeInit, toggleSizeList} from './editor-font-size.js'
 
 const defaultConfig = {
   bindObj: document.body
@@ -22,6 +23,7 @@ const Editor = class {
       this.domIsReady = true
       disableObserver()
       this.addEvent()
+      fontSizeInit(this.config)
     })
 
     bindObj.innerHTML = editorHtml + optListHtml
@@ -33,6 +35,8 @@ const Editor = class {
     const editorIconPanel = bindObj.querySelector('.editor-opt')
 
     editorIconPanel.addEventListener('click', (event) => {
+      event.stopPropagation()
+      
       const eventName = event.target.getAttribute('event')
       const selection = document.getSelection()
 
@@ -49,7 +53,7 @@ const Editor = class {
       } else if (eventName === 'text-italic') {
         toggleItalic(range, selection)
       } else if (eventName === 'text-change-size') {
-        event.target.parentNode.classList.toggle('show-list')
+        toggleSizeList(range, selection)
       }
     })
   }
