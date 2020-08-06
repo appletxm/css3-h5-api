@@ -4,8 +4,8 @@ const assetsRouter = require('./server-router-assets')
 const apiRouter = require('./server-router-api')
 const logger = require('./server-log')
 
-const port = 8000
-const host = '192.168.10.81'
+const port = 9000
+const host = '0.0.0.0'
 
 app.use(['/api', '/app/v1', '/web'], (req, res) => {
   apiRouter(req, res, logger)
