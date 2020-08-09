@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test Canvas api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+    canvas {
+      width: 2rem;
+      height: 2rem;
+      border: 1px solid #eee;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas width="200" height="200" id="test-canvas"></canvas>
+  <script>
+    var canvas = document.querySelector('#test-canvas')
+    var ctx = canvas.getContext('2d')
+
+    function drawAngle() {
+      var startAngle = (Math.PI / 180) * 25
+      var endAngle = (Math.PI / 180) * 165
+      var anticlockwise = false
+
+      ctx.arc(100, 100, 100, startAngle, endAngle, anticlockwise);
+      ctx.lineTo(100, 100)
+      ctx.closePath()
+
+      var lineargradient = ctx.createLinearGradient(100, 100, 100, 200)
+      // ctx.createRadialGradient(100, 100, 0, 75, 75,100)
+      lineargradient.addColorStop(0, '#ffffff')
+      lineargradient.addColorStop(1, '#000000')
+      ctx.fillStyle = lineargradient
+      ctx.globalAlpha = 0.5
+
+      ctx.fill();
+      // ctx.stroke();
+
+      // if (canvas.getContext){
+      //   for(var i = 0; i < 4; i++){
+      //     for(var j = 0; j < 3; j++){
+      //       ctx.beginPath();
+      //       var x = 25 + j * 50; // x 坐标值
+      //       var y = 25 + i * 50; // y 坐标值
+      //       var radius = 20; // 圆弧半径
+      //       var startAngle = 0; // 开始点
+      //       var endAngle = Math.PI + (Math.PI * j) / 2; // 结束点
+      //       var anticlockwise = i % 2 === 0 ? false : true; // 顺时针或逆时针
+
+      //       ctx.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+
+      //       if (i>1){
+      //         ctx.fill();
+      //       } else {
+      //         ctx.stroke();
+      //       }
+      //     }
+      //   }
+      // }
+    }
+
+    drawAngle()
+  </script>
+</body>
+
+</html>
