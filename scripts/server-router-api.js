@@ -44,14 +44,14 @@ function getMockFiles (req, res) {
 }
 
 function getBinaryData (req, res) {
-  const filePath = path.resolve('./assets/doc/save as pdf.docx')
+  const filePath = path.resolve('./assets/books/数据结构与算法JavaScript描述.pdf')
   const fileSize = getFileSize(filePath, false)
 
   // console.info('****mb***', fileSize)
 
   res.set({
     'Content-Length': fileSize,
-    'Content-Disposition': 'attachment; filename=' + encodeURIComponent('save as pdf.docx'),
+    'Content-Disposition': 'attachment; filename=' + encodeURIComponent('数据结构与算法JavaScript描述.pdf'),
     'Content-Type': 'application/octet-stream'
   })
 

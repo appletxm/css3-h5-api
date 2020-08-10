@@ -31,48 +31,199 @@
       background: green;
       transition: width .5s ease-in-out;
     }
+
+    .wrap-box {
+      border: 1px solid #eee;
+      padding: 10px;
+      margin: 10px;
+    }
   </style>
 </head>
 
 <body>
-  <script src="../bin/traceur.js"></script>
-  <script src="../bin/BrowserSystem.js"></script>
+  <!-- <script src="../bin/BrowserSystem.js"></script> -->
 
-  <button id="outputExecl">click me for download</button>
-
-  <div>
-    <!-- <input type="file" vlaue="" id="file" name="file" multiple/> -->
-    <input type="file" vlaue="" id="file" name="file"/>
-    <div class="progress"><p></p></div>
+  <div class="wrap-box">
+    <button id="fetch-json">fetch json</button>
   </div>
   
-  <script type="module">
-    function downLoadExcel() {
-      fetch('/api/list').then(response => {
-        return response.json()
-      }).then(data => {
-        console.info(data)
-      }).catch(err => {
-        console.info('err:', err)
-      })
-    }
-    document.querySelector('#outputExecl').addEventListener('click', function() {
-      downLoadExcel()
-    })
+  <div class="wrap-box">
+    <button id="download-excel">click me for download</button>
+  </div>
 
-    document.querySelector('#file').addEventListener('change', function() {
+  <div class="wrap-box">
+    <button id="download-progress">click me for download on progress</button>
+    <button id="fetch-abort">fetch abort</button>
+    <div class="progress"><p></p></div>
+  </div>
+
+  <div class="wrap-box">
+    <!-- <input type="file" vlaue="" id="file" name="file" multiple/> -->
+    <input type="file" vlaue="" id="file" name="file"/>
+    <button id="upload-pdf">click me for upload file</button>
+  </div>
+  
+  <script>
+    var controller = new AbortController()
+
+    function getDownloadFileName(response) {
+      var fileName = '下载'
+      if (response.headers.get('content-disposition')) {
+        var rawName = response.headers.get('content-disposition')
+        rawName = rawName.match(/filename=([^;]+)/)
+        if (rawName && rawName.length > 1) {
+          fileName = decodeURIComponent(rawName[1])
+        }
+      }
+
+      return fileName
+    }
+
+    function doDownload(blobData, fileName) {
+      if (window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveOrOpenBlob(blobData, fileName)
+        return false
+      }
+      var url = URL.createObjectURL(blobData)
+      // window.open(url)
+      var a = document.createElement('a')
+      var body = document.querySelector('body')
+
+      console.info('before:', url)
+
+      if (url.indexOf(window.location.host) < 0) {
+        url = url.replace(/^(blob:)(.+)$/, function(str, $1, $2) {
+          return $1 + (window.location.protocol + '//' + window.location.host + '/') + $2
+        })
+      }
+
+      console.info('after:', url)
+      a.href = url
+      a.download = fileName
+      body.appendChild(a)
+      a.click()
+      body.removeChild(a)
+    }
+    
+    function downloadExcel() {
+      var progress = document.querySelector('.progress')
+      var inner = progress.querySelector('p')
+
+      fetch('/api/download-excel', {
+        method: 'GET'
+      }).then(async function(response) {
+        var fileName = getDownloadFileName(response)
+        var blobData = await response.blob()
+        // return response.arrayBuffer()
+
+        return {
+          stream: blobData,
+          fileName: fileName
+        }
+      }).then(function(response) {
+        console.log('Success:', response)
+        doDownload(response.stream, response.fileName)
+      }).catch(function(error) {
+        console.error('Error:', error)
+      });
+    }   
+    
+    document.querySelector('#download-excel').addEventListener('click', function() {
+      downloadExcel()
+    })
+    
+    function uploadFile() {
       var progress = document.querySelector('.progress')
       var inner = progress.querySelector('p')
 
       var formData = new FormData()
       formData.append("file", document.querySelector('input[type="file"]').files[0])
 
-      fetch('/api/upload', {
+      fetch('/api/download-excel', {
         method: 'POST',
         body: formData
       }).then(response => response.json())
       .then(response => console.log('Success:', JSON.stringify(response)))
       .catch(error => console.error('Error:', error));
+    }
+    
+    document.querySelector('#file').addEventListener('change', function() {
+      uploadFile()
+    })
+
+
+    function fetchJson() {
+      fetch('/api/list').then(function(response) {
+        return response.json()
+      }).then(function(data) {
+        console.info(data)
+      }).catch(err => {
+        console.info('err:', err)
+      })
+    }
+    
+    document.querySelector('#fetch-json').addEventListener('click', function() {
+      fetchJson()
+    })
+
+    function showDownloadProgress(current, total) {
+      var btn = document.querySelector('#download-progress')
+      var dom = btn.nextElementSibling.nextElementSibling
+      var p = dom.querySelector('p')
+      // console.info(dom.classList.contains('progress'))
+      p.style.width = (current / total * 100) + '%'
+    }
+
+    async function downloadProgress() {
+      try {
+        var response = await fetch('/api/download-pdf', {
+          signal: controller.signal
+        })
+        var fileName = getDownloadFileName(response)
+
+        reader = response.body.getReader()
+        // console.info(response.headers.get('Content-Length'))
+
+        var contentLength = response.headers.get('Content-Length')
+        var receivedLength = 0
+        var chunks = []
+
+        while(true) {
+          const {done, value} = await reader.read()
+
+          if (done) {
+            break;
+          }
+
+          chunks.push(value)
+          receivedLength += value.length
+
+          // console.log(`Received ${receivedLength} of ${contentLength}`)
+          showDownloadProgress(receivedLength, contentLength)
+        }
+
+        // let chunksAll = new Uint8Array(receivedLength)
+        // let position = 0;
+        // for (let chunk of chunks) {
+        //   chunksAll.set(chunk, position);
+        //   position += chunk.length;
+        // }
+
+        let blob = new Blob(chunks, {
+          type: 'application/pdf'
+        })
+
+        doDownload(blob, fileName)
+      } catch(err) {
+        console.info(err.name, ':', err)
+      }
+    }
+
+    document.querySelector('#download-progress').addEventListener('click', function() {
+      downloadProgress()
+    })
+    document.querySelector('#fetch-abort').addEventListener('click', function(){
+      controller.abort()
     })
   </script>
 </body>
