@@ -62,8 +62,27 @@
     <input type="file" vlaue="" id="file" name="file"/>
     <button id="upload-pdf">click me for upload file</button>
   </div>
+
+  <div class="wrap-box">
+    <p>simple cors test</p>
+
+    <iframe name="testFormIframe" id="testFormIframe"></iframe>
+    <form id="testForm" name="testForm" method="POST" action="http://192.168.21.109:9000/cross-origin-test/post" target="testFormIframe" enctype="multipart/form-data">
+      <input type="file" value="" id="file" name="avator" multiple />
+      <input type="file" value="" id="file" name="pdfFile" multiple />
+      <input type="text" value="" name="name" placeholder="请输入姓名" />
+      <input type="text" value="" name="email" placeholder="请输入邮箱" />
+    </form>
+
+    <button id="cross-origin-post">cross origin post</button> <br/>
+    <button id="cross-origin-get">cross origin get</button> <br/>
+    <button id="cross-origin-get-jsonp">cross origin get jsonp</button> <br/>
+  </div>
   
   <script>
+    function jsonpCallback(params) {
+      console.info('jsonp callback:', params)
+    }
     var controller = new AbortController()
 
     function getDownloadFileName(response) {
@@ -224,6 +243,26 @@
     })
     document.querySelector('#fetch-abort').addEventListener('click', function(){
       controller.abort()
+    })
+
+    document.querySelector('#cross-origin-post').addEventListener('click', function(){
+      document.querySelector('#testForm').submit()
+    })
+
+    document.querySelector('#cross-origin-get').addEventListener('click', async function(){
+      const response = await fetch('http://192.168.21.109:9000/cross-origin-test/get', {
+        // credentials: 'include',
+        headers: {
+          'Content-type': 'application/json',
+          'accessToken': '1b6380cb-c900-4d17-8813-9e56201eeacd'
+        }
+      })
+    })
+
+    document.querySelector('#cross-origin-get-jsonp').addEventListener('click', async function() {
+      var script = document.createElement('script')
+      script.setAttribute('src', 'http://192.168.21.109:9000/cross-origin-test/jsonp?callback=jsonpCallback')
+      document.body.appendChild(script)
     })
   </script>
 </body>
