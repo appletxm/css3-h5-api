@@ -142,6 +142,8 @@ const Ajax = class {
     let { options, xhrObj, promise, resolveCb, rejectCb, xhrId } = this.prepareForAjax(_options)
     let { responseType } = _options
 
+    xhrObj.withCredentials = true
+
     if (responseType) {
       xhrObj.responseType = responseType
     }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  <button id="test-btn">send data to server side</button>
+
+  <form method="GET" action="/api/test">
+    <input type="text" name="testFiled" value="123456" />
+    <input type="submit" vaule="test" />
+  </form>
+
+  <script src="../bin/traceur.js"></script>
+
+  <script type="module">
+    import Ajax from '../src/ajax.js'
+
+    const btn = document.querySelector('#test-btn')
+    btn.addEventListener('click', () => {
+      doAjax()
+    })
+    function doAjax() {
+      let ajax = new Ajax()
+      ajax.get({
+        url: '/api/test'
+      }, {
+        a: 1,
+        b:2
+      }).then(res => {
+        console.info('res:', res)
+      }).cath(err => {
+        console.info('err:', err)
+      })
+    }    
+  </script>
+
+</body>
+</html>
