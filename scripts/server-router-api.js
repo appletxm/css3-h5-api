@@ -27,8 +27,8 @@ function getMockFiles (req, res) {
     // parseFile.code = '200'
     // parseFile.msg = 'Get data success'
     res.cookie('onlyItem', '123456789', { maxAge: 60000, httpOnly: true })
-    res.cookie('showItem', 'abcdefg', { maxAge: 60000 })
     res.cookie('sessionItem', '778899')
+    res.cookie('showItem', 'abcdefg', { maxAge: 60000, sameSite: false })
   } catch(e) {
     parseFile = {}
     parseFile.code = '999'
