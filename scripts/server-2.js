@@ -27,6 +27,10 @@ app.use(['/api', '/app/v1', '/web'], (req, res) => {
   apiRouter(req, res, logger)
 })
 
+app.use('/*.html', function (req, res) {
+  assetsRouter(req, res, logger)
+})
+
 app.use(['/', '/src', '/assets'], (req, res) => {
   assetsRouter(req, res, logger)
 })

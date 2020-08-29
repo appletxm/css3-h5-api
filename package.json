@@ -8,6 +8,7 @@
     "dev": "concurrently --kill-others \"npm run babel-watch\" \"npm run server\"",
     "debug": "concurrently --kill-others \"npm run babel-watch\" \"node --inspect scripts/server.js\"",
     "debug2": "node --inspect scripts/server-2.js",
+    "server-2": "node scripts/server-2.js",
     "babel": "babel src --out-dir dist --source-maps inline",
     "babel-watch": "babel src --out-dir dist --watch",
     "server": "node scripts/server.js",

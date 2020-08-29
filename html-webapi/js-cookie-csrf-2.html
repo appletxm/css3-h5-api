@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+
+    form {
+      margin: .1rem 0;
+    }
+  </style>
+</head>
+<body>
+  <button id="fetch-json">get cookie</button>
+
+  <!-- <button id="fetch-json-2">cors get test</button>
+
+  <form id="test-form" action="http://localhost:9000/api/test" method="GET">
+    <button id="test-submit">test validate cors</button>
+  </form> -->
+
+  <script>
+    function fetchJson(path) {
+      fetch(path).then(function(response) {
+        return response.json()
+      }).then(function(data) {
+        console.info(data)
+      }).catch(err => {
+        console.info('err:', err)
+      })
+    }
+
+    document.querySelector('#fetch-json').addEventListener('click', function() {
+      fetchJson('/api/test')
+    })
+
+    // document.querySelector('#fetch-json-2').addEventListener('click', function() {
+    //   fetchJson('http://localhost:9000/api/test')
+    // })
+
+    // document.querySelector('#test-submit').addEventListener('click', function() {
+    //   document.querySelector('#test-form').submit()
+    // })
+  </script>
+
+</body>
+</html>
