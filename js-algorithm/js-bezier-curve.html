@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test dom 2.0 querySelector</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .14rem;
+      margin: 0;
+      padding: 0;
+    }
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+
+    div {
+      margin: .1rem;
+    }
+
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      margin: .1rem;
+      border: 1px solid #eee;
+    }
+    table td {
+      width: .3rem;
+      height: .3rem;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+      -webkit-appearance: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="my-house" width="700" height="400"></canvas>
+
+  <script>
+    var ctx = document.querySelector('#my-house').getContext('2d')
+    ctx.lineWidth = 2;
+    // ctx.fillStyle = 'red'
+    
+
+    // Wall
+    // ctx.strokeRect(75, 140, 150, 110);
+    // Door
+    // ctx.fillRect(130, 190, 40, 60)
+
+    function drawLine() {
+      ctx.strokeStyle = 'purple'
+      ctx.beginPath()
+      ctx.moveTo(0, 60)
+      ctx.lineTo(60, 0);
+      ctx.lineTo(120, 60)
+      ctx.stroke()
+    }
+
+    function drawTang() {
+      ctx.strokeStyle = 'orange'
+      ctx.beginPath()
+      ctx.moveTo(0, 60);
+      ctx.lineTo(60, 0);
+      ctx.lineTo(120, 60);
+      ctx.closePath();
+      ctx.stroke();
+      // ctx.fill()
+    }
+
+    function drawBezier() {
+      ctx.strokeStyle = 'orange'
+      ctx.beginPath()
+      ctx.moveTo(0, 120)
+      // ctx.bezierCurveTo(0, 120, 60, 120, 60, 0, 120, 0);
+      ctx.bezierCurveTo(60, 120, 60, 0, 120, 0);
+      // ctx.closePath()
+      ctx.stroke()
+
+    }
+
+    drawLine()
+    drawBezier()
+  </script>
+
+</body>
+</html>
