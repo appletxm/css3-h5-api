@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>Custom Element</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+
+  </style>
+</head>
+
+<body>
+  <script>
+    class TimeFormatted extends HTMLElement {
+      constructor() {
+        super()
+      }
+
+      render() { // (1)
+        let date = new Date(this.getAttribute('datetime') || Date.now());
+
+        this.innerHTML = new Intl.DateTimeFormat("default", {
+          year: this.getAttribute('year') || undefined,
+          month: this.getAttribute('month') || undefined,
+          day: this.getAttribute('day') || undefined,
+          hour: this.getAttribute('hour') || undefined,
+          minute: this.getAttribute('minute') || undefined,
+          second: this.getAttribute('second') || undefined,
+          timeZoneName: this.getAttribute('time-zone-name') || undefined,
+        }).format(date);
+      }
+
+      connectedCallback() { // (2)
+        console.info(this)
+        if (!this.rendered) {
+          this.render();
+          this.rendered = true;
+        }
+      }
+
+      disconnectedCallback() {
+        console.info('disconnectedCallback')
+      }
+
+      static get observedAttributes() { // (3)
+        return ['datetime', 'year', 'month', 'day', 'hour', 'minute', 'second', 'time-zone-name'];
+      }
+
+      attributeChangedCallback(name, oldValue, newValue) { // (4)
+        // console.info(name, oldValue, newValue)
+        this.render();
+      }
+
+      adoptedCallback() {
+        console.info('adoptedCallback')
+      }
+
+    }
+
+    customElements.define("time-formatted", TimeFormatted);
+
+  </script>
+
+  <time-formatted id="elem" hour="numeric" minute="numeric" second="numeric"></time-formatted>
+  <script>
+    setInterval(() => elem.setAttribute('datetime', new Date()), 1000); // (5)
+    // console.info(customElements.get('time-formatted'))
+    const promise = customElements.whenDefined('time-formatted')
+    promise.then(function(res) {
+      console.info('======', res)
+    }).catch(function(err){
+      console.info(err)
+    })
+  </script>
+</body>
+
+</html>
