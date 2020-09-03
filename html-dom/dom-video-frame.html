@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+	<title>Video player</title>
+	<link rel="icon" href="assets/images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		video {
+			height: 100vh;
+		}
+	</style>
+</head>
+
+<body>
+	<video width="100%" controls autoplay loop>
+		<source type="video/mp4" src="assets/videos/640.mp4"></source>
+	</video>
+
+	<script>
+    var video = document.querySelector('video')
+
+		// function play(url) {
+		// 	video.innerHTML = ''
+
+		// 	const source = document.createElement('source')
+		// 	source.setAttribute('src', url)
+    //   source.setAttribute('type', 'video/mp4')
+		// 	video.appendChild(source)
+
+		// 	doPlay()
+		// }
+
+		// function pause() {
+		// 	video.pause()
+		// }
+
+		function doPlay() {
+			video.play().then(() => {
+				console.info('play video success')
+			}).catch((err) => {
+				console.info('[Error startPlayVideo]', err)
+			})
+		}
+
+		// window.addEventListener('message', function(event) {
+		// 	console.info('++++++++++', event.data)
+		// 	var data = event.data
+		// 	var eventType = data.event
+		// 	if (eventType === 'play') {
+		// 		play(data.url)
+		// 	} else if (eventType === 'pause') {
+		// 		pause()
+		// 	}
+		// })
+
+		// video.addEventListener('loadeddata', (event) => {
+  	// 	console.log('Yay! The readyState just increased to  ' +  'HAVE_CURRENT_DATA or greater for the first time.')
+		// })
+
+		// video.addEventListener('canplay', (event) => {
+		// 	doPlay()
+    // })
+
+    doPlay()
+	</script>
+</body>
+
+</html>

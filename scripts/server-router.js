@@ -16,8 +16,12 @@ function getHtmlFile (req, res) {
   // let htmlFilePath = path.join(__dirname, '../index.html')
   // let html = fs.readFileSync(htmlFilePath)
 
-  let filename = req.originalUrl === '/' ? '../index.html'  : req.originalUrl
-  filename = path.join(__dirname, '..' + req.originalUrl)
+  let url = req.originalUrl.replace(/\?.+$/, '')
+
+  console.info('===url===', url)
+
+  let filename = url === '/' ? '../index.html'  : url
+  filename = path.join(__dirname, '..' + url)
   let html = fs.readFileSync(filename)
 
   res.set('content-type', 'text/html')

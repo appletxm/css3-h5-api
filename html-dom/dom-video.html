@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test video</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+
+    video {
+      width: 3rem;
+      height: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <video></video>
+  <video controls autoplay loop>
+    <source src="assets/videos/640.mp4" type="video/mp4"></source>
+  </video>
+  <!-- <iframe id="video-iframe" src="http://192.168.69.161:8000/assets/videos/640.mp4" allow="autoplay; loop; fullscreen" sandbox="allow-scripts allow-presentation allow-same-origin"></iframe> -->
+  <iframe id="video-iframe" src="http://192.168.69.161:8000/html-dom/dom-video-frame.html" sandbox="allow-scripts allow-presentation allow-same-origin" allow="autoplay; fullscreen;" frameborder="0" scrolling="no"></iframe> 
+
+  <!-- <script>
+    document.querySelector('iframe').onload = function() {
+      var video = document.querySelector('video')
+      video.src = 'http://192.168.96.2:8000/assets/videos/640.mp4'
+      video.oncanplay = function(){
+        video.play();
+      };
+    }
+  </script> -->
+
+</body>
+
+</html>

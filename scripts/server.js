@@ -35,7 +35,6 @@ app.use(['/api/upload'], upload.single('file'), function (req, res) {
 })
 
 app.use(['/api', '/app/v1', '/web', '*/videos/*'], (req, res) => {
-  debugger
   console.info('cookie is:', req.cookies)
   apiRouter(req, res, logger)
 })
