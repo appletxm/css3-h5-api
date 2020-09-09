@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../../assets/images/logo.ico" type="image/png">
+  <style>
+
+  </style>
+</head>
+
+<body>
+  <video width="400" controls></video>
+  <div id="errorMsg"></div>
+</body>
+
+<script type="text/javascript">
+  var video = document.querySelector('video');
+  var constraints = window.constraints = {
+    audio: false,
+    // video: true
+    video: {
+      width: 1280,
+      height: 720
+    }
+  };
+  var errorElement = document.querySelector('#errorMsg');
+
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then(function (stream) {
+      var videoTracks = stream.getVideoTracks();
+      console.log('Got stream with constraints:', constraints);
+      console.log('Using video device: ' + videoTracks[0].label);
+      stream.onended = function () {
+        console.log('Stream ended');
+      };
+      window.stream = stream; // make variable available to browser console
+      video.srcObject = stream;
+    //   // video.src = window.URL.createObjectURL( stream )
+
+    //   if (video.srcObject) {
+    //     video.srcObject = new MediaStream()
+    //     video.srcObject.getVideoTracks().forEach(track => {
+    //         video.srcObject.removeTrack(track)
+    //     })
+    //   }
+      
+    //     stream.getVideoTracks().forEach(track => {
+    //         video.srcObject.addTrack(track)
+    //     })
+
+    //   video.load()
+    //   video.onloadedmetadata = () => {
+    //     video.play()
+    //   }
+    })
+    .catch(function (error) {
+      if (error.name === 'ConstraintNotSatisfiedError') {
+        errorMsg('The resolution ' + constraints.video.width.exact + 'x' +
+          constraints.video.width.exact + ' px is not supported by your device.');
+      } else if (error.name === 'PermissionDeniedError') {
+        errorMsg('Permissions have not been granted to use your camera and ' +
+          'microphone, you need to allow the page access to your devices in ' +
+          'order for the demo to work.');
+      }
+      errorMsg('getUserMedia error: ' + error.name, error);
+    });
+
+  function errorMsg(msg, error) {
+    errorElement.innerHTML += '<p>' + msg + '</p>';
+    if (typeof error !== 'undefined') {
+      console.error(error);
+    }
+  }
+
+</script>
+
+</html>
