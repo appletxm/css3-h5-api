@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+      margin: 0;
+      padding: 0;
+    }
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+    .paste-area {
+      width: 300px;
+      height: 100px;
+      border: 1px dashed gray;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <video width="400" autoplay></video>
+
+  <canvas id="grabFrameCanvas" width="400" height="400"></canvas>
+  <canvas id="takePhotoCanvas" width="400" height="400"></canvas>
+
+  <button id="getMedia">onGetUserMediaButtonClick</button>
+  <button id="grabFrameButton">grabFrameButton</button>
+  <button id="takePhotoButton">takePhotoButton</button>
+
+  <script>
+    var imageCapture;
+    const input = {}
+
+    var constraints = window.constraints = {
+      audio: false,
+      // video: true
+      video: {
+        width: 1280,
+        height: 720
+      }
+    };
+
+    function onGetUserMediaButtonClick() {
+      navigator.mediaDevices.getUserMedia(constraints).then(mediaStream => {
+        document.querySelector('video').srcObject = mediaStream
+
+        mediaStream.onended = function () {
+          console.log('Stream ended');
+        };
+
+        const track = mediaStream.getVideoTracks()[0];
+
+        console.log('Got stream with constraints:', constraints);
+        console.log('Using video device: ' + track.label);
+
+        imageCapture = new ImageCapture(track);
+
+        return imageCapture.getPhotoCapabilities()
+      }).then(photoCapabilities => {
+        const settings = imageCapture.track.getSettings()
+
+        console.info('==1==', photoCapabilities)
+
+        input.min = photoCapabilities.imageWidth.min;
+        input.max = photoCapabilities.imageWidth.max;
+        input.step = photoCapabilities.imageWidth.step;
+
+        return imageCapture.getPhotoSettings()
+      }).then(photoSettings => {
+        input.value = photoSettings.imageWidth;
+        console.info('==2==', photoSettings)
+      }).catch(error => console.log(error));
+    }
+
+    function onGrabFrameButtonClick() {
+      imageCapture.grabFrame()
+      .then(imageBitmap => {
+        const canvas = document.querySelector('#grabFrameCanvas');
+        drawCanvas(canvas, imageBitmap);
+      })
+      .catch(error => console.log(error));
+    }
+
+    function onTakePhotoButtonClick() {
+      imageCapture.takePhoto().then(blob => {
+        return createImageBitmap(blob)
+      }).then(imageBitmap => {
+        const canvas = document.querySelector('#takePhotoCanvas');
+        drawCanvas(canvas, imageBitmap);
+      }).catch(error => console.log(error));
+    }
+
+    /* Utils */
+
+    function drawCanvas(canvas, img) {
+      canvas.width = getComputedStyle(canvas).width.split('px')[0];
+      canvas.height = getComputedStyle(canvas).height.split('px')[0];
+      let ratio  = Math.min(canvas.width / img.width, canvas.height / img.height);
+      let x = (canvas.width - img.width * ratio) / 2;
+      let y = (canvas.height - img.height * ratio) / 2;
+      canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+      canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
+          x, y, img.width * ratio, img.height * ratio);
+    }
+
+    document.querySelector('video').addEventListener('play', function() {
+      document.querySelector('#grabFrameButton').disabled = false;
+      document.querySelector('#takePhotoButton').disabled = false;
+    });
+
+    document.querySelector('#getMedia').addEventListener('click', function() {
+      onGetUserMediaButtonClick()
+    });
+
+    document.querySelector('#grabFrameButton').addEventListener('click', function() {
+      onGrabFrameButtonClick()
+    });
+
+    document.querySelector('#takePhotoButton').addEventListener('click', function() {
+      onTakePhotoButtonClick()
+    });
+  </script>
+
+</body>
+</html>
