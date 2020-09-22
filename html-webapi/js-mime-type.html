@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>mime type test</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+  </style>
+</head>
+<body>
+  <input type="file" />
+
+  <script type="module">
+    document.querySelector('input').addEventListener('change', function(event) {
+      const files = event.currentTarget.files
+      const file = files[0]
+      console.info(file)
+      const reader = new FileReader()
+      reader.onloadend = function(event) {
+        const buffer = new Uint8Array(event.target.result)
+        let str = '' 
+        const signalArray = buffer.subarray(0, 4)
+        for(var i = 0; i < signalArray.length; i++) {
+          str += signalArray[i].toString(16);
+        }
+        // can use the str to matched the file magic code list from https://en.wikipedia.org/wiki/List_of_file_signatures
+        const mimeType = getMiMeType(str)
+        console.info('====', str, mimeType)
+      }
+      
+      reader.readAsArrayBuffer(file)
+    })
+
+    function getMiMeType(str) {
+      let type = ''
+      switch (file) {
+        case "89504e47":
+          type = "image/png";
+          break;
+        case "47494638":
+          type = "image/gif";
+          break;
+        case "ffd8ffe0":
+        case "ffd8ffe1":
+        case "ffd8ffe2":
+        case "ffd8ffe3":
+        case "ffd8ffe8":
+          type = "image/jpeg";
+          break;
+        default:
+          type = "unknown"; // Or you can use the blob.type as fallback
+          break;
+      }
+
+      return type
+    }
+  </script>
+
+</body>
+</html>
