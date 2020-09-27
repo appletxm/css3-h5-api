@@ -30,7 +30,7 @@ function getHtmlFile (req, res) {
 }
 
 function getScriptFile (req, res) {
-  let scriptFilePath = path.join(__dirname, '..' + req.originalUrl)
+  let scriptFilePath = path.join(__dirname, '..' + (req.originalUrl.replace(/\?.+$/, '')))
   let script = fs.readFileSync(scriptFilePath)
   let contentType = getContentType('js')
 
@@ -48,7 +48,7 @@ function getScriptFile (req, res) {
 }
 
 function getCssFile (req, res) {
-  let filePath = path.join(__dirname, '../' + req.originalUrl)
+  let filePath = path.join(__dirname, '../' + (req.originalUrl.replace(/\?.+$/, '')))
   let file = fs.readFileSync(filePath)
   let contentType = getContentType('css')
 
@@ -58,7 +58,7 @@ function getCssFile (req, res) {
 }
 
 function getPdfFile (req, res) {
-  let filePath = decodeURIComponent(path.join(__dirname, '../' + req.originalUrl))
+  let filePath = decodeURIComponent(path.join(__dirname, '../' + (req.originalUrl.replace(/\?.+$/, ''))))
   let file = fs.readFileSync(filePath)
   let contentType = getContentType('pdf')
 

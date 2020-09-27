@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test jsplumb</title>
+  <style type="text/css">
+    .w {
+      border: 1px solid #456;
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      z-index: 10;
+      cursor: move;
+
+    }
+
+    ._jsPlumb_connector {
+      z-index: 9;
+    }
+
+    #one {
+      left: 50px;
+      top: 50px;
+    }
+
+    #two {
+      left: 150px;
+      top: 150px;
+    }
+
+    #three {
+      left: 250px;
+      top: 60px;
+    }
+
+    #four {
+      left: 350px;
+      top: 180px;
+    }
+
+    .info-msg {
+        padding: 10px;
+        border: 1px solid #eee;
+        margin: 10px;
+        border-radius: 4px;
+    }
+
+    #container {
+        padding: 10px;
+        margin: 10px;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        position: relative;
+        height: 300px;
+        user-select: none;
+    }
+
+    .myEndpoint {
+        background-color: purple;
+    }
+  </style>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+</head>
+
+<body>
+  <div class="info-msg">
+    Drag a connection from <strong>one</strong> to <strong>two</strong>
+    <div id="debug"></div>
+  </div>
+
+  <div id="container">
+    <div id="one" class="w">one</div>
+    <div id="two" class="w">two</div>
+    <div id="three" class="w">three</div>
+    <div id="four" class="w">four</div>
+  </div>
+
+  <!-- <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js'></script>
+  <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js'></script>
+  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jsPlumb/1.4.1/jquery.jsPlumb-1.4.1-all.js"></script> -->
+
+  <script type='text/javascript' src='../bin/jsplumb.min.js'></script>
+
+  <script type="text/javascript">
+    const instance = jsPlumb.getInstance()
+    const common = {
+        isSource: true,
+        isTarget: true,
+        anchors: ['Top', 'Bottom', 'Right', 'Left'],
+
+        paintStyle: { stroke: '#0f0', strokeWidth: 2 },
+        hoverPaintStyle: {
+            stroke: 'orange'
+        },
+
+        // connector: ['Straight'],
+        connectorStyle: {
+            stroke: 'green',
+            strokeWidth: 2
+        },
+        connectorHoverStyle: {
+            stroke: 'orange',
+            strokeWidth: 2
+        },
+
+        endpointStyle: { fill: 'purple' },
+        endpoint:[ "Dot", { 
+            // cssClass:"myEndpoint", 
+            width: 12, 
+            height: 12,
+            radius: 6,
+            cursor: 'pointer'
+        }],
+
+        overlays: [ ['Arrow', { width: 12, length: 12, location: 1 }] ],
+
+        maxConnections: -1
+    }
+
+    instance.importDefaults({
+        ConnectionsDetachable: false
+    })
+
+    instance.setContainer('container')
+
+    instance.ready(function () {
+        instance.addEndpoint('three', {
+            uuid: '003'
+        }, common)
+        instance.addEndpoint('four', {}, common)
+        instance.addEndpoint('one', {
+            uuid: '001'
+        }, common)
+        instance.addEndpoint('two', {}, common)
+
+        // instance.connect({
+        //     anchors:["Bottom", "Continuous"],
+        //     source: 'one',
+        //     target: 'two'
+        // }, common);
+
+        // instance.connect({ uuids: ['001', '003'] });
+
+        instance.draggable('one')
+        instance.draggable('two')
+        instance.draggable('four')
+        instance.draggable('three')
+    });
+
+    instance.bind("connection", function (info) {
+        console.log("new connection:", info);
+        document.querySelector('#debug').innerHTML = 'new connection:' + JSON.stringify(info, null, ' ')
+    });
+
+    instance.bind('endpointClick', function(info) {
+        console.info('endpointClick', info)
+    })
+
+    instance.bind('click', function (conn, originalEvent) {
+        console.info(instance, originalEvent)
+        if (window.prompt('确定删除所点击的链接吗？ 输入1确定') === '1') {
+            instance.deleteConnection(conn)
+        }
+    })
+
+    instance.bind('beforeDrop', function (info) {
+        // var a = 10
+        // var b = 2
+        // if (a < b) {
+        //     console.log('链接会自动建立')
+        //     return true // 链接会自动建立
+        // } else {
+        //     console.log('链接取消')
+        //     return false // 链接不会建立，注意，必须是false
+        // }
+        return true
+    })
+
+  </script>
+</body>
