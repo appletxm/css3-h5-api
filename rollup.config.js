@@ -15,13 +15,15 @@ const plugins = [
   isProduction && uglify()
 ]
 
-export default {
-  input: 'src/hf-js-sdk.js',
-  output: {
-    file: `build/hf-js-sdk${isProduction ? '.min' : ''}.js`,
-    format: 'umd',
-    name: 'HFAgent',
-    sourceMap: 'inline'
-  },
-  plugins: plugins
-}
+export default [
+  {
+    input: 'src/hf-js-sdk.js',
+    output: {
+      file: `build/hf-js-sdk${isProduction ? '.min' : ''}.js`,
+      format: 'umd',
+      name: 'HFAgent',
+      sourceMap: 'inline'
+    },
+    plugins: plugins
+  }
+]
