@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .12rem;
+    }
+
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    #diagramContainer {
+      margin: 50px;
+      width: 400px;
+      height: 400px;
+      position: relative;
+    }
+
+    .item {
+      width: 40px;
+      height: 40px;
+      border: 1px solid gray;
+      position: absolute;
+      left: 0;
+    }
+
+    .item-a {
+      left: 90px;
+      top: 100px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="diagramContainer">
+    <div id="item_left" class="item"></div>
+    <div id="item_right" class="item item-a"></div>
+  </div>
+  <script src="https://cdn.bootcss.com/jsPlumb/2.6.8/js/jsplumb.min.js"></script>
+
+  <script>
+    /* global jsPlumb */
+    // jsPlumb.ready(function () {
+    //   var common = {
+    //     endpoint: 'Rectangle',
+    //     connector: ['Bezier'],
+    //     anchor: ['Left', 'Right']
+    //   }
+
+    //   jsPlumb.addEndpoint('item_left', {
+    //     anchors: ['Right']
+    //   })
+
+    //   jsPlumb.connect({
+    //     source: 'item_left',
+    //     target: 'item_right',
+    //     paintStyle: { stroke: 'lightgray', strokeWidth: 3 },
+    //     endpointStyle: { fill: 'lightgray', outlineStroke: 'darkgray', outlineWidth: 2 },
+    //     overlays: [ ['Arrow', { width: 12, length: 12, location: 0.5 }] ]
+    //   }, common)
+
+    //   jsPlumb.draggable('item_left')
+    //   jsPlumb.draggable('item_right')
+    // })
+
+
+    // jsPlumb.ready(function () {
+    //   jsPlumb.setContainer('diagramContainer')
+
+    //   jsPlumb.importDefaults({
+    //     ConnectionsDetachable: false
+    //   })
+
+    //   var common = {
+    //     isSource: true,
+    //     isTarget: true,
+    //     connector: 'Straight',
+    //     endpoint: 'Dot',
+    //     paintStyle: {
+    //       fill: 'white',
+    //       outlineStroke: 'blue',
+    //       strokeWidth: 3
+    //     },
+    //     hoverPaintStyle: {
+    //       outlineStroke: 'lightblue'
+    //     },
+    //     connectorStyle: {
+    //       outlineStroke: 'green',
+    //       strokeWidth: 1
+    //     },
+    //     connectorHoverStyle: {
+    //       strokeWidth: 2
+    //     }
+    //   }
+
+    //   jsPlumb.addEndpoint('item_left', {
+    //     anchors: ['Right'],
+    //     uuid: 'fromId'
+    //   }, common)
+
+    //   jsPlumb.addEndpoint('item_right', {
+    //     anchor: 'Left',
+    //     uuid: 'toId'
+    //   }, common)
+
+    //   jsPlumb.addEndpoint('item_right', {
+    //     anchor: 'Right'
+    //   }, common)
+
+    //   jsPlumb.draggable('item_left', {
+    //     containment: 'parent',
+    //     grid: [10, 10]
+    //   })
+    //   jsPlumb.draggable('item_right', {
+    //     containment: 'parent',
+    //     grid: [10, 10]
+    //   })
+
+    //   jsPlumb.bind('click', function (conn, originalEvent) {
+    //     if (window.prompt('确定删除所点击的链接吗？ 输入1确定') === '1') {
+    //       // jsPlumb.detach(conn)
+    //       jsPlumb.deleteConnection(conn)
+    //     }
+    //   })
+
+    //   // setTimeout(function(){
+    //   //   jsPlumb.connect({ uuids: ['fromId', 'toId'] })
+    //   // }, 5000)
+
+    //   // setTimeout(function(){
+    //   //   jsPlumb.remove('item_left')
+    //   // }, 10000)
+
+    //   jsPlumb.bind('beforeDrop', function (info) {
+    //     var a = 10
+    //     var b = 2
+    //     if (a < b) {
+    //       console.log('链接会自动建立')
+    //       return true // 链接会自动建立
+    //     } else {
+    //       console.log('链接取消')
+    //       return false // 链接不会建立，注意，必须是false
+    //     }
+    //   })
+    // })
+
+    window.jsPlumb.ready(function () {
+      var jsPlumb = window.jsPlumb
+
+      jsPlumb.makeSource('item_left', {
+        endpoint:"Dot",
+        anchor: "Continuous"
+      })
+
+      jsPlumb.makeTarget('item_right', {
+        endpoint:"Dot",
+        anchor: "Continuous"
+      })
+
+      jsPlumb.draggable('item_left')
+      jsPlumb.draggable('item_right')
+    })
+  </script>
+</body>
+
+</html>
