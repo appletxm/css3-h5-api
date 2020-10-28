@@ -18,21 +18,22 @@
 <body>
   <input type="file" />
 
-  <script type="module">
+  <script>
     document.querySelector('input').addEventListener('change', function(event) {
-      const files = event.currentTarget.files
-      const file = files[0]
+      debugger
+      var files = event.currentTarget.files
+      var file = files[0]
       console.info(file)
-      const reader = new FileReader()
+      var reader = new FileReader()
       reader.onloadend = function(event) {
-        const buffer = new Uint8Array(event.target.result)
+        var buffer = new Uint8Array(event.target.result)
         let str = '' 
-        const signalArray = buffer.subarray(0, 4)
+        var signalArray = buffer.subarray(0, 4)
         for(var i = 0; i < signalArray.length; i++) {
           str += signalArray[i].toString(16);
         }
         // can use the str to matched the file magic code list from https://en.wikipedia.org/wiki/List_of_file_signatures
-        const mimeType = getMiMeType(str)
+        var mimeType = getMiMeType(str)
         console.info('====', str, mimeType)
       }
       
