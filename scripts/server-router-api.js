@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const getContentType = require('./server-get-content-type')
 
 function getFileSize(filePath, needChange) {
   var stats = fs.statSync(filePath)
@@ -90,9 +91,9 @@ function getBinaryPicData(req, res) {
 }
 
 function getVideoFiles(req, res) {
-  let filePath
-  let file
-  let parseFile
+  // // let filePath
+  // let file
+  // let parseFile
 
   // try {
   //   filePath = path.resolve(__dirname, '../mocks/' + req['originalUrl'] + ((/^\/.+$/).test(req['path']) ? req['path'] : '') + '.json')
@@ -117,8 +118,21 @@ function getVideoFiles(req, res) {
   // res.send(parseFile)
   // res.end()
 
-  const path = './assets/videos/SampleVideo_1280x720_5mb.mp4'
-  const stat = fs.statSync(path)
+  let contentType = ''
+  const matchedObj = req.originalUrl.match(/\.([^\.\/\?\&]+)/)
+  if (matchedObj[1]) {
+    contentType = getContentType(matchedObj[1])
+  } else {
+    contentType = 'video/mp4'
+  }
+  console.info('******contentType: ', contentType)
+
+  // let filePath = './assets/videos/SampleVideo_1280x720_5mb.mp4'
+  const fileBasePath = req.originalUrl.replace(/\?.+$/, '')
+  const filePath = path.resolve('./' + fileBasePath.replace(/\//, ''))
+  console.info('******media file path: ', filePath)
+
+  const stat = fs.statSync(filePath)
   const fileSize = stat.size
   const range = req.headers.range
   
@@ -128,12 +142,12 @@ function getVideoFiles(req, res) {
     const end = parts[1] ? parseInt(parts[1], 10): fileSize-1
   
     const chunksize = (end-start)+1
-    const file = fs.createReadStream(path, {start, end})
+    const file = fs.createReadStream(filePath, {start, end})
     const head = {
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
       'Accept-Ranges': 'bytes',
       'Content-Length': chunksize,
-      'Content-Type': 'video/mp4',
+      'Content-Type': contentType,
     }
   
     res.writeHead(206, head)
@@ -141,10 +155,10 @@ function getVideoFiles(req, res) {
   } else {
     const head = {
       'Content-Length': fileSize,
-      'Content-Type': 'video/mp4',
+      'Content-Type': contentType,
     }
     res.writeHead(200, head)
-    fs.createReadStream(path).pipe(res)
+    fs.createReadStream(filePath).pipe(res)
   }
 }
 
@@ -158,7 +172,7 @@ function getAjaxGet (req, res) {
     params = req.query
   }
 
-  if (req.originalUrl.indexOf('videos') >= 0) {
+  if (req.originalUrl.indexOf('videos') >= 0 || req.originalUrl.indexOf('uploads') >= 0) {
     getVideoFiles(req, res)
   } else if (req.originalUrl.indexOf('download-pdf') >= 0) {
     getBinaryData(req, res)

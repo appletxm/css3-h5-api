@@ -22,7 +22,9 @@ function getContentType(extendsName){
     case 'stream':
       return 'application/octet-stream' // 'application/octet-stream', 'application/x-msdownload'
     case 'mp4':
-      return 'video/mpeg4'
+      return 'video/mp4'
+    case 'mp3':
+      return 'audio/mp3'
     case 'ico':
       return 'image/x-icon' // application/x-ico
     default:

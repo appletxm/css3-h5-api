@@ -34,7 +34,7 @@ app.use(['/api/upload'], upload.single('file'), function (req, res) {
   routerUploadSingleFile(req, res)
 })
 
-app.use(['/api', '/app/v1', '/web', '*/videos/*'], (req, res) => {
+app.use(['/api', '/app/v1', '/web', '/uploads/*', '*/videos/*'], (req, res) => {
   console.info('cookie is:', req.cookies)
   apiRouter(req, res, logger)
 })
