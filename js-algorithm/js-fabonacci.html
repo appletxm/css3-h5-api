@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test dom 2.0 querySelector</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .14rem;
+      margin: 0;
+      padding: 0;
+    }
+    .test-div {
+      width: 300px;
+      height: 50px;
+    }
+
+    div {
+      margin: .1rem;
+    }
+
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      margin: .1rem;
+      border: 1px solid #eee;
+    }
+    table td {
+      width: .3rem;
+      height: .3rem;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+      -webkit-appearance: none;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    function fibonacci (n) {
+      var n1 = 1, n2 = 1, sum = 0;
+      for(var i = 2; i <= n; i++) {
+        sum = n1 + n2
+        n1 = n2
+        n2 = sum
+      }
+
+      return sum
+    }
+
+    console.info(new Date().getTime())
+    var sum = fibonacci(30) 
+    console.info(new Date().getTime())
+    console.info('fibonacci:', sum)
+
+  </script>
+
+</body>
+</html>
