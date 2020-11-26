@@ -54,9 +54,24 @@
     }
 
     console.info(new Date().getTime())
-    var sum = fibonacci(30) 
+    var sum = fibonacci(10)
     console.info(new Date().getTime())
     console.info('fibonacci:', sum)
+
+
+    function fibonacci2(n1, n2, n, max) {
+      if (n > max) {
+        return n2
+      } else {
+        var sum = n1 + n2
+        n = n + 1
+        return fibonacci2(n2, sum, n, max)
+      }
+    }
+    console.info(new Date().getTime())
+    var sum2 = fibonacci2(0, 1, 1, 10)
+    console.info(new Date().getTime())
+    console.info('fibonacci2:', sum2)
 
   </script>
 
