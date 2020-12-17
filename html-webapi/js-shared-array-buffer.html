@@ -27,6 +27,9 @@
     var height = 0
     var renderData = null
 
+    var worker = new Worker('./js-shared-array-work-1.js')
+    var imageUrl = '../assets/images/child/1.jpg'
+
     document.querySelector('#test-btn').addEventListener('click', function() {
       renderData = ctx.getImageData(0, 0, width, height)
       console.info(renderData)
@@ -56,9 +59,6 @@
       // }, 1000)
     }
 
-    var worker = new Worker('./js-shared-array-work-1.js')
-    var imageUrl = '../assets/images/child/1.jpg'
-
     function loadImage() {
       var img = new Image()
       // var img = document.querySelector('#test-img')
@@ -86,12 +86,20 @@
       })
     }
 
-    
     worker.addEventListener('message', function(event) {
       console.info('****************', event.data)
     })
 
-    loadImage()
+    worker.postMessage({
+      type: 'compress',
+      config: {
+        imageUrl: imageUrl,
+        width: 400,
+        height: 200
+      }
+    })
+
+    // loadImage()
   </script>
 </body>
 
