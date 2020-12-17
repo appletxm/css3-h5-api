@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: .14rem;
+    }
+    #sql-parse {
+      width: 400px;
+      height: 200px;
+      border: 1px solid #eee;
+      outline: 1px solid #666;
+      font-size: .14rem;
+      margin-top: .1rem;
+    }
+
+    .replace-cell {
+      color:orange;
+    }
+
+    .is-inputed {
+      color:orangered;
+    }
+  </style>
+</head>
+
+<body>
+  table: <input type="text" value="" id="test-input" />
+  field: <input type="text" value="" id="test-input-filed" />
+  <div id="sql-parse" contenteditable="true"></div>
+
+  <script type="text/javascript">
+    var sqlDom = document.querySelector('#sql-parse')
+    var sqlStr = 'select * from ${db}.${table} where (${filter}) and (${field} is null)'
+    var sqlWatch = {}
+    var nodes = []
+
+    var isEditTable = false
+    var isEditField = false
+
+    function changeValue(item) {
+      // console.info('edit type:', item.type)
+
+      isEditTable = false
+      isEditField = false
+
+      if (item.type === 'table') {
+        isEditTable = true
+      }
+
+      if (item.type === 'field') {
+        isEditField = true
+      }
+
+      buildHtml()
+    }
+
+    function buildHtml() {
+      var html = []
+      for(var i = 0; i < nodes.length; i++) {
+        var node = nodes[i] 
+        if (typeof node === 'string') {
+          html.push(node)
+        }
+
+        if (typeof node === 'object') {
+          var classList = 'replace-cell ' + node['type']
+          if (node['type'] === 'table' && isEditTable === true) {
+            classList = classList + ' is-inputed'
+          }
+          if (node['type'] === 'field' && isEditField === true) {
+            classList = classList + ' is-inputed'
+          }
+          
+          html.push('<span class="' + classList + '">' + node['value'] + '</span>')
+        }
+      }
+
+      // return html
+      document.querySelector('#sql-parse').innerHTML = html.join('')
+    }
+
+    function doParse(str) {
+      var reg = /\$\{([^\{]+)\}/
+      var res = reg.exec(str)
+
+      // console.info(res)
+      
+      if (res) {
+        var parsed = str.split(res[0])
+
+        sqlWatch['_' + res[1]] = {
+          value: res[0],
+          type: res[1]
+        }
+        Object.defineProperty(sqlWatch, res[1], {
+          get() {
+            return this['_' + res[1]]
+          },
+          set(val) {
+            this['_' + res[1]]['value'] = val
+            changeValue(this['_' + res[1]])
+          }
+        })
+
+        nodes.push(parsed[0])
+        nodes.push(sqlWatch[res[1]])
+        doParse(parsed[1])
+      } else {
+        nodes.push(str)
+      }
+    }
+    
+    doParse(sqlStr)
+    // console.info(nodes, sqlWatch)
+    buildHtml()
+
+    document.querySelector('#test-input').addEventListener('input', function(event){
+      console.info(event.target.value)
+      sqlWatch['table'] = event.target.value || '${table}'
+    })
+
+    document.querySelector('#test-input-filed').addEventListener('input', function(event){
+      console.info(event.target.value)
+      sqlWatch['field'] = event.target.value || '${field}'
+    })
+
+    // document.querySelector('#test-input').addEventListener('blur', function(event){
+    //   isEditTable = false
+    //   buildHtml()
+    // })
+
+    // document.querySelector('#test-input').addEventListener('focus', function(event){
+    //   isEditTable = true
+    //   buildHtml()
+    // })
+  </script>
+</body>
+
+</html>

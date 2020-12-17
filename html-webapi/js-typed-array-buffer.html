@@ -8,14 +8,30 @@
   <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <meta name="format-detection" content="telephone=no">
   <title>test css3 and h5 api</title>
-  <link rel="icon" href="assets/images/logo.ico" type="image/png">
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    canvas {
+      border: 1px solid #eee;
+    }
+  </style>
 </head>
 
 <body>
-  <img id="test-img" style="display: none;" src="./assets/images/bg.jpg" />
+  <img id="test-img" style="display: none;" src="../assets/images/child/1.jpg" />
   <canvas id="test-canvas"></canvas>
+  <button id="test-btn">get image data</button>
 
   <script type="text/javascript">
+    var ctx = null
+    var width = 0
+    var height = 0
+    var renderData = null
+
+    document.querySelector('#test-btn').addEventListener('click', function() {
+      renderData = ctx.getImageData(0, 0, width, height)
+      console.info(renderData.data.length)
+    })
+
     function testUint() {
       const str = `<html>
       <head>
@@ -35,16 +51,31 @@
       let uint2 = new Uint8Array(buffer)
       console.info(uint2)
     }
+
+    function drawCtx(img) {
+      var canvas = document.querySelector('#test-canvas')
+      width = event.target.naturalWidth
+      height = event.target.naturalHeight
+
+      // canvas.style.cssText = 'width:' + width + 'px; height:' + height + 'px;'
+      canvas.setAttribute('width', width / 2)
+      canvas.setAttribute('height', height / 2)
+
+      setTimeout(function() {
+        ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, width, height, 0, 0, width / 2, height / 2)
+      }, 0)
+    }
    
     function drawImg() {
       let img = document.querySelector('#test-img')
       img.addEventListener('load', (event) => {
-        console.info(event.currentTarget)
+        // console.dir(event.currentTarget, event.target)
+        drawCtx(event.currentTarget || event.target)
       }, false)
     }
 
-
-    drawImg()
+    // drawImg()
 
   </script>
 </body>

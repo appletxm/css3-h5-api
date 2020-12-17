@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    canvas {
+      border: 1px solid #eee;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <img id="test-img" style="display: none;" src="../assets/images/child/1.jpg" /> -->
+  <canvas id="test-canvas" width="400" height="200"></canvas>
+  <button id="test-btn">get image data</button>
+
+  <script type="text/javascript">
+    var ctx = null
+    var width = 0
+    var height = 0
+    var renderData = null
+
+    document.querySelector('#test-btn').addEventListener('click', function() {
+      renderData = ctx.getImageData(0, 0, width, height)
+      console.info(renderData)
+    })
+
+    function drawImg(img) {
+      var canvas = document.querySelector('#test-canvas')
+      width = event.target.naturalWidth
+      height = event.target.naturalHeight
+
+      // canvas.style.cssText = 'width:' + width + 'px; height:' + height + 'px;'
+      canvas.setAttribute('width', width)
+      canvas.setAttribute('height', height)
+      
+      ctx = canvas.getContext('2d', { alpha: false })
+      ctx.drawImage(img, 0, 0, width, height)
+
+      createImageBitmap(img, 0, 0, width, height).then(function(res) {
+        var bitMap = res
+        console.info(bitMap)
+      }).catch(function(error) {
+        console.info('createImageBitmap failed')
+      })
+
+      // setTimeout(function() {
+      //   var imgData = ctx.getImageData(img, 0, 0, width, height)
+      // }, 1000)
+    }
+
+    var worker = new Worker('./js-shared-array-work-1.js')
+    var imageUrl = '../assets/images/child/1.jpg'
+
+    function loadImage() {
+      var img = new Image()
+      // var img = document.querySelector('#test-img')
+      img.addEventListener('load', (event) => {
+        // console.dir(event.currentTarget, event.target)
+        // communicateToWorker(event.currentTarget || event.target)
+        drawImg(img)
+      }, false)
+      img.setAttribute('src',imageUrl )
+    }
+
+    function communicateToWorker(img) {
+      var imgWidth = img.naturalWidth
+      var imgHeight = img.naturalHeight
+
+      worker.postMessage({
+        type: 'compress',
+        config: {
+          imgUrl: imageUrl,
+          width: 400,
+          height: 200,
+          imageWidth: imgWidth,
+          imageHeight: imgHeight
+        }
+      })
+    }
+
+    
+    worker.addEventListener('message', function(event) {
+      console.info('****************', event.data)
+    })
+
+    loadImage()
+  </script>
+</body>
+
+</html>
