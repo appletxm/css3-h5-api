@@ -18,8 +18,8 @@
 
 <body>
   <img id="test-img"/>
-  <!-- <canvas id="test-canvas" width="400" height="200"></canvas>
-  <button id="test-btn">get image data</button> -->
+  <canvas id="test-canvas" width="400" height="200"></canvas>
+  <!-- <button id="test-btn">get image data</button> -->
 
   <script type="text/javascript">
     var ctx = null
@@ -34,6 +34,40 @@
     //   renderData = ctx.getImageData(0, 0, width, height)
     //   console.info(renderData)
     // })
+
+    function drawImgFromCache(msgInfo) {
+      var canvas = document.querySelector('#test-canvas')
+      var ctx = canvas.getContext('2d', { alpha: false })
+      var imageWidth = msgInfo.imgInfo.width
+      var imageHeight = msgInfo.imgInfo.height
+      
+      var veiew = new DataView(msgInfo.stb, 0)
+      var clampedArray = new Uint8ClampedArray(msgInfo.stb.byteLength)
+
+      // console.info(veiew.byteLength)
+      
+      clampedArray.map(function(data, index){
+        if (index < veiew.byteLength) {
+          clampedArray[index] = veiew.getUint8(index)
+        }
+      })
+
+      // console.info(clampedArray, clampedArray.byteLength)
+
+      var imgData = new ImageData(clampedArray, imageWidth, imageHeight)
+      // console.info(imgData)
+
+      canvas.setAttribute('width', imageWidth)
+      canvas.setAttribute('height', imageHeight)
+
+      createImageBitmap(imgData, 0, 0, imgData.width, imgData.height).then(bigMap => {
+        // console.info(bigMap)
+        ctx.drawImage(bigMap, 0, 0, imgData.width, imgData.height)
+        bigMap.close()
+      }).catch(error => {
+        console.info(error)
+      })
+    }
 
     function drawImg(img) {
       var canvas = document.querySelector('#test-canvas')
@@ -95,7 +129,7 @@
       }
 
       if (msgInfo.stb) {
-
+        drawImgFromCache(msgInfo)
       }
     }
     

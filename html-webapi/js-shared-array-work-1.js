@@ -8,6 +8,27 @@ var stb = null
 
 // console.info(ctx)
 
+function setImageToCache(ctx, bitMap) {
+  var imageData = ctx.getImageData(0, 0, bitMap.width, bitMap.height)
+  var data = imageData.data
+
+  console.info('imageData.data.length:', data.length)
+
+  stb = new SharedArrayBuffer(data.length)
+  var uint8 = new Uint8ClampedArray(stb)
+  // var view = new DataView(stb, 0)
+
+  data.forEach(function(imgData, index) {
+    uint8[index] = imgData
+    // view.setUint8(index, imgData)
+  })
+
+  stb.width = bitMap.width
+  stb.height = bitMap.height
+
+  return stb
+}
+
 function createCanvas(bitMap) {
   offCanvas = new OffscreenCanvas(400, 500)
   ctx = offCanvas.getContext('2d')
@@ -19,12 +40,13 @@ function createCanvas(bitMap) {
     resizeHeight: 200
   }).then(res => {
     bitMap = res
-    console.info(bitMap)
+    console.info('************', bitMap)
 
     // offCanvas.width = bitMap.width
     // offCanvas.height = bitMap.height
+    ctx.beginPath()
     ctx.fillStyle = 'red'
-    ctx.arc(300, 300, 50, 20, 90)
+    ctx.arc(300, 300, 50, 0, Math.PI * 2)
     ctx.closePath()
     ctx.fill()
 
@@ -38,12 +60,16 @@ function createCanvas(bitMap) {
 
       var url = URL.createObjectURL(res)
 
-      stb = new SharedArrayBuffer(res.size + 100)
+      var stb = setImageToCache(ctx, bitMap)
   
       postMessage({
         type: 'imageUrl',
         url,
-        stb
+        stb,
+        imgInfo: {
+          width: bitMap.width,
+          height: bitMap.height
+        }
       })
     }).catch(err => {
       console.info('err:', err)
