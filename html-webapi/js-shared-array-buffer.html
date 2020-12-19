@@ -17,9 +17,9 @@
 </head>
 
 <body>
-  <!-- <img id="test-img" style="display: none;" src="../assets/images/child/1.jpg" /> -->
-  <canvas id="test-canvas" width="400" height="200"></canvas>
-  <button id="test-btn">get image data</button>
+  <img id="test-img"/>
+  <!-- <canvas id="test-canvas" width="400" height="200"></canvas>
+  <button id="test-btn">get image data</button> -->
 
   <script type="text/javascript">
     var ctx = null
@@ -30,10 +30,10 @@
     var worker = new Worker('./js-shared-array-work-1.js')
     var imageUrl = '../assets/images/child/1.jpg'
 
-    document.querySelector('#test-btn').addEventListener('click', function() {
-      renderData = ctx.getImageData(0, 0, width, height)
-      console.info(renderData)
-    })
+    // document.querySelector('#test-btn').addEventListener('click', function() {
+    //   renderData = ctx.getImageData(0, 0, width, height)
+    //   console.info(renderData)
+    // })
 
     function drawImg(img) {
       var canvas = document.querySelector('#test-canvas')
@@ -86,8 +86,22 @@
       })
     }
 
+    function handleMessage(msgInfo) {
+      console.info('****************', msgInfo)
+
+      if (msgInfo.type === 'imageUrl') {
+        url = msgInfo.url
+        document.querySelector('#test-img').setAttribute('src', url)
+      }
+
+      if (msgInfo.stb) {
+
+      }
+    }
+    
     worker.addEventListener('message', function(event) {
-      console.info('****************', event.data)
+      // console.info('****************', event.data)
+      handleMessage(event.data)
     })
 
     worker.postMessage({
@@ -100,6 +114,16 @@
     })
 
     // loadImage()
+
+    // function trigger () {
+    //   for(var i = 0; i < 100; i++) {
+    //     console.info('=============', i)
+    //   }
+    // }
+
+    // setTimeout(function() {
+    //   trigger()
+    // }, 0)
   </script>
 </body>
 
