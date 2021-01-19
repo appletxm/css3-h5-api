@@ -26,6 +26,12 @@ app.get('/', (req, res) => {
   res.end()
 })
 
+app.use(['/proxy/*'], function(req, res) {
+  req.originalUrl = req.originalUrl.replace('/proxy', './')
+  console.info(req.originalUrl)
+  assignRouter(req, res, logger)
+})
+
 app.use('/*.html', function (req, res) {
   assignRouter(req, res, logger)
 })
