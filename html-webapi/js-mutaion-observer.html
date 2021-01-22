@@ -8,9 +8,11 @@
   <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <meta name="format-detection" content="telephone=no">
   <title>test css3 and h5 api</title>
-  <link rel="icon" href="assets/images/logo.ico" type="image/png">
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
   <style>
-    
+    body {
+      font-size: .14rem;
+    }
   </style>
 </head>
 
@@ -20,13 +22,17 @@
       <input type="text" value="123456" />
       <lable>12345678</lable>
   </div>
+
+  <div class="watch-attr" data-test="99">
+    9999999999999999
+  </div>
   
 </body>
 
 <script type="text/javascript">
-  var doc = document.querySelector("#js-id-doc");
+  // var doc = document.querySelector("#js-id-doc");
 
-  function observerWithMutationObserver() {
+  function observerWithMutationObserver(doc) {
     var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
     var MutationObserverConfig = {
       childList: true,
@@ -40,22 +46,30 @@
     observer.observe(doc, MutationObserverConfig);
   }
   
-  function observerWithMutationEvent() {
+  function observerWithMutationEvent(doc) {
     doc.addEventListener("DOMSubtreeModified", function(evt) {
       console.info('***********', arguments)
       do_render(evt);
     }, false);
   }
   
-
+  
   function do_render(arg) {
     console.info('do_render:', arg)
   }
 
-  observerWithMutationObserver()
-  observerWithMutationEvent()
+  // var jsDom = document.querySelector("#js-id-doc")
+  // observerWithMutationObserver(jsDom)
+  // observerWithMutationEvent(jsDom)
 
-  doc.removeChild(document.querySelector('input'))
+  var watch = document.querySelector('.watch-attr')
+  observerWithMutationObserver(watch)
+  observerWithMutationEvent(watch)
+  setTimeout(function(){
+    watch.style.color = 'red'
+  }, 4000)
+
+  // doc.removeChild(document.querySelector('input'))
 </script>
 
 </html>
