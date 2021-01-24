@@ -37,7 +37,8 @@
     var MutationObserverConfig = {
       childList: true,
       subtree: true,
-      characterData: true
+      characterData: true,
+      attributes: true
     };
     var observer = new MutationObserver(function(mutations){
       console.info('=======', arguments)
