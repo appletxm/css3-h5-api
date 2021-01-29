@@ -4,7 +4,7 @@
   "private": false,
   "scripts": {
     "eslint": "eslint --config .eslintrc.js src/js/**/*.js",
-    "start": "concurrently --kill-others \"npm run babel-watch\" \"npm run server\"",
+    "start": "npm run dev",
     "dev": "concurrently --kill-others \"npm run babel-watch\" \"npm run server\"",
     "debug": "concurrently --kill-others \"npm run babel-watch\" \"node --inspect scripts/server.js\"",
     "debug2": "node --inspect ./scripts/server-http2-express.js",
@@ -16,7 +16,8 @@
     "http2-express": "node ./scripts/server-http2-express.js",
     "rollup:build": "cross-env NODE_ENV=\"production\" rollup --config rollup.config.js",
     "rollup:watch": "rollup --config rollup.config.js --watch",
-    "sdk:dev": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\""
+    "sdk:dev": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\"",
+    "dev-rollup": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\""
   },
   "dependencies": {
     "@babel/runtime": "^7.6.3",

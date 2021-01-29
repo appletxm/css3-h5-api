@@ -25,5 +25,16 @@ export default [
       sourceMap: 'inline'
     },
     plugins: plugins
+  },
+
+  {
+    input: 'src/router-hash.js',
+    output: {
+      file: `build/router-hash${isProduction ? '.min' : ''}.js`,
+      format: 'umd',
+      name: 'RouterHash',
+      sourceMap: 'inline'
+    },
+    plugins: plugins
   }
 ]
