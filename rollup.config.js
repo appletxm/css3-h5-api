@@ -36,5 +36,16 @@ export default [
       sourceMap: 'inline'
     },
     plugins: plugins
+  },
+
+  {
+    input: 'src/router-history.js',
+    output: {
+      file: `build/router-history${isProduction ? '.min' : ''}.js`,
+      format: 'umd',
+      name: 'RouterHistory',
+      sourceMap: 'inline'
+    },
+    plugins: plugins
   }
 ]
