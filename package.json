@@ -17,10 +17,10 @@
     "rollup:build": "cross-env NODE_ENV=\"production\" rollup --config rollup.config.js",
     "rollup:watch": "rollup --config rollup.config.js --watch",
     "sdk:dev": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\"",
-    "dev-rollup": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\""
+    "dev-rollup": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\"",
+    "debug3": "node --inspect ./scripts/babel-ast.js"
   },
   "dependencies": {
-    "@babel/runtime": "^7.6.3",
     "babel-polyfill": "^6.26.0",
     "babel-standalone": "^6.26.0",
     "chalk": "^2.3.0",
@@ -43,9 +43,14 @@
   "devDependencies": {
     "@babel/cli": "^7.6.4",
     "@babel/core": "^7.6.4",
+    "@babel/generator": "^7.13.9",
+    "@babel/parser": "^7.13.13",
     "@babel/plugin-proposal-decorators": "^7.6.0",
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.6.3",
+    "@babel/runtime": "^7.6.3",
+    "@babel/traverse": "^7.13.13",
+    "@babel/types": "^7.13.14",
     "babel-eslint": "8.0.1",
     "bufferutil": "^4.0.1",
     "concurrently": "^3.5.1",
@@ -63,8 +68,8 @@
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-uglify": "^6.0.3",
-    "utf-8-validate": "^5.0.2",
-    "uglifyjs": "^2.4.11"
+    "uglifyjs": "^2.4.11",
+    "utf-8-validate": "^5.0.2"
   },
   "nodejs": {
     "version": ">=8.0"
