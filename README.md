@@ -30,3 +30,20 @@ then you can run 'node ./scripts/server-http2-express.js' in the terminal
 - https://github.com/jamiebuilds/babel-handbook/blob/master/translations/en/plugin-handbook.md#paths
 
 - https://www.npmjs.com/package/htmlparser2
+
+4.1 babel-travers
+── 属性      
+  - node   当前节点
+  - parent  父节点
+  - parentPath 父path
+  - scope   作用域
+  - context  上下文
+  - ...
+── 方法
+  - get   当前节点
+  - findParent  向父节点搜寻节点
+  - getSibling 获取兄弟节点
+  - replaceWith  用AST节点替换该节点
+  - replaceWithMultiple 用多个AST节点替换该节点
+  - insertBefore  在节点前插入节点
+  - insertAfter 在节点后插入节点
