@@ -6,6 +6,20 @@ const path = require('path')
 const fs = require('fs')
 
 const dataPros = []
+const events = {
+  '$emit': 'triggerEvent'
+}
+const lifeCycles = {
+  'beforeCreated': 'created',
+  'created': 'attached',
+  'mounted': 'ready',
+  'destroyed': 'detached'
+}
+
+const dataObserver = {
+  'watch': 'observers',
+  'computed': 'observers'
+}
 
 function collectionDataProps(nodeName, pros) {
   for (node of pros) {
@@ -40,6 +54,98 @@ function getDataObjNode(path) {
   return dataObjNode
 }
 
+function getDataProsNode(path) {
+  const parent = path.parentPath
+  if ((t.isAssignmentExpression(parent) && parent.get('left') === path) || t.isUpdateExpression(parent)) {
+    const expressOld = path.findParent(parent =>
+      parent.isExpressionStatement()
+    )
+    const { left, right } = expressOld.node.expression
+    // const getLeft = expressOld.get('left')
+    // const getRight = expressOld.get('right')
+    const objKey = left.property
+    const objVal = right
+    const property = t.objectProperty(objKey, objVal)
+    const objExpress = t.objectExpression([property])
+
+    const idenProp = t.identifier('setData')
+    const thisExpress = t.thisExpression()
+    const memExpress = t.memberExpression(thisExpress, idenProp)
+    const callExpress = t.callExpression(memExpress, [objExpress])
+
+    const expressNew = t.expressionStatement(callExpress)
+
+    expressOld.replaceWith(expressNew)
+
+  } else {
+    path.get('object').replaceWithSourceString('this.data')
+  }
+}
+
+function getEventNode(path) {
+  const name = path.node.property.name
+  path.node.property.name = events[name]
+}
+
+function getLifeCycelsNode(path, name) {
+  path.node.key.name = lifeCycles[name]
+}
+
+function hintObserver(path) {
+  const nextPath = path.getAllNextSiblings()
+  const prePath = path.getAllPrevSiblings()
+  const allPath = [...prePath, ...nextPath]
+
+  // const allProperties = path.parentPath.node.value.properties
+  let alReadyHasObservers = false
+  let oldObserverPath = path
+  
+  for (let subPath of allPath) {
+    if (subPath.node.key.name === 'observers') {
+      alReadyHasObservers = true
+       = subPath
+      break
+    }
+  }
+
+  return {
+    alReadyHasObservers,
+    oldObserverPath
+  }
+}
+
+function getWatchObserversNode(path, name) {
+  const { alReadyHasObservers, oldObserverPath } = hintObserver(path)
+  const { properties } = path.node.value
+
+  for(let property of properties) {
+    let keyName = property.key.name
+    if (!t.isStringLiteral(property.key)) {
+      property.key = t.stringLiteral(keyName)
+    }
+  }
+
+  if (!alReadyHasObservers) {
+    path.node.key.name = dataObserver[name]
+  } else {
+    const oldProperties = oldObserverPath.node.value.properties
+    oldObserverPath.node.value.properties = [...oldProperties, ...properties]
+    path.remove()
+  }
+}
+
+function getComputedObserversNode(path, name) {
+  path.node.key.name = dataObserver[name]
+  const { properties } = path.node.value
+
+  for (let property of properties) {
+    const subNodes = path.getAllNextSiblings()
+    console.info(subNodes)
+  }
+
+  // find(callback) findParent(callback) // 'getAllPrevSiblings' // 'getAllNextSiblings'
+}
+
 const code = fs.readFileSync(path.join(__dirname, '../assets/vuejs/index.vue'), {
   encoding: 'utf8'
 })
@@ -68,29 +174,26 @@ traverse(ast, {
     const key = node.key
     const name = key ? key.name : ''
 
-    // console.info('*****ObjectMethod****', name)
+    console.info('*****ObjectMethod****', name)
 
     if (name === 'data') {
       const datdObjNode = getDataObjNode(path)
       path.replaceWith(datdObjNode)
     }
+
+    if (lifeCycles.hasOwnProperty(name)) {
+      getLifeCycelsNode(path, name)
+    }
+
+    // path.find((node) => {
+    //   console.info('============', node.type, t.isThisExpression(node))
+    // })
   },
-
-  // ReturnStatement(path) {
-  //   const parent = path.parentPath
-  //   const ancester = parent && parent.parentPath
-
-  //   if (ancester) {
-  //     const node = ancester.node
-  //     const key = node.key
-  //     const name = key ? key.name : ''
-  //     console.info('*****ReturnStatement****', name)
-  //   }
-  // },
 
   ObjectProperty(path) {
     const { type, key } = path.node
     const { name } = key
+
     // console.info('*****ObjectProperty****', type, name)
 
     if (name === 'props') {
@@ -102,16 +205,20 @@ traverse(ast, {
     if (name === 'default') {
       path.node.key.name = 'value'
     }
+
+    if (name === 'watch') {
+      getWatchObserversNode(path, name)
+    }
   },
 
   // ObjectExpression(path) {
   //   const key = path.parent.key
   //   const name = key ? key.name : ''
-  //   // console.info('*****objectExpression****', name)
-    
-  //   if (name === 'pros' || name === 'properties') {
-  //     const pros = path.node.properties
-  //     collectionDataProps('pros', pros)
+
+  //   console.info('*****objectExpression****', name)
+
+  //   if (name === 'computed') {
+  //     getComputedObserversNode(path, name)
   //   }
   // },
 
@@ -119,17 +226,14 @@ traverse(ast, {
     const name = path.node.property.name
     const type = path.node.object.type
 
-    console.info('*****MemberExpression****', name, dataPros)
+    // console.info('*****MemberExpression****', name, dataPros)
 
     if (type === 'ThisExpression' && dataPros.includes(name)) {
-      path.get('object').replaceWithSourceString('this.data');
-      
-      //判断是不是赋值操作
-      if ((t.isAssignmentExpression(path.parentPath) && path.parentPath.get('left') === path) || t.isUpdateExpression(path.parentPath)) {
-        const expressionStatement = path.findParent(parent =>
-          parent.isExpressionStatement()
-        )
-      }
+      getDataProsNode(path)
+    }
+
+    if (type === 'ThisExpression' && events.hasOwnProperty(name)) {
+      getEventNode(path)
     }
   },
 
@@ -141,21 +245,7 @@ traverse(ast, {
       }
     }
   }
-
 })
-
-// traverse(ast, {
-//   enter(path) {
-//     console.info('path.node.name: ', path.node.type, path.node.name)
-//     const { type } = path.node
-//     if (type === 'ExportDefaultDeclaration') {
-//       if (path.node.declaration.properties) {
-//         const newNode = insertBeforeFn(path)
-//         path.replaceWith(newNode)
-//       }
-//     }
-//   }
-// })
 
 const genCode = generate(ast, {
   ast: true,

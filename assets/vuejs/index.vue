@@ -3,6 +3,7 @@ const cfg = require('component-cfg')
 
 export default {
   name: 'Button',
+
   props: {
     size: {
       type: String,
@@ -23,11 +24,13 @@ export default {
     },
     autofocus: Boolean,
   },
+
   data() {
     return {
       cfg
     }
   },
+
   computed: {
     buttonSize() {
       return this.size;
@@ -36,16 +39,39 @@ export default {
       return this.disabled;
     }
   },
+
+  watch: {
+    size(newVal, oldVal) {
+      console.info('===watch size: ', newVal, oldVal)
+    },
+
+    disabled(newVal, oldVal) {
+      console.info('===watch disabled: ', newVal, oldVal)
+    }
+  },
+
   methods: {
     handleClick(evt) {
       this.$emit('click', evt);
     },
     testChangeSize() {
-      this.cfg = '777'
+      this.cfg = 999
     },
     testGetData() {
       const total = this.size + this.type
       return total
     }
+  },
+
+  mounted() {
+    console.info('---mounted:', this.size)
+  },
+
+  created() {
+    console.info('---name:', this.size)
+  },
+
+  destroyed() {
+    console.info('---destroyed:', this.size)
   }
 }
