@@ -37,6 +37,10 @@ export default {
     },
     buttonDisabled() {
       return this.disabled;
+    },
+    complex() {
+      const str = this.icon + this.nativeType + this.size
+      return str
     }
   },
 
@@ -54,9 +58,11 @@ export default {
     handleClick(evt) {
       this.$emit('click', evt);
     },
+
     testChangeSize() {
       this.cfg = 999
     },
+
     testGetData() {
       const total = this.size + this.type
       return total
