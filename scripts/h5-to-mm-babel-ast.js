@@ -5,7 +5,11 @@ const t = require('@babel/types')
 const path = require('path')
 const fs = require('fs')
 
-const dataPros = []
+let dataPros = []
+let componentsNodes = {}
+let defaultComInmportIndexs = []
+let configOptions = null
+
 const events = {
   '$emit': 'triggerEvent'
 }
@@ -21,10 +25,77 @@ const dataObserver = {
   'computed': 'observers'
 }
 
+function resetStates() {
+  dataPros = []
+  componentsNodes = {}
+  defaultComInmportIndexs = []
+}
+
 function collectionDataProps(nodeName, pros) {
   for (node of pros) {
     dataPros.push(node.key.name)
   }
+}
+
+function hintObserver(path) {
+  const nextPath = path.getAllNextSiblings()
+  const prePath = path.getAllPrevSiblings()
+  const allPath = [...prePath, ...nextPath]
+
+  // const allProperties = path.parentPath.node.value.properties
+  let alReadyHasObservers = false
+  let oldObserverPath = null
+  
+  for (let subPath of allPath) {
+    if (subPath.node.key.name === 'observers') {
+      alReadyHasObservers = true
+      oldObserverPath = subPath
+      break
+    }
+  }
+
+  return {
+    alReadyHasObservers,
+    oldObserverPath
+  }
+}
+
+function hitDataPath(currentPath) {
+  const allSiblings = [...currentPath.getAllPrevSiblings(), ...currentPath.getAllNextSiblings()]
+  const dataPathIndex = allSiblings.findIndex(sib => {
+    const name = sib.node.key ? sib.node.key.name : ''
+    return name === 'data'
+  })
+  const dataPath = allSiblings[dataPathIndex]
+  // const dataType = dataPath.node.type
+  // console.info('***dataType: ', dataType)
+
+  return {
+    allParentPath: allSiblings,
+    dataPath,
+    dataPathIndex
+  }
+}
+
+function removeComponetImportNode(path) {
+  const body = path.parentPath.node.body
+  const newBody = []
+
+  body.forEach((item, index) => {
+    if(!defaultComInmportIndexs.find((sIndex) => sIndex === index)) {
+      newBody.push(item)
+    }
+  })
+
+  path.parentPath.node.body = newBody
+}
+
+function generateComponentJson() {
+  const josnObj = {
+    'component': true,
+    'usingComponents': componentsNodes
+  }
+  fs.writeFileSync(path.join(__dirname, '../tmp/index.json'), JSON.stringify(josnObj, null, ' '))
 }
 
 function getComponentsNode(path) {
@@ -89,46 +160,6 @@ function getEventNode(path) {
 
 function getLifeCycelsNode(path, name) {
   path.node.key.name = lifeCycles[name]
-}
-
-function hintObserver(path) {
-  const nextPath = path.getAllNextSiblings()
-  const prePath = path.getAllPrevSiblings()
-  const allPath = [...prePath, ...nextPath]
-
-  // const allProperties = path.parentPath.node.value.properties
-  let alReadyHasObservers = false
-  let oldObserverPath = null
-  
-  for (let subPath of allPath) {
-    if (subPath.node.key.name === 'observers') {
-      alReadyHasObservers = true
-      oldObserverPath = subPath
-      break
-    }
-  }
-
-  return {
-    alReadyHasObservers,
-    oldObserverPath
-  }
-}
-
-function hitDataPath(currentPath) {
-  const allSiblings = [...currentPath.getAllPrevSiblings(), ...currentPath.getAllNextSiblings()]
-  const dataPathIndex = allSiblings.findIndex(sib => {
-    const name = sib.node.key ? sib.node.key.name : ''
-    return name === 'data'
-  })
-  const dataPath = allSiblings[dataPathIndex]
-  // const dataType = dataPath.node.type
-  // console.info('***dataType: ', dataType)
-
-  return {
-    allParentPath: allSiblings,
-    dataPath,
-    dataPathIndex
-  }
 }
 
 function createObserverProperty(observerProperties) {
@@ -268,7 +299,6 @@ function getLetConstDestructNode(path) {
     const properties = declareation['id']['properties']
     const propsDatas = []
     const others = []
-    const newBody = []
     const pPath = path.parentPath
     const body = pPath.node.body
     const kind = path.node.kind
@@ -282,7 +312,7 @@ function getLetConstDestructNode(path) {
       }
     })
 
-    console.info('****getLetConstDestructNode***', propsDatas, others)
+    // console.info('****getLetConstDestructNode***', propsDatas, others)
 
     if (propsDatas.length === properties.length) {
       path.node.declarations[0]['init'] = t.memberExpression(t.thisExpression(), t.identifier('data'))
@@ -290,7 +320,7 @@ function getLetConstDestructNode(path) {
       // console.info('***getLetConstDestructNode ignore**')
     } else {
       if (t.isBlockStatement(pPath.node)) {
-        console.info('*******', body)
+        // console.info('*******', body)
         const index = body.findIndex(item => item === path.node)
         const otherBody = createThisDestruct(others, kind)
         const dataPropsBody = createThisDestruct(propsDatas, kind, 'data')
@@ -299,6 +329,34 @@ function getLetConstDestructNode(path) {
       }
     }
   }
+}
+
+function getSubComponentsNode(path) {
+  const value = path.node.value
+  const components = value ? value.properties : []
+  const body = path.parentPath.parentPath.parentPath.node.body
+  
+  components.forEach(item => {
+    const name = item.value.name
+    
+    const index = body.findIndex(node => {
+      const { source, specifiers } = node
+
+      const defaultSpec = specifiers.find(spec => t.isImportDefaultSpecifier(spec))
+      const res = defaultSpec && name === defaultSpec.local.name
+      
+      if (res) {
+        // console.info(name, '===' , defaultSpec.local.name, '***', source.value)
+        componentsNodes[name] = source.value
+      }
+
+      return res
+    })
+
+    defaultComInmportIndexs.push(index)
+  })
+
+  path.remove()
 }
 
 function transferDefaultNodes(path) {
@@ -346,6 +404,15 @@ function transferDefaultNodes(path) {
       if (name === 'computed') {
         getComputedObserversNode(path)
       }
+
+      if (name === 'mixins') {
+        path.node.key.name = 'behaviors'
+      }
+
+      if (name === 'components') {
+        getSubComponentsNode(path)
+        generateComponentJson()
+      }
     },
   
     MemberExpression(path) {
@@ -379,6 +446,9 @@ function transferDefaultNodes(path) {
 */
 function doTransforem(options) {
   const { src, dest } = options
+
+  configOptions = options
+
   const code = fs.readFileSync(src, {
     encoding: 'utf8'
   })
@@ -392,6 +462,8 @@ function doTransforem(options) {
     // ]
   })
   
+  resetStates()
+
   traverse(ast, {
     // ObjectMethod(path) {
     //   const node = path.node
@@ -447,11 +519,17 @@ function doTransforem(options) {
     //     getEventNode(path)
     //   }
     // },
+
+    // ImportDeclaration(path) {
+    //   getImportNodes(path)
+    // },
   
     ExportDefaultDeclaration(path) {
       if (path.node.type === 'ExportDefaultDeclaration') {
 
         transferDefaultNodes(path)
+
+        removeComponetImportNode(path)
 
         if (path.node.declaration.properties) {
           const newNode = getComponentsNode(path)
