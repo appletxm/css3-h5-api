@@ -388,6 +388,22 @@ function transfer$el(path) {
   path.node.declaration.properties.push($props)
 }
 
+function transfer$ExternalClassName(path) {
+  const left = t.binaryExpression('+', t.memberExpression(t.identifier('cfg'), t.identifier('prefix')), t.stringLiteral('-'))
+  const returnNode = t.returnStatement(t.binaryExpression('+', left, t.stringLiteral('ext-class')))
+  const block = t.blockStatement([returnNode])
+  const $extClass = t.objectMethod('get', t.identifier('$externalClassName'), [], block)
+
+  path.node.declaration.properties.push($extClass)
+}
+
+function  addExternalClass(path) {
+  const member = t.memberExpression(t.thisExpression(), t.identifier('$externalClassName'))
+  const arrayExpress = t.arrayExpression([member])
+  const property = t.objectProperty(t.identifier('externalClasses'), arrayExpress)
+  path.node.declaration.properties.splice(2, 0, property)
+}
+
 function transferDefaultNodes(path) {
   path.traverse({
     ObjectMethod(path) {
@@ -565,6 +581,10 @@ function doTransforem(options) {
         transferNextTick(path)
 
         transfer$el(path)
+
+        transfer$ExternalClassName(path)
+
+        addExternalClass(path)
 
         if (path.node.declaration.properties) {
           const newNode = getComponentsNode(path)
