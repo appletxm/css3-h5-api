@@ -359,6 +359,35 @@ function getSubComponentsNode(path) {
   path.remove()
 }
 
+function transfer$Props(path) {
+  const returnNode = t.returnStatement(t.memberExpression(t.thisExpression(), t.identifier('data')))
+  const block = t.blockStatement([returnNode])
+  const $props = t.objectMethod('get', t.identifier('$props'), [], block)
+
+  path.node.declaration.properties.push($props)
+}
+
+function transferNextTick(path) {
+  const block = t.blockStatement([t.expressionStatement(t.callExpression(t.identifier('fn'), []))])
+  const arrowFn = t.arrowFunctionExpression([], block)
+  const time = t.numericLiteral(0)
+  const timeFn = t.callExpression(t.identifier('setTimeout'), [arrowFn, time])
+  const body = t.blockStatement([t.expressionStatement(timeFn)])
+  const params = [t.identifier('fn')]
+  const $nextTick = t.objectMethod('method', t.identifier('$nextTick'), params, body)
+
+  path.node.declaration.properties.push($nextTick)
+}
+
+function transfer$el(path) {
+  const member = t.memberExpression(t.identifier('wx'), t.identifier('createSelectorQuery'))
+  const returnNode = t.returnStatement(t.callExpression(member, [t.thisExpression()]))
+  const block = t.blockStatement([returnNode])
+  const $props = t.objectMethod('get', t.identifier('$el'), [], block)
+
+  path.node.declaration.properties.push($props)
+}
+
 function transferDefaultNodes(path) {
   path.traverse({
     ObjectMethod(path) {
@@ -530,6 +559,12 @@ function doTransforem(options) {
         transferDefaultNodes(path)
 
         removeComponetImportNode(path)
+
+        transfer$Props(path)
+
+        transferNextTick(path)
+
+        transfer$el(path)
 
         if (path.node.declaration.properties) {
           const newNode = getComponentsNode(path)
