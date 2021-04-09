@@ -1,0 +1,123 @@
+<div
+    ref="reference"
+    v-clickoutside="() => toggleDropDownVisible(false)"
+    :class="[
+      `${cfg.prefix}-cascader`,
+      realSize && `${cfg.prefix}-cascader--${realSize}`,
+      { 'is-disabled': isDisabled }
+    ]"
+    @mouseenter="inputHover = true"
+    @mouseleave="inputHover = false"
+    @click="() => toggleDropDownVisible(readonly ? undefined : true)"
+    @keydown="handleKeyDown"
+  >
+    <ui-input
+      ref="input"
+      v-model="multiple ? presentText : inputValue"
+      :size="realSize"
+      :placeholder="placeholder"
+      :readonly="readonly"
+      :disabled="isDisabled"
+      :validate-event="false"
+      :class="{ 'is-focus': dropDownVisible }"
+      @focus="handleFocus"
+      @blur="handleBlur"
+      @input="handleInput"
+    >
+      <template slot="suffix">
+        <i
+          v-if="clearBtnVisible"
+          key="clear"
+          :class="[`${cfg.prefix}-input__icon ${cfg.prefix}-icon ui-icon-fill-currency-failure`]"
+          @click.stop="handleClear"
+        ></i>
+        <i
+          v-else
+          key="arrow-down"
+          :class="[
+            `${cfg.prefix}-input__icon`,
+            `${cfg.prefix}-icon`,
+            'ui-icon-line-direction-down',
+            dropDownVisible && 'is-reverse'
+          ]"
+          @click.stop="toggleDropDownVisible()"
+        ></i>
+      </template>
+    </ui-input>
+
+    <div v-if="multiple" :class="[`${cfg.prefix}-cascader__tags`]">
+      <ui-tag
+        v-for="(tag, index) in presentTags"
+        :key="tag.key"
+        type="info"
+        :size="tagSize"
+        :hit="tag.hitState"
+        :closable="tag.closable"
+        disable-transitions
+        @close="deleteTag(index)"
+      >
+        <span>{{ tag.text }}</span>
+      </ui-tag>
+      <input
+        v-if="filterable && !isDisabled"
+        v-model.trim="inputValue"
+        type="text"
+        :class="[`${cfg.prefix}-cascader__search-input`]"
+        :placeholder="presentTags.length ? '' : placeholder"
+        @input="e => handleInput(inputValue, e)"
+        @click.stop="toggleDropDownVisible(true)"
+        @keydown.delete="handleDelete"
+      >
+    </div>
+
+    <transition :name="`${cfg.prefix}-zoom-in-top`" @after-leave="handleDropdownLeave">
+      <div
+        v-show="dropDownVisible"
+        ref="popper"
+        :class="[`${cfg.prefix}-popper`, `${cfg.prefix}-cascader__dropdown`, popperClass]"
+      >
+        <cascader-panel
+          v-show="!filtering"
+          ref="panel"
+          v-model="checkedValue"
+          :options="options"
+          :props="config"
+          :border="false"
+          :separator="separator"
+          :render-label="$scopedSlots.default"
+          @expand-change="handleExpandChange"
+          @close="toggleDropDownVisible(false)"
+        ></cascader-panel>
+        <ui-scrollbar
+          v-if="filterable"
+          v-show="filtering"
+          ref="suggestionPanel"
+          tag="ul"
+          :class="[`${cfg.prefix}-cascader__suggestion-panel`]"
+          :view-class="[`${cfg.prefix}-cascader__suggestion-list`]"
+          @keydown.native="handleSuggestionKeyDown"
+        >
+          <template v-if="suggestions.length">
+            <li
+              v-for="(item, index) in suggestions"
+              :key="item.uid"
+              :class="[
+                `${cfg.prefix}-cascader__suggestion-item`,
+                item.checked && 'is-checked'
+              ]"
+              :tabindex="-1"
+              @click="handleSuggestionClick(index)"
+            >
+              <span>{{ item.text }}</span>
+              <i v-if="item.checked" :class="[`${cfg.prefix}-icon ui-icon-line-currency-tick`]"></i>
+            </li>
+          </template>
+          <slot v-else name="empty">
+            <li :class="[`${cfg.prefix}-cascader__empty-text`]">
+              {{ t('el.cascader.noMatch') }}
+            </li>
+          </slot>
+        </ui-scrollbar>
+      </div>
+    </transition>
+  </div>

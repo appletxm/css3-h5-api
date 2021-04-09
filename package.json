@@ -18,7 +18,7 @@
     "rollup:watch": "rollup --config rollup.config.js --watch",
     "sdk:dev": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\"",
     "dev-rollup": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\"",
-    "debug3": "node --inspect ./scripts/babel-ast.js"
+    "debug3": "node --inspect ./scripts/h5-to-mm-babel-ast.js"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

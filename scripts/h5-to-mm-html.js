@@ -159,19 +159,9 @@ function getWatchObserversNode(path, name) {
 }
 
 function genObserverBody(fnPath) {
-  // const resStr = 'res'
-  // const returnNode = t.returnStatement(t.identifier(resStr))
-  // const fnExpress = t.functionExpression(null, [], fnPath.node.body)
-  // const fnCall = t.callExpression(fnExpress, [])
-  // const varDeclarator = t.variableDeclarator(t.identifier(resStr), fnCall)
-  // const constStament = t.variableDeclaration('const', [varDeclarator])
-  // const body = t.blockStatement([constStament, returnNode])
-
-  // return body
-
   const fnName = fnPath.node.key ? fnPath.node.key.name : ''
-  const fnExpress = t.functionExpression(null, [], fnPath.node.body)
-  const fnCall = t.callExpression(fnExpress, [])
+  const fnExpress = t.functionExpression(null, [t.identifier('_this')], fnPath.node.body)
+  const fnCall = t.callExpression(fnExpress, [t.thisExpression()])
   
   const property = t.objectProperty(t.identifier(fnName), fnCall)
   const properties = t.objectExpression([property])
@@ -206,7 +196,8 @@ function getComputedObserversNode(currentPath) {
 
           if (type === 'ThisExpression' && dataPros.includes(name)) {
             observerPropsNames.push(name)
-            getDataProsNode(path)
+            // getDataProsNode(path)
+            path.get('object').replaceWithSourceString('_this.data')
           }
         }
       }, fnPath)
