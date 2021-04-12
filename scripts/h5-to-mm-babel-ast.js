@@ -98,7 +98,7 @@ function generateComponentJson() {
 
   let newComponentsNodes = {}
   for (let name in componentsNodes) {
-    console.info('****', name, componentsNodes[name])
+    // console.info('****', name, componentsNodes[name])
     const filePath = componentsNodes[name] + ((/^.+index(\.js)?$/).test(componentsNodes[name]) ? '' : '/index.js')
     name = name.match(/([A-Z])([^A-Z]+)/g)
     name = name.map(item => item.toLowerCase())
@@ -500,7 +500,7 @@ function transferDefaultNodes(path) {
  *  ignore
  * }
 */
-function doTransforem(options) {
+function doTransfer(options) {
   const { src, dest } = options
 
   configOptions = options
@@ -608,7 +608,9 @@ function doTransforem(options) {
   const genCode = generate(ast, {
     ast: true,
     filename: 'testComponent',
-    quotes: 'single'
+    quotes: 'single',
+    concise: false,
+    // retainLines: true
   }, code)
   
   fs.writeFileSync(dest, genCode.code, {
@@ -616,11 +618,11 @@ function doTransforem(options) {
   })
 }
 
-doTransforem({
+doTransfer({
   src: path.join(__dirname, '../assets/vuejs/complex-component.js'), 
   dest: path.join(__dirname, '../tmp/test-component.js')
 })
 
 module.exports = {
-  doTransforem
+  doTransfer
 }
