@@ -93,8 +93,19 @@ function removeComponetImportNode(path) {
 function generateComponentJson() {
   const josnObj = {
     'component': true,
-    'usingComponents': componentsNodes
+    'usingComponents': {}
   }
+
+  let newComponentsNodes = {}
+  for (let name in componentsNodes) {
+    console.info('****', name, componentsNodes[name])
+    const filePath = componentsNodes[name] + ((/^.+index(\.js)?$/).test(componentsNodes[name]) ? '' : '/index.js')
+    name = name.match(/([A-Z])([^A-Z]+)/g)
+    name = name.map(item => item.toLowerCase())
+    newComponentsNodes[name.join('-')] = filePath
+  }
+  josnObj['usingComponents'] = newComponentsNodes
+
   fs.writeFileSync(path.join(__dirname, '../tmp/index.json'), JSON.stringify(josnObj, null, ' '))
 }
 
@@ -367,7 +378,7 @@ function transfer$Props(path) {
   path.node.declaration.properties.push($props)
 }
 
-function transferNextTick(path) {
+function transfer$NextTick(path) {
   const block = t.blockStatement([t.expressionStatement(t.callExpression(t.identifier('fn'), []))])
   const arrowFn = t.arrowFunctionExpression([], block)
   const time = t.numericLiteral(0)
@@ -578,7 +589,7 @@ function doTransforem(options) {
 
         transfer$Props(path)
 
-        transferNextTick(path)
+        transfer$NextTick(path)
 
         transfer$el(path)
 
@@ -610,4 +621,6 @@ doTransforem({
   dest: path.join(__dirname, '../tmp/test-component.js')
 })
 
-module.exports = doTransforem
+module.exports = {
+  doTransforem
+}
