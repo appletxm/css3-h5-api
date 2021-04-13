@@ -1,16 +1,49 @@
-const { Parser, parseDOM, DomUtils } = require("htmlparser2")
+const { parseDOM, DomUtils } = require("htmlparser2")
 const path = require('path')
 const fs = require('fs')
 
-let configOptions = null
+let configOptions = {
+  directives: {
+    'v-show': 'wx:if',
+    'v-for': 'wx:for',
+    'v-model': 'model:value',
+    ':key': 'wx:key',
+    'v-key': 'wx:key',
+    'v-if': 'wx:if',
+    'v-elseif': 'wx:elseif',
+    'v-else': 'wx:else'
+  },
+  tags: {
+    'span': 'text',
+    'i': 'text',
+    'em': 'text',
+    'b': 'text',
+    'header': 'text',
+    'footer': 'text',
+    'nav': 'text',
+  
+    'p': 'view',
+    'div': 'view',
+    'h1': 'view',
+    'h2': 'view',
+    'h3': 'view',
+    'ul': 'text',
+    'li': 'text',
+    'table': 'view',
+    'thead': 'view',
+    'th': 'text',
+    'tbody': 'view',
+    'tr':'view',
+    'td': 'text'
+  },
+  events: {
+    'click': 'tap'
+  }
+}
 
-let directives = {
-  'v-show': '',
-  'v-if': 'wx:if',
-  'v-for': 'wx:for',
-  'v-module': 'model:value',
-  ':key': 'wx:key',
-  'v-key': 'wx:key'
+function mergeOptions(options) {
+  const configOptions = Object.assign(configOptions, options)
+  return configOptions
 }
 
 function resetStates() {
@@ -19,8 +52,72 @@ function resetStates() {
   defaultComInmportIndexs = []
 }
 
-function analyseNode(parentNode) {
-  
+function getTranferHtml(domList) {
+  let html = ''
+  domList.forEach(dom => {
+    html = html + DomUtils.getOuterHTML(dom)
+  })
+  html =  html.replace(/&apos;/g, '\'')
+  html = html.replace(/&gt;/g, '>')
+  html = html.replace(/&amp;/g, '&')
+
+  return html
+}
+
+function transferAttr(config, attrs) {
+  const newAttrs = {}
+  const dynamicReg = /^\:.+$/
+  const directiveReg = /^v-.+$/
+  const eventReg = /^(v-bind\:|@).+$/
+
+  const { directives, events } = config
+
+  for (let attr in attrs) {
+    let key = attr.trim()
+    let value = attrs[attr].trim()
+
+    if (dynamicReg.test(attr)) {
+      key = key.replace(/^:/, '')
+
+      if (value.match(/\[([^\[\]]*)?\]/g) && (/^\:class$/).test(attr)) {
+        value = value + '.join(\' \')'
+      }
+    }
+
+    if (directiveReg.test(attr)) {
+      key = directives[key] || key
+      delete attrs[attr]
+    }
+
+    if (eventReg.test(attr)) {
+      key = key.replace(/^(v-bind\:|@)/, '')
+      key = `bind:${events[key] || key}`
+    }
+
+    value = value ? `\{\{ ${value} \}\}` : ''
+    newAttrs[key] = value
+  }
+
+  return newAttrs
+}
+
+function transferDom(config, nodes) {
+  const { tags } = config
+
+  for (let i = 0;  i < nodes.length; i++) {
+    const node = nodes[i]
+    const { attribs, children, name } = node
+
+    node.name = tags[name]  || name
+
+    if (attribs) {
+      const newAttrs = transferAttr(config, attribs)
+      node.attribs = newAttrs
+    }
+    if (children && children.length > 0) {
+      transferDom(config, children)
+    }
+  }
 }
 
 /***
@@ -34,53 +131,20 @@ function analyseNode(parentNode) {
 function doTransfer(options) {
   const { src, dest } = options
 
-  configOptions = options
+  configOptions = mergeOptions(options)
 
   const code = fs.readFileSync(src, { encoding: 'utf8' })
-  
-  resetStates()
-
   const parserDom = parseDOM(code)
-  
-  // const parser = new Parser({
-  //   onopentag(tagname, attributes) {
-  //     if (attributes.hasOwnProperty(':class')) {
-  //       console.info('======', this)
-  //       attributes[':class'] = '99999999999999'
-  //       parser.updatePosition(-1)
-  //     }
-  //   },
 
-  //   onattribname(attr) {
-  //     console.info('##########', this, attr)
-  //   },
-
-  //   // ontext(text) {
-  //   //   console.log("=====ontext ", text);
-  //   // },
-  //   // onclosetag(tagname) {
-  //   //   console.info('===onclosetag ', tagname)
-  //   // }
-  // });
-  // parser.write(code)
-  // parser.end()
-
-  console.info(parserDom[0]['attribs'][':disabled'])
-
-  parserDom[0]['attribs'][':disabled'] = '9999'
-  parserDom[0]['attribs'][':test'] = '{{cfg.prefix}}'
-
-  console.info(DomUtils.getOuterHTML(parserDom[0]))
-
-  let html = DomUtils.getOuterHTML(parserDom[0])
-  
-  html =  html.replace(/&apos;/g, '\'')
+  resetStates()
+  transferDom(configOptions, parserDom)
+  const html = getTranferHtml(parserDom)
 
   fs.writeFileSync(dest, html, {encoding: 'utf8'})
 }
 
 doTransfer({
-  src: path.join(__dirname, '../assets/vuejs/template.html'), 
+  src: path.join(__dirname, '../assets/vuejs/complex-template.html'), 
   dest: path.join(__dirname, '../tmp/index.wxml')
 })
 
