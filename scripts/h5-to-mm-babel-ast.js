@@ -370,6 +370,17 @@ function getSubComponentsNode(path) {
   path.remove()
 }
 
+function getMixinsNodes(path) {
+  const parentBody = path.parentPath.parentPath.parentPath.node.body
+  const mixinsNodes = path.node.value.elements
+
+  // parentBody.forEach(node => {
+  //   if(t.variableDeclaration(node.type)) {
+      
+  //   }
+  // })
+}
+
 function transfer$Props(path) {
   const returnNode = t.returnStatement(t.memberExpression(t.thisExpression(), t.identifier('data')))
   const block = t.blockStatement([returnNode])
@@ -415,6 +426,13 @@ function  addExternalClass(path) {
   path.node.declaration.properties.splice(2, 0, property)
 }
 
+function addOptions(path) {
+  const property = t.objectProperty(t.identifier('multipleSlots'), t.booleanLiteral(true))
+  const objExpress = t.objectExpression([property])
+  const optionProperty = t.objectProperty(t.identifier('options'), objExpress)
+  path.node.declaration.properties.splice(2, 0, optionProperty)
+}
+
 function transferDefaultNodes(path) {
   path.traverse({
     ObjectMethod(path) {
@@ -439,12 +457,16 @@ function transferDefaultNodes(path) {
       // console.info('*****ObjectProperty****', name)
   
       if (name === 'props') {
-        path.node.key.name = 'properties'
         const pros = path.node.value.properties
+        const parentNode = path.parentPath.parentPath.node
 
         // console.info('*******',  path.parentPath.key, pros && pros.length)
 
-        if (t.isExportDefaultDeclaration(path.parentPath.parentPath.node) && (pros && pros.length > 0)) {
+        if (t.isExportDefaultDeclaration(parentNode)) {
+          path.node.key.name = 'properties'
+        }
+
+        if (t.isExportDefaultDeclaration(parentNode) && (pros && pros.length > 0)) {
           collectionDataProps('pros', pros)
         }
       }
@@ -462,6 +484,7 @@ function transferDefaultNodes(path) {
       }
 
       if (name === 'mixins') {
+        getMixinsNodes(path)
         path.node.key.name = 'behaviors'
       }
 
@@ -528,56 +551,20 @@ function doTransfer(options) {
   
     //   // console.info('*****ObjectMethod****', name)
   
-    //   if (name === 'data') {
-    //     const datdObjNode = getDataObjNode(path)
-    //     path.replaceWith(datdObjNode)
-    //   } else if (lifeCycles.hasOwnProperty(name)) {
+    //   if (lifeCycles.hasOwnProperty(name)) {
     //     getLifeCycelsNode(path, name)
-    //   } else {}
+    //   }
     // },
   
     // ObjectProperty(path) {
-    //   const { type, key } = path.node
+    //   const { key } = path.node
     //   const { name } = key
   
-    //   // console.info('*****ObjectProperty****', type, name)
+    //   // console.info('*****ObjectProperty****', name)
   
     //   if (name === 'props') {
     //     path.node.key.name = 'properties'
-    //     const pros = path.node.value.properties
-    //     collectionDataProps('pros', pros)
     //   }
-  
-    //   if (name === 'default') {
-    //     path.node.key.name = 'value'
-    //   }
-  
-    //   if (name === 'watch') {
-    //     getWatchObserversNode(path, name)
-    //   }
-  
-    //   if (name === 'computed') {
-    //     getComputedObserversNode(path)
-    //   }
-    // },
-  
-    // MemberExpression(path) {
-    //   const name = path.node.property.name
-    //   const type = path.node.object.type
-  
-    //   // console.info('*****MemberExpression****', name, dataPros)
-  
-    //   if (type === 'ThisExpression' && dataPros.includes(name)) {
-    //     getDataProsNode(path)
-    //   }
-  
-    //   if (type === 'ThisExpression' && events.hasOwnProperty(name)) {
-    //     getEventNode(path)
-    //   }
-    // },
-
-    // ImportDeclaration(path) {
-    //   getImportNodes(path)
     // },
   
     ExportDefaultDeclaration(path) {
@@ -596,6 +583,8 @@ function doTransfer(options) {
         transfer$ExternalClassName(path)
 
         addExternalClass(path)
+
+        addOptions(path)
 
         if (path.node.declaration.properties) {
           const newNode = getComponentsNode(path)
@@ -620,7 +609,7 @@ function doTransfer(options) {
 
 doTransfer({
   src: path.join(__dirname, '../assets/vuejs/complex-component.js'), 
-  dest: path.join(__dirname, '../tmp/test-component.js')
+  dest: path.join(__dirname, '../tmp/index.js')
 })
 
 module.exports = {

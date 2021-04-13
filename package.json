@@ -18,7 +18,7 @@
     "rollup:watch": "rollup --config rollup.config.js --watch",
     "sdk:dev": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\"",
     "dev-rollup": "concurrently --kill-others \"npm run rollup:watch\" \"npm run server\"",
-    "debug3": "node --inspect ./scripts/h5-to-mm-babel-ast.js"
+    "debug3": "node --inspect ./scripts/h5-to-mm-html.js"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
@@ -63,6 +63,7 @@
     "eslint-plugin-standard": "3.0.1",
     "event-source-polyfill": "0.0.12",
     "hex64": "^0.4.0",
+    "htmlparser2": "^6.1.0",
     "rollup": "^1.24.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",
