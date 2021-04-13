@@ -25,6 +25,13 @@ const dataObserver = {
   'computed': 'observers'
 }
 
+function getStrikeName(name) {
+  name = name.match(/([A-Z])([^A-Z]+)/g)
+  name = name.map(item => item.toLowerCase())
+
+  return name
+}
+
 function resetStates() {
   dataPros = []
   componentsNodes = {}
@@ -32,6 +39,7 @@ function resetStates() {
 }
 
 function collectionDataProps(nodeName, pros) {
+  // console.info('****nodeName***', nodeName)
   for (node of pros) {
     dataPros.push(node.key.name)
   }
@@ -100,8 +108,9 @@ function generateComponentJson() {
   for (let name in componentsNodes) {
     // console.info('****', name, componentsNodes[name])
     const filePath = componentsNodes[name] + ((/^.+index(\.js)?$/).test(componentsNodes[name]) ? '' : '/index.js')
-    name = name.match(/([A-Z])([^A-Z]+)/g)
-    name = name.map(item => item.toLowerCase())
+    // name = name.match(/([A-Z])([^A-Z]+)/g)
+    // name = name.map(item => item.toLowerCase())
+    name = getStrikeName(name)
     newComponentsNodes[name.join('-')] = filePath
   }
   josnObj['usingComponents'] = newComponentsNodes
@@ -176,6 +185,21 @@ function getLifeCycelsNode(path, name) {
 function createObserverProperty(observerProperties) {
   const property = t.objectProperty(t.identifier('observers'), t.objectExpression(observerProperties))
   return property
+}
+
+function getPropsNodes(path) {
+  const pros = path.node.value.properties
+  const parentNode = path.parentPath.parentPath.node
+
+  // console.info('*******',  path.parentPath.key, pros && pros.length)
+
+  if (t.isExportDefaultDeclaration(parentNode)) {
+    path.node.key.name = 'properties'
+  }
+
+  if (t.isExportDefaultDeclaration(parentNode) && (pros && pros.length > 0)) {
+    collectionDataProps('pros', pros)
+  }
 }
 
 function getWatchObserversNode(path, name) {
@@ -410,9 +434,30 @@ function transfer$el(path) {
   path.node.declaration.properties.push($props)
 }
 
+function getComponentExternalName(path) {
+  const properties = path.node.declaration.properties
+  const dataPath = properties.filter(prop => prop.key && prop.key.name === 'data')
+  const namePath = properties.filter(prop => prop.key && prop.key.name === 'name')
+
+  let originName = namePath && namePath.length > 0 ? namePath[0]['value']['value'] : ''
+
+  originName = getStrikeName(originName)
+
+  const extName = originName.join('-') + '-c-ext-class'
+
+  const dataPropertiest = dataPath && dataPath.length > 0 ? dataPath[0].value.properties : []
+  if (dataPropertiest && dataPropertiest.length > 0) {
+    dataPropertiest.push(t.objectProperty(t.identifier('externalClassName'), t.stringLiteral(extName)))
+    dataPath[0].value.properties = dataPropertiest
+  }
+
+  return extName
+}
+
 function transfer$ExternalClassName(path) {
+  const externalName = getComponentExternalName(path)
   const left = t.binaryExpression('+', t.memberExpression(t.identifier('cfg'), t.identifier('prefix')), t.stringLiteral('-'))
-  const returnNode = t.returnStatement(t.binaryExpression('+', left, t.stringLiteral('ext-class')))
+  const returnNode = t.returnStatement(t.binaryExpression('+', left, t.stringLiteral(externalName)))
   const block = t.blockStatement([returnNode])
   const $extClass = t.objectMethod('get', t.identifier('$externalClassName'), [], block)
 
@@ -457,18 +502,7 @@ function transferDefaultNodes(path) {
       // console.info('*****ObjectProperty****', name)
   
       if (name === 'props') {
-        const pros = path.node.value.properties
-        const parentNode = path.parentPath.parentPath.node
-
-        // console.info('*******',  path.parentPath.key, pros && pros.length)
-
-        if (t.isExportDefaultDeclaration(parentNode)) {
-          path.node.key.name = 'properties'
-        }
-
-        if (t.isExportDefaultDeclaration(parentNode) && (pros && pros.length > 0)) {
-          collectionDataProps('pros', pros)
-        }
+        getPropsNodes(path)
       }
   
       if (name === 'default') {
@@ -543,30 +577,7 @@ function doTransfer(options) {
   
   resetStates()
 
-  traverse(ast, {
-    // ObjectMethod(path) {
-    //   const node = path.node
-    //   const key = node.key
-    //   const name = key ? key.name : ''
-  
-    //   // console.info('*****ObjectMethod****', name)
-  
-    //   if (lifeCycles.hasOwnProperty(name)) {
-    //     getLifeCycelsNode(path, name)
-    //   }
-    // },
-  
-    // ObjectProperty(path) {
-    //   const { key } = path.node
-    //   const { name } = key
-  
-    //   // console.info('*****ObjectProperty****', name)
-  
-    //   if (name === 'props') {
-    //     path.node.key.name = 'properties'
-    //   }
-    // },
-  
+  traverse(ast, {  
     ExportDefaultDeclaration(path) {
       if (path.node.type === 'ExportDefaultDeclaration') {
 

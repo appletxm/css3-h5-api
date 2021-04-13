@@ -42,14 +42,11 @@ let configOptions = {
 }
 
 function mergeOptions(options) {
-  const configOptions = Object.assign(configOptions, options)
-  return configOptions
+  const cfg = Object.assign(configOptions, options)
+  return cfg
 }
 
 function resetStates() {
-  dataPros = []
-  componentsNodes = {}
-  defaultComInmportIndexs = []
 }
 
 function getTranferHtml(domList) {
@@ -75,6 +72,7 @@ function transferAttr(config, attrs) {
   for (let attr in attrs) {
     let key = attr.trim()
     let value = attrs[attr].trim()
+    let needUpdateVal = false
 
     if (dynamicReg.test(attr)) {
       key = key.replace(/^:/, '')
@@ -82,19 +80,23 @@ function transferAttr(config, attrs) {
       if (value.match(/\[([^\[\]]*)?\]/g) && (/^\:class$/).test(attr)) {
         value = value + '.join(\' \')'
       }
+
+      needUpdateVal = true
     }
 
     if (directiveReg.test(attr)) {
       key = directives[key] || key
       delete attrs[attr]
+      needUpdateVal = true
     }
 
     if (eventReg.test(attr)) {
       key = key.replace(/^(v-bind\:|@)/, '')
       key = `bind:${events[key] || key}`
+      needUpdateVal = true
     }
 
-    value = value ? `\{\{ ${value} \}\}` : ''
+    value = needUpdateVal ? `\{\{ ${value} \}\}` : value
     newAttrs[key] = value
   }
 
@@ -120,6 +122,30 @@ function transferDom(config, nodes) {
   }
 }
 
+function addExternalClass(node) {
+  let className = node[0]['attribs']['class']
+  const cfgPrefixClass = `\`\$\{cfg.prefix\}-\$\{externalClassName\}\``
+
+  if (className) {
+    const matched = className.match(/\[([\s\S]+)?\]/m)
+    if (matched && matched.length > 1) {
+      className = matched[1] + ', ' + cfgPrefixClass
+      className = `\{\{ [${className}].join(' ') \}\}`
+    } else {
+      let ctxClass = className.match(/\{\{([\s\S]+)?\}\}/m)
+      if (ctxClass && ctxClass.length > 1) {
+        className = `\{\{ [${ctxClass[1]}, ${cfgPrefixClass}].join(' ') \}\}`
+      } else {
+        className = `\{\{ ['${className}', ${cfgPrefixClass}].join(' ') \}\}`
+      }
+    }
+  } else {
+    className = cfgPrefixClass
+  }
+
+  node[0]['attribs']['class'] = className
+}
+
 /***
  * Object {}
  * {
@@ -136,8 +162,14 @@ function doTransfer(options) {
   const code = fs.readFileSync(src, { encoding: 'utf8' })
   const parserDom = parseDOM(code)
 
+  if (parserDom.length > 1) {
+    throw new Error('Please make sure the single root node')
+  }
+
   resetStates()
   transferDom(configOptions, parserDom)
+  addExternalClass(parserDom)
+  
   const html = getTranferHtml(parserDom)
 
   fs.writeFileSync(dest, html, {encoding: 'utf8'})

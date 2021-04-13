@@ -1,11 +1,9 @@
 <div
     ref="reference"
     v-clickoutside="() => toggleDropDownVisible(false)"
-    :class="[
-      `${cfg.prefix}-cascader`,
-      realSize && `${cfg.prefix}-cascader--${realSize}`,
-      { 'is-disabled': isDisabled }
-    ]"
+    class="{{
+      `${cfg.prefix}-cascader`
+    }}"
     @mouseenter="inputHover = true"
     @mouseleave="inputHover = false"
     @click="() => toggleDropDownVisible(readonly ? undefined : true)"
