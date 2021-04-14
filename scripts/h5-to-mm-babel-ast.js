@@ -90,7 +90,10 @@ function removeComponetImportNode(path) {
   const newBody = []
 
   body.forEach((item, index) => {
-    if(!defaultComInmportIndexs.find((sIndex) => sIndex === index)) {
+    const isTemplate = t.isImportDeclaration(item) && (/^.+\.html$/).test(item.source.value)
+    const matchedCompoent = defaultComInmportIndexs.find((sIndex) => sIndex === index)
+
+    if(!matchedCompoent && !isTemplate) {
       newBody.push(item)
     }
   })
@@ -517,6 +520,10 @@ function transferDefaultNodes(path) {
         getComputedObserversNode(path)
       }
 
+      if (name === 'template') {
+        path.remove()
+      }
+
       if (name === 'mixins') {
         getMixinsNodes(path)
         path.node.key.name = 'behaviors'
@@ -577,7 +584,7 @@ function doTransfer(options) {
   
   resetStates()
 
-  traverse(ast, {  
+  traverse(ast, {
     ExportDefaultDeclaration(path) {
       if (path.node.type === 'ExportDefaultDeclaration') {
 
