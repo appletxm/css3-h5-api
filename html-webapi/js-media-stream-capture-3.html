@@ -1,0 +1,132 @@
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>HTMLCanvasElement capture into MediaStream demo</title>
+  <link rel="icon" href="../../assets/images/logo.ico" type="image/png">
+</head>
+
+<body>
+  <div> Create Real-Time stream from &lt; canvas &gt; and play it back.</div>
+
+  <video id="v" muted="true" hidden controls autoplay loop>
+    <source type="video/mp4" src="../assets/videos/640.mp4"></source>
+  </video>
+
+  <canvas id="c" width="480" height="270"></canvas>
+
+  <br>
+  Frame rate: <input type="number" id="fps" value="5">
+  <button id="btn1" onclick="startStreaming()">Create Stream from &lt; canvas &gt; with frame rate</button>
+
+  <script>
+    // This file is just a bunch of methods I use extensively.  I called it dimsum
+    // because is like a said tasty bun, full of nice and tasty stuff inside :)
+
+    /* global URL */
+
+    function makeGetStreamX(width, height, buttonName, gotStreamFunction) {
+      return function () {
+        var constraintsWidthXHeight = {
+          "audio": false,
+          "video": {
+            "mandatory": {
+              "minWidth": width,
+              "maxWidth": width,
+              "minHeight": height,
+              "maxHeight": height
+            },
+            "optional": []
+          }
+        };
+        navigator.webkitGetUserMedia(constraintsWidthXHeight,
+          gotStreamFunction,
+          getUserMediaFailedCallback);
+        document.getElementById(buttonName).disabled = true;
+      };
+    }
+
+    function createButton(id, text, onClick) {
+      const button = document.createElement("input");
+      button.id = id;
+      button.type = "button";
+      button.value = text;
+      button.onclick = onClick;
+      document.body.appendChild(button);
+      console.log("Button " + id + " created");
+    }
+
+    function createVideoTag(id, width, height, video_source) {
+      const videoTag = document.createElement('video');
+      if (video_source != '')
+        videoTag.src = URL.createObjectURL(video_source);
+      videoTag.id = id;
+      videoTag.width = width;
+      videoTag.height = height;
+      document.body.appendChild(videoTag);
+      videoTag.autoplay = true;
+      console.log("VideoTag " + id + " created");
+    }
+
+    function getUserMediaFailedCallback(error) {
+      console.error('User media request denied with error code ' + error.code);
+    }
+
+    function recorderOnStop() {
+      console.log('recorderOnStop fired');
+    }
+
+  </script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var v = document.getElementById('v');
+      var c = document.getElementById('c');
+      var context = c.getContext('2d');
+      v.addEventListener('play', function () {
+        draw(this, context, c.clientWidth, c.clientHeight);
+      }, false);
+
+    }, false);
+
+    function draw(v, c, w, h) {
+      if (v.paused || v.ended) return false;
+      c.drawImage(v, 0, 0, w, h);
+      setTimeout(draw, 20, v, c, w, h);
+    }
+
+    var theStream;
+    var thePlayback;
+
+    function startStreaming() {
+      document.getElementById("btn1").disabled = true;
+
+      // Create a MediaStream out of the <canvas> tag.
+      var num = document.getElementById("fps").value;
+      theStream = document.getElementById("c").captureStream(num);
+      document.body.appendChild(document.createElement("br"));
+      createButton("btn2", "Play back captured Stream to a <video> with frame rate " + num, startPlayback);
+      document.body.appendChild(document.createElement("br"));
+    }
+
+    function startPlayback() {
+      document.getElementById("btn2").disabled = true;
+
+      // And plug the created MediaStream into another <video> tag.
+      createVideoTag("playbackTag", 480, 270, theStream);
+      thePlayback = document.getElementById("playbackTag");
+      document.body.appendChild(document.createElement("br"));
+
+      createButton("btn3", "Stop theStream captured from <canvas>", stopStreaming);
+    }
+
+    function stopStreaming() {
+      document.getElementById("btn3").disabled = true;
+      theStream.getVideoTracks()[0].stop();
+    }
+
+  </script>
+
+</body>
+
+</html>

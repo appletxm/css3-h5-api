@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test h5 media stream</title>
+  <link rel="icon" href="../../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: 14px;
+      text-align: center;
+    }
+    canvas {
+      width: 640px;
+      height: 480px;
+      border: 1px solid #eee;
+    }
+
+    button {
+      width: 200px;
+      line-height: 20px;
+      display: block;
+      margin: 10px auto;
+    }
+
+    .wrapper {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid gray;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas></canvas>
+
+  <button disabled>capture</button>
+
+  <div class="wrapper"></div>
+  
+  <script>
+      // Prefer camera resolution nearest to 1280x720.
+      var constraints = { audio: false, video: { width: 640, height: 480 } };
+      var frameRate = 25
+      var stream = null
+      var canvas = document.querySelector('canvas');
+      var button = document.querySelector('button')
+      
+      document.querySelector('button').addEventListener('click', function(e) {
+        stream.getVideoTracks()[0].requestFrame()
+      })
+
+      navigator.mediaDevices.getUserMedia(constraints).then(function(mediaStream) {
+        stream = canvas.captureStream(frameRate)
+        button.removeAttribute('disabled')
+      })
+      .catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
+  </script>
+</body>
+
+</html>
