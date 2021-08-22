@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test h5 media stream</title>
+  <link rel="icon" href="../../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: 14px;
+    }
+
+    button {
+      line-height: 24px;
+      margin: 10px;
+      padding: 0 10px;
+    }
+
+    .img-wrapper {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid gray;
+    }
+
+    .opts {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #eee;
+    }
+
+    .video-wrapper {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #eee;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="opts">
+    audio: <select id="select-audio"></select>
+    video: <select id="select-video"></select>
+
+    <br/>
+
+    <button id="btn-start" disabled>start</button>
+    <button id="btn-capture" disabled>capture</button>
+  </div>
+
+  <div class="video-wrapper">
+    <video id="video" width="720" height="360" muted autoplay></video>
+    <canvas id="preview" width="720" height="360"></canvas>
+  </div>
+
+  <div class="img-wrapper">
+    <canvas id="screen-shot" width="720" height="360"></canvas>
+  </div>
+
+  <script>
+    // Prefer camera resolution nearest to 1280x720.
+    var constraints = {
+      audio: false,
+      video: {
+        deviceId: {
+          exact: 'f5c8e5a972e3b04f9a4658864a6028c0bdb8ccc8ab46fad7e703fb51b7ed9d33'
+        },
+        width: 720,
+        height: 320
+      }
+    };
+    var frameRate = 25
+    var stream = null
+    var cPreview = document.querySelector('#preview');
+    var ctx = cPreview.getContext('2d')
+    var btnPlay = document.querySelector('#btn-start')
+    var btnCapture = document.querySelector('#btn-capture')
+    var video = document.querySelector('video')
+    const audioSelect = document.querySelector('#select-audio');
+    const videoSelect = document.querySelector('#select-video');
+    var videoList = []
+    var audioList = []
+
+    // async function getDevices() {
+    //   const devices = await navigator.mediaDevices.enumerateDevices()
+    //   return devices
+    // }
+
+    function draw(v, c, w, h) {
+      if (v.paused || v.ended) return false;
+      c.drawImage(v, 0, 0, w, h);
+      setTimeout(draw, 20, v, c, w, h);
+    }
+
+    function getDevices() {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then(function (deviceInfos) {
+          console.info('*****deviceInfos****', deviceInfos)
+
+          for (let i = 0; i !== deviceInfos.length; ++i) {
+            const deviceInfo = deviceInfos[i];
+            const option = document.createElement("option");
+            option.value = deviceInfo.deviceId;
+            if (deviceInfo.kind === "audioinput") {
+              option.text = deviceInfo.label || "microphone " + (audioSelect.length + 1);
+              audioSelect.appendChild(option);
+            } else if (deviceInfo.kind === "videoinput") {
+              option.text = deviceInfo.label || "camera " + (videoSelect.length + 1);
+              videoSelect.appendChild(option);
+            } else {
+              console.log("Found another kind of device: ", deviceInfo);
+            }
+          }
+        })
+        .catch(function (err) {
+          console.log('[getDevices]', err.name + ": " + err.message);
+        }); // always check for errors at the end.
+    }
+
+    function changeConstraints() {
+      if (window.stream) {
+        window.stream.getTracks().forEach(function (track) {
+          track.stop();
+        });
+      }
+
+      // const constraints = {
+      //   audio: {
+      //     deviceId: {
+      //       exact: audioSelect.value
+      //     },
+      //   },
+      //   video: {
+      //     deviceId: {
+      //       exact: videoSelect.value
+      //     },
+      //   },
+      // };
+
+      console.info('[changeConstraints]', videoSelect.value)
+
+      constraints.video.deviceId = {
+        exact: videoSelect.value
+      }
+
+      playVideo()
+    }
+
+    function playVideo() {
+      // navigator.mediaDevices
+      //   .then(getStream)
+      //   .catch(function (err) {
+      //     console.log(err.name + ": " + err.message);
+      //   }); // always check for errors at the end.
+
+      navigator.mediaDevices.getUserMedia(constraints).then(function (mediaStream) {
+        // stream = canvas.captureStream(frameRate)
+        // button.removeAttribute('disabled')
+        // draw()
+        window.stream = mediaStream
+        video.srcObject = mediaStream
+      }).catch(function (err) {
+        console.log('[playVideo]', err.name + ": " + err.message);
+      }); // always check for errors at the end.
+    }
+
+    function readVideoTrack() {
+      if (window.MediaStreamTrackProcessor) {
+        const canvas = document.querySelector("canvas");
+        const ctx = canvas.getContext("2d");
+        const track = getCanvasTrack(); // MediaStream.getVideoTracks()[0]
+        const processor = new MediaStreamTrackProcessor(track);
+        const reader = processor.readable.getReader();
+        readChunk();
+
+        function readChunk() {
+          reader.read().then(({
+            done,
+            value
+          }) => {
+            // the MediaStream video can have dynamic size
+            if (canvas.width !== value.displayWidth || canvas.height !== value.displayHeight) {
+              canvas.width = value.displayWidth;
+              canvas.height = value.displayHeight;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // value is a VideoFrame
+            ctx.drawImage(value, 0, 0);
+            value.close(); // close the VideoFrame when we're done with it
+            if (!done) {
+              readChunk();
+            }
+          });
+        }
+      } else {
+        console.error("Your browser doesn't support this API yet");
+      }
+
+      // We can't use getUserMedia in StackSnippets
+      // So here we use a simple canvas as source
+      // for our MediaStream.
+      function getCanvasTrack() {
+        // just some noise...
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const img = new ImageData(300, 150);
+        const data = new Uint32Array(img.data.buffer);
+        const track = canvas.captureStream().getVideoTracks()[0];
+
+        anim();
+
+        return track;
+
+        function anim() {
+          for (let i = 0; i < data.length; i++) {
+            data[i] = Math.random() * 0xFFFFFF + 0xFF000000;
+          }
+          ctx.putImageData(img, 0, 0);
+          if (track.readyState === "live") {
+            requestAnimationFrame(anim);
+          }
+        }
+
+      }
+    }
+
+    audioSelect.onchange = changeConstraints;
+    videoSelect.onchange = changeConstraints;
+
+    document.addEventListener('DOMContentLoaded', async function () {
+      // const devices = await getDevices()
+      // console.info('*****devices***', devices)
+      btnPlay.removeAttribute('disabled')
+      getDevices()
+    }, false);
+
+    btnPlay.addEventListener('click', function (e) {
+      playVideo()
+    })
+
+    btnCapture.addEventListener('click', function (e) {
+      var imgData = ctx.getImageData(0, 0, 720, 320)
+      console.log(imgData)
+      var s = document.querySelector('#screen-shot')
+      var sctx = s.getContext('2d')
+      sctx.putImageData(imgData, 0, 0)
+    })
+
+    video.addEventListener('loadedmetadata', function (e) {
+      console.info('****onloadedmetadata****', e)
+      draw(video, ctx, 720, 320);
+      // video.play()
+    })
+
+    video.addEventListener('play', function (e) {
+      console.info('****play****', e)
+      // draw(this, context, c.clientWidth, c.clientHeight);
+      btnCapture.removeAttribute('disabled')
+    }, false);
+
+  </script>
+</body>
+
+</html>

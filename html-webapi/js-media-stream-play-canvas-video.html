@@ -1,58 +1,20 @@
-<!DOCTYPE html>
-<html lang="en" style="font-size: 100px;">
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-  <meta name="format-detection" content="telephone=no">
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <title>HTMLCanvasElement capture into MediaStream demo</title>
-  <link rel="icon" href="../../assets/images/logo.ico" type="image/png">
-  <style>
-    body {
-      font-size: 14px;
-      text-align: center;
-    }
-
-    canvas {
-      width: 720px;
-      height: 320px;
-      border: 1px solid #eee;
-    }
-
-    button {
-      width: 240px;
-      line-height: 20px;
-      display: block;
-      margin: 10px auto;
-    }
-
-    .image {
-      padding: 10px; margin: 10px; border: 1px solid #eee;
-    }
-
-  </style>
 </head>
 
 <body>
   <div> Create Real-Time stream from &lt; canvas &gt; and play it back.</div>
 
-  <div>
-    <button id="trigger-play">trigger video play</button>
-    <button id="take-screen-shot-video">take screen shot to video</button>
-    <button id="take-screen-shot-download">take screen shot download</button>
-  </div>
-  
-  <div class="image">
-    <canvas id="shot" width="720" height="320"></canvas>
-  </div>
 
-  <video id="v" width="100%" muted hidden controls autoplay>
-		<source type="video/mp4" src="../assets/videos/640.mp4"></source>
-	</video>
+  <video id="v" width="720" height="320" muted="true" controls autoplay loop>
+    <source type="video/mp4" src="../assets/videos/640.mp4"></source>
+  </video>
 
   <canvas id="c" width="720" height="320"></canvas>
-
+  <div id="div1"> </div>
   <br>
   <button id="btn1" onclick="startStreaming()">Create Stream from &lt; canvas &gt;</button>
 
@@ -61,8 +23,6 @@
     // because is like a said tasty bun, full of nice and tasty stuff inside :)
 
     /* global URL */
-
-    // var objUrl = null
 
     function makeGetStreamX(width, height, buttonName, gotStreamFunction) {
       return function () {
@@ -97,22 +57,14 @@
 
     function createVideoTag(id, width, height, video_source) {
       const videoTag = document.createElement('video');
+      if (video_source != '')
+        videoTag.src = URL.createObjectURL(video_source);
       videoTag.id = id;
-      videoTag.width = '720';
-      videoTag.height = '320';
-      videoTag.autoplay = true;
-      videoTag.muted = true
+      videoTag.width = width;
+      videoTag.height = height;
       document.body.appendChild(videoTag);
+      videoTag.autoplay = true;
       console.log("VideoTag " + id + " created");
-
-      // URL.revokeObjectURL(objUrl)
-
-      setTimeout(function() {
-        if (video_source != ''){
-          // objUrl = URL.createObjectURL(video_source);
-          videoTag.srcObject = video_source
-        }
-      }, 1000)
     }
 
     function getUserMediaFailedCallback(error) {
@@ -126,42 +78,18 @@
   </script>
 
   <script>
-    var v = document.getElementById('v');
-    // c = document.createElement('canvas');
-    // document.getElementById('div1').appendChild(c);
-    var c = document.getElementById('c');
-    // c.hidden = true;
-    var context = c.getContext('2d');
-    var theStream;
-    var thePlayback;
-    
-    document.querySelector('#trigger-play').addEventListener('click', function() {
-      // var v = document.getElementById('v');
-      v.play()
-    })
-
-    document.querySelector('#take-screen-shot-video').addEventListener('click', function() {
-      console.info(theStream.getVideoTracks())
-      theStream.getVideoTracks()[0].requestFrame();
-    })
-
-    document.querySelector('#take-screen-shot-download').addEventListener('click', function() {
-      var imgData = context.getImageData(0, 0, 720, 320)
-      console.log(imgData)
-      var s = document.querySelector('#shot')
-      var sctx = s.getContext('2d')
-      sctx.putImageData(imgData, 0, 0)
-    })
-
     document.addEventListener('DOMContentLoaded', function () {
-      v.addEventListener('loadedmetadata', function(e) {
-        console.info('****onloadedmetadata****', e)
-        v.play()
-      })
+      var v = document.getElementById('v');
+      // c = document.createElement('canvas');
+      // document.getElementById('div1').appendChild(c);
+      c = document.getElementById('c');
+      // c.hidden = true;
 
+      var context = c.getContext('2d');
       v.addEventListener('play', function () {
         draw(this, context, c.clientWidth, c.clientHeight);
       }, false);
+
     }, false);
 
     function draw(v, c, w, h) {
@@ -170,11 +98,14 @@
       setTimeout(draw, 20, v, c, w, h);
     }
 
+    var c;
+    var theStream;
+    var thePlayback;
+
     function startStreaming() {
       document.getElementById("btn1").disabled = true;
 
       // Create a MediaStream out of the <canvas> tag.
-      // theStream = c.captureStream(0); // 指定在video中播放那张画面要在 0 的情况下才有用， 如果想自动同步的话就不设置任何值
       theStream = c.captureStream();
       document.body.appendChild(document.createElement("br"));
       createButton("btn2", "Play back captured Stream to a <video>", startPlayback);

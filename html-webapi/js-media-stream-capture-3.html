@@ -4,6 +4,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>HTMLCanvasElement capture into MediaStream demo</title>
   <link rel="icon" href="../../assets/images/logo.ico" type="image/png">
+  <style>
+  </style>
 </head>
 
 <body>
@@ -59,7 +61,8 @@
     function createVideoTag(id, width, height, video_source) {
       const videoTag = document.createElement('video');
       if (video_source != '')
-        videoTag.src = URL.createObjectURL(video_source);
+      videoTag.srcObject = video_source
+        // videoTag.src = URL.createObjectURL(video_source);
       videoTag.id = id;
       videoTag.width = width;
       videoTag.height = height;
