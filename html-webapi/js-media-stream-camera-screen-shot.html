@@ -33,8 +33,22 @@
 
     .video-wrapper {
       margin: 10px;
-      padding: 10px;
       border: 1px solid #eee;
+      position: relative;
+      width: 720px;
+      height: 360px;
+    }
+
+    .video-wrapper video {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .video-wrapper canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
   </style>
@@ -49,6 +63,7 @@
 
     <button id="btn-start" disabled>start</button>
     <button id="btn-capture" disabled>capture</button>
+    <button id="btn-stop" disabled>stop</button>
   </div>
 
   <div class="video-wrapper">
@@ -65,11 +80,8 @@
     var constraints = {
       audio: false,
       video: {
-        deviceId: {
-          exact: 'f5c8e5a972e3b04f9a4658864a6028c0bdb8ccc8ab46fad7e703fb51b7ed9d33'
-        },
         width: 720,
-        height: 320
+        height: 360
       }
     };
     var frameRate = 25
@@ -77,6 +89,7 @@
     var cPreview = document.querySelector('#preview');
     var ctx = cPreview.getContext('2d')
     var btnPlay = document.querySelector('#btn-start')
+    var btnStop = document.querySelector('#btn-stop')
     var btnCapture = document.querySelector('#btn-capture')
     var video = document.querySelector('video')
     const audioSelect = document.querySelector('#select-audio');
@@ -121,12 +134,16 @@
         }); // always check for errors at the end.
     }
 
-    function changeConstraints() {
+    function stopPlay() {
       if (window.stream) {
         window.stream.getTracks().forEach(function (track) {
           track.stop();
-        });
+        })
       }
+    }
+
+    function changeConstraints() {
+      stopPlay()
 
       // const constraints = {
       //   audio: {
@@ -243,16 +260,20 @@
     })
 
     btnCapture.addEventListener('click', function (e) {
-      var imgData = ctx.getImageData(0, 0, 720, 320)
+      var imgData = ctx.getImageData(0, 0, 720, 360)
       console.log(imgData)
       var s = document.querySelector('#screen-shot')
       var sctx = s.getContext('2d')
       sctx.putImageData(imgData, 0, 0)
     })
 
+    btnStop.addEventListener('click', function (e) {
+      stopPlay()
+    })
+
     video.addEventListener('loadedmetadata', function (e) {
       console.info('****onloadedmetadata****', e)
-      draw(video, ctx, 720, 320);
+      draw(video, ctx, 720, 360);
       // video.play()
     })
 
@@ -260,6 +281,7 @@
       console.info('****play****', e)
       // draw(this, context, c.clientWidth, c.clientHeight);
       btnCapture.removeAttribute('disabled')
+      btnStop.removeAttribute('disabled')
     }, false);
 
   </script>
