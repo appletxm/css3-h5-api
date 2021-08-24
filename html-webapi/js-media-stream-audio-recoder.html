@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test h5 media stream</title>
+  <link rel="icon" href="../../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: 14px;
+      line-height: 24px;
+    }
+
+    .opt-wrapper {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #eee;
+    }
+
+    button {
+      margin-left: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="opt-wrapper">
+    audio: <select id="audio-devices"></select>
+    <button id="btn-start" disabled>Start</button>
+    <button id="btn-stop" disabled>Stop</button>
+    <button id="btn-play" disabled>Play</button>
+    <button id="btn-delete" disabled>Delete</button>
+    <button id="btn-download" disabled>Download</button>
+  </div>
+
+  <audio autoplay controls></audio>
+
+  <script>
+    const constraints = { audio: true}
+    const audio = document.querySelector('audio')
+    let realMediaStream = null
+    let mediaRecorder = null
+    const options = { mimeType: "audio/mp3; codecs=vp9" }
+    const btnStart = document.querySelector('#btn-start')
+    const btnStop = document.querySelector('#btn-stop')
+    const btnPlay = document.querySelector('#btn-play')
+    const btnDelete = document.querySelector('#btn-delete')
+    const btnDownload = document.querySelector('#btn-download')
+    const select = document.querySelector('#audio-devices')
+    const recorderChunks = []
+    let objectUrl = null
+    const audioType = 'mp3'
+
+    function creatObjectUrlForReccord() {
+      if (!objectUrl) {
+        // const blob = new Blob(recorderChunks, { 'type': 'audio/ogg; codecs=opus' });
+        const blob = new Blob(recorderChunks, { 'type': `audio/${audioType}` });
+        objectUrl = URL.createObjectURL(blob);
+      }
+    }
+
+    function downloadRecord() {
+      creatObjectUrlForReccord()
+
+      const a = document.createElement("a");
+      document.body.appendChild(a);
+      a.href = objectUrl;
+      a.download = `test.${audioType}`;
+      a.click();
+      document.body.removeChild(a)
+    }
+
+    function playRecord() {
+      creatObjectUrlForReccord()
+      audio.src = objectUrl
+    }
+
+    function deleteRecord() {
+      if (objectUrl) {
+        audio.src = ''
+        window.URL.revokeObjectURL(objectUrl);
+        objectUrl = null
+        recorderChunks.length = 0
+
+        btnPlay.disabled = true
+        btnDelete.disabled = true
+        btnDownload.disabled = true
+      }
+    }
+
+    function createPromise() {
+      let resolveCb = null
+      let rejectCb = null
+      const promise = new Promise((resolve, reject) => {
+        resolveCb = resolve
+        rejectCb = reject
+      })
+
+      return { resolveCb, rejectCb, promise }
+    }
+
+    function getAudioDevices(callback) {
+      const { resolveCb, rejectCb, promise } = createPromise()
+      // let defaultSelect = {}
+
+      navigator.mediaDevices.enumerateDevices().then(function (devices) {
+        devices.forEach(function (device) {
+          let menu = document.getElementById("audio-devices")
+
+          if (device.kind == "audioinput") {
+            let item = document.createElement("option")
+            item.innerText = device.label;
+            item.value = device.deviceId;
+            menu.appendChild(item);
+          }
+
+          resolveCb(true)
+        })
+      }).catch(err => {
+        console.log('[getAudioDevices ERROR]', err)
+        rejectCb(err)
+      })
+
+      return promise
+    }
+
+    function getUserMedia() {
+      const { resolveCb, rejectCb, promise } = createPromise()
+      navigator.mediaDevices.getUserMedia(constraints).then(function (mediaStream) {
+        // audio.srcObject = mediaStream;
+        realMediaStream = mediaStream
+        createRecorderInstance(mediaStream)
+        resolveCb(true)
+      })
+        .catch((err) => {
+          console.log(err.name + ": " + err.message);
+          rejectCb(err)
+        }); // always check for errors at the end.
+
+      return promise
+    }
+
+    function stopStream() {
+      if (realMediaStream) {
+        const tracks = realMediaStream.getTracks()
+        tracks.forEach(track => {
+          console.info(track)
+          track.stop()
+        })
+      }
+    }
+
+    function createRecorderInstance(stream) {
+      mediaRecorder = new MediaRecorder(stream)
+
+      mediaRecorder.addEventListener('dataavailable', (e) => {
+        console.info('**ondataavailable**', e)
+        recorderChunks.push(e.data)
+      })
+
+      mediaRecorder.addEventListener('error', (e) => {
+        console.info('**recoreder error**', e)
+      })
+
+      mediaRecorder.addEventListener('start', (e) => {
+        console.info('**recoreder start**', e)
+      })
+
+      mediaRecorder.addEventListener('stop', (e) => {
+        btnPlay.removeAttribute('disabled')
+        btnDownload.removeAttribute('disabled')
+        btnDelete.removeAttribute('disabled')
+        console.info('**recoreder stop**', e)
+      })
+    }
+
+    function readyForRecord() {
+      btnStart.removeAttribute('disabled')
+      btnStop.removeAttribute('disabled')
+    }
+
+    audio.addEventListener('loadedmetadata', () => {
+      console.info('====loadedmetadata======')
+      audio.play()
+    })
+
+    btnStart.addEventListener('click', () => {
+      // audio.play();
+      if (mediaRecorder) {
+        mediaRecorder.start();
+        console.log('**mediaRecorder.state**', mediaRecorder.state);
+        console.log("recorder started");
+      }
+    })
+
+    btnStop.addEventListener('click', () => {
+      if (mediaRecorder) {
+        mediaRecorder.stop()
+      }
+      // stopStream()
+    })
+
+    btnDelete.addEventListener('click', () => {
+      console.info('**delete record**')
+      deleteRecord()
+    })
+
+    btnDownload.addEventListener('click', () => {
+      downloadRecord()
+    })
+
+    btnPlay.addEventListener('click', () => {
+      playRecord()
+    })
+
+    document.addEventListener('DOMContentLoaded', function () {
+      getAudioDevices().then((res) => {
+        if (res === true) {
+          return getUserMedia()
+        } else {
+          return null
+        }
+      }).then(res => {
+        if (res) {
+          readyForRecord(res)
+        }
+      }).catch(err => {
+        console.log('[init ERROR] ', err)
+      })
+    })
+
+  </script>
+</body>
+
+</html>
