@@ -34,6 +34,8 @@
     <button id="btn-play" disabled>Play</button>
     <button id="btn-delete" disabled>Delete</button>
     <button id="btn-download" disabled>Download</button>
+
+    <button id="btn-close-all">Close All</button>
   </div>
 
   <audio autoplay controls></audio>
@@ -49,6 +51,7 @@
     const btnPlay = document.querySelector('#btn-play')
     const btnDelete = document.querySelector('#btn-delete')
     const btnDownload = document.querySelector('#btn-download')
+    const btnCloseAll = document.querySelector('#btn-close-all')
     const select = document.querySelector('#audio-devices')
     const recorderChunks = []
     let objectUrl = null
@@ -191,20 +194,20 @@
       // audio.play();
       if (mediaRecorder) {
         mediaRecorder.start();
-        console.log('**mediaRecorder.state**', mediaRecorder.state);
-        console.log("recorder started");
+        console.log('**start recorder status**', mediaRecorder.state);
       }
     })
 
     btnStop.addEventListener('click', () => {
       if (mediaRecorder) {
         mediaRecorder.stop()
+        console.log('**stop recorder status**', mediaRecorder.state);
       }
       // stopStream()
     })
 
     btnDelete.addEventListener('click', () => {
-      console.info('**delete record**')
+      console.info('**delete record recorder state**', mediaRecorder.state)
       deleteRecord()
     })
 
@@ -214,6 +217,15 @@
 
     btnPlay.addEventListener('click', () => {
       playRecord()
+    })
+
+    btnCloseAll.addEventListener('click', () => {
+      stopStream()
+      deleteRecord()
+      mediaRecorder = null
+
+      btnStart.disabled = true
+      btnStop.disabled = true
     })
 
     document.addEventListener('DOMContentLoaded', function () {
