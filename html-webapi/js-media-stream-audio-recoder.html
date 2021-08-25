@@ -23,6 +23,7 @@
     button {
       margin-left: 30px;
     }
+
   </style>
 </head>
 
@@ -34,33 +35,71 @@
     <button id="btn-play" disabled>Play</button>
     <button id="btn-delete" disabled>Delete</button>
     <button id="btn-download" disabled>Download</button>
-
+    <button id="btn-upload" disabled>Upload</button>
     <button id="btn-close-all">Close All</button>
+
+    <button id="btn-test-start">Test Start</button>
+    <button id="btn-test-end">Test End</button>
   </div>
 
   <audio autoplay controls></audio>
 
+  <canvas id="audio-line"></canvas>
+
   <script>
-    const constraints = { audio: true}
+    const constraints = {
+      audio: true
+    }
     const audio = document.querySelector('audio')
     let realMediaStream = null
     let mediaRecorder = null
-    const options = { mimeType: "audio/mp3; codecs=vp9" }
+    // const options = {
+    //   mimeType: "audio/mp3; codecs=vp9"
+    // }
+    const options = {
+      // mimeType: 'audio/3gpp',
+      audioBitsPerSecond: '2.5Mbps'
+    }
     const btnStart = document.querySelector('#btn-start')
     const btnStop = document.querySelector('#btn-stop')
     const btnPlay = document.querySelector('#btn-play')
     const btnDelete = document.querySelector('#btn-delete')
     const btnDownload = document.querySelector('#btn-download')
     const btnCloseAll = document.querySelector('#btn-close-all')
+    const btnUpload = document.querySelector('#btn-upload')
+    const btnTestStart = document.querySelector('#btn-test-start')
+    const btnTestEnd = document.querySelector('#btn-test-end')
     const select = document.querySelector('#audio-devices')
     const recorderChunks = []
+    let blob = null
     let objectUrl = null
     const audioType = 'mp3'
+    // let timer = 0
+
+    let testObj = null
+
+    function startUp() {
+      getAudioDevices().then((res) => {
+        if (res === true) {
+          return getUserMedia()
+        } else {
+          return null
+        }
+      }).then(res => {
+        if (res) {
+          readyForRecord(res)
+        }
+      }).catch(err => {
+        console.log('[init ERROR] ', err)
+      })
+    }
 
     function creatObjectUrlForReccord() {
       if (!objectUrl) {
         // const blob = new Blob(recorderChunks, { 'type': 'audio/ogg; codecs=opus' });
-        const blob = new Blob(recorderChunks, { 'type': `audio/${audioType}` });
+        blob = new Blob(recorderChunks, {
+          'type': `audio/${audioType}`
+        });
         objectUrl = URL.createObjectURL(blob);
       }
     }
@@ -91,6 +130,7 @@
         btnPlay.disabled = true
         btnDelete.disabled = true
         btnDownload.disabled = true
+        btnUpload.disabled = true
       }
     }
 
@@ -102,17 +142,26 @@
         rejectCb = reject
       })
 
-      return { resolveCb, rejectCb, promise }
+      return {
+        resolveCb,
+        rejectCb,
+        promise
+      }
     }
 
     function getAudioDevices(callback) {
-      const { resolveCb, rejectCb, promise } = createPromise()
+      const {
+        resolveCb,
+        rejectCb,
+        promise
+      } = createPromise()
       // let defaultSelect = {}
 
       navigator.mediaDevices.enumerateDevices().then(function (devices) {
-        devices.forEach(function (device) {
-          let menu = document.getElementById("audio-devices")
+        let menu = document.getElementById("audio-devices")
+        menu.innerHTML = ''
 
+        devices.forEach(function (device) {
           if (device.kind == "audioinput") {
             let item = document.createElement("option")
             item.innerText = device.label;
@@ -131,13 +180,17 @@
     }
 
     function getUserMedia() {
-      const { resolveCb, rejectCb, promise } = createPromise()
+      const {
+        resolveCb,
+        rejectCb,
+        promise
+      } = createPromise()
       navigator.mediaDevices.getUserMedia(constraints).then(function (mediaStream) {
-        // audio.srcObject = mediaStream;
-        realMediaStream = mediaStream
-        createRecorderInstance(mediaStream)
-        resolveCb(true)
-      })
+          // audio.srcObject = mediaStream;
+          realMediaStream = mediaStream
+          createRecorderInstance(mediaStream)
+          resolveCb(true)
+        })
         .catch((err) => {
           console.log(err.name + ": " + err.message);
           rejectCb(err)
@@ -173,9 +226,15 @@
       })
 
       mediaRecorder.addEventListener('stop', (e) => {
-        btnPlay.removeAttribute('disabled')
-        btnDownload.removeAttribute('disabled')
-        btnDelete.removeAttribute('disabled')
+        // btnPlay.removeAttribute('disabled')
+        // btnDownload.removeAttribute('disabled')
+        // btnDelete.removeAttribute('disabled')
+        // btnUpload.removeAttribute('disabled')
+
+        btnPlay.disabled = false
+        btnDownload.disabled = false
+        btnDelete.disabled = false
+        btnUpload.disabled = false
         console.info('**recoreder stop**', e)
       })
     }
@@ -185,6 +244,87 @@
       btnStop.removeAttribute('disabled')
     }
 
+    function closeAll() {
+      stopStream()
+      deleteRecord()
+      mediaRecorder = null
+
+      btnStart.disabled = true
+      btnStop.disabled = true
+    }
+
+    function startRateCheck() {
+      let waveRequest = null
+      let oscillsRequest = null
+      const audioContext = new AudioContext()
+      const dest = audioContext.destination
+
+      const track = audioContext.createMediaStreamSource(realMediaStream)
+      // const audio = new Audio(realMediaStream)
+      // audio.muted = true
+      // const track = audioContext.createMediaElementSource(audio)
+
+      const gainNode = audioContext.createGain()
+
+      track.connect(gainNode)
+      gainNode.connect(dest)
+      
+      const analyser = audioContext.createAnalyser()
+      gainNode.connect(analyser)
+      const waveform = new Float32Array(analyser.frequencyBinCount);
+      analyser.getFloatTimeDomainData(waveform);
+
+      function updateWaveForm() {
+        waveRequest = requestAnimationFrame(updateWaveForm);
+        analyser.getFloatTimeDomainData(waveform);
+      }
+
+      function drawOscilloscope() {
+        oscillsRequest = requestAnimationFrame(drawOscilloscope);
+
+        const scopeCanvas = document.getElementById('audio-line');
+        const scopeContext = scopeCanvas.getContext('2d');
+
+        scopeCanvas.width = waveform.length;
+        scopeCanvas.height = 200;
+
+        scopeContext.clearRect(0, 0, scopeCanvas.width, scopeCanvas.height);
+        scopeContext.beginPath();
+
+        for(let i = 0; i < waveform.length; i++) {
+          const x = i;
+          const y = ( 0.5 + (waveform[i] / 2) ) * scopeCanvas.height;
+          
+
+          if(i == 0) {
+            scopeContext.moveTo(x, y);
+          } else {
+            scopeContext.lineTo(x, y);
+          }
+        }
+
+        scopeContext.strokeStyle= '#5661FA';
+        scopeContext.lineWidth = 2;
+        scopeContext.stroke();
+      }
+    
+      drawOscilloscope()
+      updateWaveForm()
+
+      return {
+        stopTest() {
+          cancelAnimationFrame(waveRequest)
+          cancelAnimationFrame(oscillsRequest)
+
+          track.disconnect(gainNode)
+          gainNode.disconnect(dest)
+
+          waveRequest = null
+          oscillsRequest = null
+        }
+      }
+    }
+    
     audio.addEventListener('loadedmetadata', () => {
       console.info('====loadedmetadata======')
       audio.play()
@@ -203,7 +343,6 @@
         mediaRecorder.stop()
         console.log('**stop recorder status**', mediaRecorder.state);
       }
-      // stopStream()
     })
 
     btnDelete.addEventListener('click', () => {
@@ -219,29 +358,65 @@
       playRecord()
     })
 
-    btnCloseAll.addEventListener('click', () => {
-      stopStream()
-      deleteRecord()
-      mediaRecorder = null
+    btnUpload.addEventListener('click', () => {
+      const file = new File(recorderChunks, `test.${audioType}`, {
+        'type': `audio/${audioType}`
+      })
+      const formData = new FormData()
 
-      btnStart.disabled = true
-      btnStop.disabled = true
+      formData.append('file', file);
+
+      fetch('/api/upload', { // Your POST endpoint
+        method: 'POST',
+        // headers: {
+        //   'Content-Type': 'multipart/form-data'
+        // },
+        body: formData
+      }).then(
+        response => response.json() // if the response is a JSON object
+      ).then(
+        success => console.log(success) // Handle the success response object
+      ).catch(
+        error => console.log(error) // Handle the error response object
+      );
+    })
+
+    btnCloseAll.addEventListener('click', () => {
+      closeAll()
+    })
+
+    btnTestStart.addEventListener('click', () => {
+      testObj = startRateCheck()
+
+      // const audioTracks = realMediaStream.getAudioTracks()
+      // console.log(audioTracks[0])
+    })
+
+    btnTestEnd.addEventListener('click', () => {
+      testObj.stopTest()
+    })
+    
+    select.addEventListener('change', (e) => {
+      const deviceId = e.target.value
+
+      console.info('**change deviceId**', deviceId)
+
+      if (deviceId === 'default' || deviceId === 'communications') {
+        constraints.audio = true
+      } else {
+        constraints.audio = {
+          deviceId: {
+            exact: deviceId
+          }
+        }
+      }
+
+      closeAll()
+      startUp()
     })
 
     document.addEventListener('DOMContentLoaded', function () {
-      getAudioDevices().then((res) => {
-        if (res === true) {
-          return getUserMedia()
-        } else {
-          return null
-        }
-      }).then(res => {
-        if (res) {
-          readyForRecord(res)
-        }
-      }).catch(err => {
-        console.log('[init ERROR] ', err)
-      })
+      startUp()
     })
 
   </script>
