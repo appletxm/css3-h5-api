@@ -22,8 +22,9 @@ export class Recorder {
     this.node = (this.context.createScriptProcessor || this.context.createJavaScriptNode).call(this.context, this.config.bufferLen, this.config.numChannels, this.config.numChannels);
 
     this.node.onaudioprocess = (e) => {
-      console.info('**onaudioprocess**', e)
       if (!this.recording) return;
+
+      console.info('**onaudioprocess**', e)
 
       var buffer = [];
       for (var channel = 0; channel < this.config.numChannels; channel++) {
@@ -34,6 +35,8 @@ export class Recorder {
         buffer: buffer
       });
     };
+
+    // this.waveNode = this.context.createAnalyser()
 
     source.connect(this.node);
     this.node.connect(this.context.destination); //this should not be necessary

@@ -38,157 +38,157 @@
   <canvas id="audio-line"></canvas>
 
   <script>
-    // const constraints = {
-    //   audio: true
-    // }
-    // const audio = document.querySelector('audio')
-    // let realMediaStream = null
-    // const btnTestStart = document.querySelector('#btn-test-start')
-    // const btnTestEnd = document.querySelector('#btn-test-end')
-    // const canvas = document.querySelector('#audio-line')
-    // const canvasCtx = canvas.getContext('2d')
-    // let drawVisual = null
-    // let audioContext = null
-    // let analyser = null
-    // let dataArray = null
-    // let bufferLength = null
+    const constraints = {
+      audio: true
+    }
+    const audio = document.querySelector('audio')
+    let realMediaStream = null
+    const btnTestStart = document.querySelector('#btn-test-start')
+    const btnTestEnd = document.querySelector('#btn-test-end')
+    const canvas = document.querySelector('#audio-line')
+    const canvasCtx = canvas.getContext('2d')
+    let drawVisual = null
+    let audioContext = null
+    let analyser = null
+    let dataArray = null
+    let bufferLength = null
 
-    // const getAudioContext = () => {
-    //   audioContext = new AudioContext()
-    //   analyser = audioContext.createAnalyser()
-    // }
+    const getAudioContext = () => {
+      audioContext = new AudioContext()
+      analyser = audioContext.createAnalyser()
+    }
 
-    // function draw() {
-    //   const WIDTH = 2048
-    //   const HEIGHT = 40
+    function draw() {
+      const WIDTH = 2048
+      const HEIGHT = 40
 
-    //   drawVisual = requestAnimationFrame(draw);
+      drawVisual = requestAnimationFrame(draw);
 
-    //   analyser.getByteTimeDomainData(dataArray);
+      analyser.getByteTimeDomainData(dataArray);
 
-    //   canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-    //   canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+      canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+      canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    //   canvasCtx.lineWidth = 2;
-    //   canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+      canvasCtx.lineWidth = 2;
+      canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
 
-    //   canvasCtx.beginPath();
+      canvasCtx.beginPath();
 
-    //   var sliceWidth = WIDTH * 1.0 / bufferLength;
-    //   var x = 0;
+      var sliceWidth = WIDTH * 1.0 / bufferLength;
+      var x = 0;
 
-    //   for (var i = 0; i < bufferLength; i++) {
+      for (var i = 0; i < bufferLength; i++) {
 
-    //     var v = dataArray[i] / 128.0;
-    //     var y = v * HEIGHT / 2;
+        var v = dataArray[i] / 128.0;
+        var y = v * HEIGHT / 2;
 
-    //     if (i === 0) {
-    //       canvasCtx.moveTo(x, y);
-    //     } else {
-    //       canvasCtx.lineTo(x, y);
-    //     }
+        if (i === 0) {
+          canvasCtx.moveTo(x, y);
+        } else {
+          canvasCtx.lineTo(x, y);
+        }
 
-    //     x += sliceWidth;
-    //   }
-
-    //   canvasCtx.lineTo(canvas.width, canvas.height / 2);
-    //   canvasCtx.stroke();
-    // };
-
-    // function doAnalyse() {
-    //   const source = audioContext.createMediaStreamSource(realMediaStream)
-
-    //   // audio.srcObject = realMediaStream
-    //   // const source = audioContext.createMediaElementSource(audio)
-
-    //   // const track = (realMediaStream.getAudioTracks())[0]
-    //   // // const source = audioContext.createMediaStreamTrackSource(track)
-    //   // track.enable = false
-
-    //   const volume = audioContext.createGain()
-    //   source.connect(volume)
-    //   volume.connect(analyser)
-    //   volume.gain.value = 5
-      
-    //   source.connect(analyser)
-    //   analyser.connect(audioContext.destination)
-    //   analyser.fftSize = 2048
-
-    //   bufferLength = analyser.frequencyBinCount;
-    //   dataArray = new Uint8Array(bufferLength);
-
-    //   analyser.getByteTimeDomainData(dataArray);
-    // }
-
-    // function createPromise() {
-    //   let resolveCb = null
-    //   let rejectCb = null
-    //   const promise = new Promise((resolve, reject) => {
-    //     resolveCb = resolve
-    //     rejectCb = reject
-    //   })
-
-    //   return {
-    //     resolveCb,
-    //     rejectCb,
-    //     promise
-    //   }
-    // }
-
-    // function getUserMedia() {
-    //   const {
-    //     resolveCb,
-    //     rejectCb,
-    //     promise
-    //   } = createPromise()
-
-    //   navigator.mediaDevices.getUserMedia(constraints).then(function (mediaStream) {
-    //       realMediaStream = mediaStream
-    //       resolveCb(true)
-    //     })
-    //     .catch((err) => {
-    //       console.log(err.name + ": " + err.message);
-    //       rejectCb(err)
-    //     })
-
-    //   return promise
-    // }
-
-    // btnTestStart.addEventListener('click', () => {})
-
-    // btnTestEnd.addEventListener('click', () => {
-    //   cancelAnimationFrame(drawVisual)
-    // })
-
-    // document.addEventListener('DOMContentLoaded', function () {
-    //   getUserMedia().then(() => {
-    //     getAudioContext()
-    //     doAnalyse()
-    //     draw()
-    //   }).catch(err => {
-    //     console.log('[ERROR] init error', err)
-    //   })
-    // })
-
-    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    var distortion = audioCtx.createWaveShaper();
-
-    function makeDistortionCurve(amount) {
-      var k = typeof amount === 'number' ? amount : 50,
-        n_samples = 44100,
-        curve = new Float32Array(n_samples),
-        deg = Math.PI / 180,
-        i = 0,
-        x;
-      for ( ; i < n_samples; ++i ) {
-        x = i * 2 / n_samples - 1;
-        curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+        x += sliceWidth;
       }
-      return curve;
+
+      canvasCtx.lineTo(canvas.width, canvas.height / 2);
+      canvasCtx.stroke();
     };
 
-    distortion.curve = makeDistortionCurve(400);
-    distortion.oversample = '4x';
+    function doAnalyse() {
+      const source = audioContext.createMediaStreamSource(realMediaStream)
+
+      // audio.srcObject = realMediaStream
+      // const source = audioContext.createMediaElementSource(audio)
+
+      // const track = (realMediaStream.getAudioTracks())[0]
+      // // const source = audioContext.createMediaStreamTrackSource(track)
+      // track.enable = false
+
+      const volume = audioContext.createGain()
+      source.connect(volume)
+      volume.connect(analyser)
+      volume.gain.value = 5
+      
+      source.connect(analyser)
+      // analyser.connect(audioContext.destination) // diable the destination for noise
+      analyser.fftSize = 2048
+
+      bufferLength = analyser.frequencyBinCount;
+      dataArray = new Uint8Array(bufferLength);
+
+      analyser.getByteTimeDomainData(dataArray);
+    }
+
+    function createPromise() {
+      let resolveCb = null
+      let rejectCb = null
+      const promise = new Promise((resolve, reject) => {
+        resolveCb = resolve
+        rejectCb = reject
+      })
+
+      return {
+        resolveCb,
+        rejectCb,
+        promise
+      }
+    }
+
+    function getUserMedia() {
+      const {
+        resolveCb,
+        rejectCb,
+        promise
+      } = createPromise()
+
+      navigator.mediaDevices.getUserMedia(constraints).then(function (mediaStream) {
+          realMediaStream = mediaStream
+          resolveCb(true)
+        })
+        .catch((err) => {
+          console.log(err.name + ": " + err.message);
+          rejectCb(err)
+        })
+
+      return promise
+    }
+
+    btnTestStart.addEventListener('click', () => {})
+
+    btnTestEnd.addEventListener('click', () => {
+      cancelAnimationFrame(drawVisual)
+    })
+
+    document.addEventListener('DOMContentLoaded', function () {
+      getUserMedia().then(() => {
+        getAudioContext()
+        doAnalyse()
+        draw()
+      }).catch(err => {
+        console.log('[ERROR] init error', err)
+      })
+    })
+
+    // var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // var distortion = audioCtx.createWaveShaper();
+
+    // function makeDistortionCurve(amount) {
+    //   var k = typeof amount === 'number' ? amount : 50,
+    //     n_samples = 44100,
+    //     curve = new Float32Array(n_samples),
+    //     deg = Math.PI / 180,
+    //     i = 0,
+    //     x;
+    //   for ( ; i < n_samples; ++i ) {
+    //     x = i * 2 / n_samples - 1;
+    //     curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+    //   }
+    //   return curve;
+    // };
+
+    // distortion.curve = makeDistortionCurve(400);
+    // distortion.oversample = '4x';
   </script>
 </body>
 

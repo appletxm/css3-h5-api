@@ -257,7 +257,6 @@
       let waveRequest = null
       let oscillsRequest = null
       const audioContext = new AudioContext()
-      const dest = audioContext.destination
 
       const track = audioContext.createMediaStreamSource(realMediaStream)
       // const audio = new Audio(realMediaStream)
@@ -265,9 +264,10 @@
       // const track = audioContext.createMediaElementSource(audio)
 
       const gainNode = audioContext.createGain()
-
       track.connect(gainNode)
-      gainNode.connect(dest)
+      gainNode.value = 5
+      // const dest = audioContext.destination
+      // gainNode.connect(dest)
       
       const analyser = audioContext.createAnalyser()
       gainNode.connect(analyser)
