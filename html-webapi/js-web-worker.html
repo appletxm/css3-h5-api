@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>web worker</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    body {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>web worker</h1>
+
+  <script src="/workers/test/js/traceur.js"></script>
+  <script type="module">
+    /* normal worker */
+    const worker = new Worker('web-work.js')
+    // worker.terminate()
+    worker.postMessage({
+      a: 99,
+      b: {
+        c: 888
+      }
+    })
+    worker.addEventListener('message', (e) => {
+      console.log('==page recieved message==', e)
+    })
+
+    /* inline worker */
+    const text = `
+      console.log('##worker 2 worked##')
+      self.addEventListener('message', (e) => {
+        console.log('##worker 2 ##', e)
+      })
+
+      setTimeout(() => {
+        self.postMessage({
+          d: 999,
+          c: {
+            e: 888
+          }
+        })
+      }, 5000)
+    `
+    const inlineContent = new Blob([text], {type: 'text/javascript'})
+    const inlineUrl = URL.createObjectURL(inlineContent)
+    const inlineWorker = new Worker(inlineUrl)
+    inlineWorker.postMessage({
+      r: 6666
+    })
+    inlineWorker.addEventListener('message', (e) => {
+      console.log('##page worker 2 recieved##', e)
+    })
+
+    window.addEventListener('unload', () => {
+      worker.terminate()
+    })
+  </script>
+
+</body>
+</html>
