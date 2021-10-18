@@ -43,4 +43,8 @@ InlineWorker.prototype.postMessage = function postMessage(data) {
   }, 0);
 };
 
+InlineWorker.prototype.ternimate = function() {
+  this.ternimate()
+}
+
 export default InlineWorker
