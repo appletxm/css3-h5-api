@@ -69,9 +69,9 @@
     <!-- audio: <select id="audio-devices"></select> -->
     <button id="btn-start" class="record">Start</button>
     <button id="btn-stop" class="stop">Stop</button>
-    <!-- <button id="btn-play" disabled>Play</button>
-    <button id="btn-delete" disabled>Delete</button>
-    <button id="btn-download" disabled>Download</button> -->
+   <!-- <button id="btn-play" disabled>Play</button> -->
+    <!-- <button id="btn-delete" disabled>Delete</button> -->
+    <button id="btn-download" disabled>Download</button>
 
     <dinv class="sound-clips"></dinv>
   </div>
@@ -86,22 +86,21 @@
     const record = document.querySelector('.record');
     const stop = document.querySelector('.stop');
     const soundClips = document.querySelector('.sound-clips');
+    const downloadBtn = document.querySelector('#btn-download')
+    // const options = {mimeType: 'audio/webm;'}
+    const options = {mimeType: 'audio/webm; codecs=opus'} // audio/webm;codecs=pcm
     let mediaRecorder = null
 
     function init() {
+      let chunks = [];
+      let audioURL = null
+
       record.onclick = function () {
         mediaRecorder.start();
         console.log(mediaRecorder.state);
         console.log("recorder started");
         record.style.background = "red";
         record.style.color = "black";
-      }
-
-      let chunks = [];
-
-      mediaRecorder.ondataavailable = function (e) {
-        console.info('***ondataavailable***', e)
-        chunks.push(e.data);
       }
 
       stop.onclick = function () {
@@ -112,6 +111,22 @@
         record.style.color = "";
       }
 
+      downloadBtn.onclick = function () {
+        if (audioURL) {
+          const a = document.createElement('a')
+          a.setAttribute('download', 'audio.mp3')
+          a.setAttribute('href', audioURL)
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+        }
+      }
+
+      mediaRecorder.ondataavailable = function (e) {
+        console.info('***ondataavailable***', e)
+        chunks.push(e.data);
+      }
+      
       mediaRecorder.onstop = function (e) {
         console.log("recorder stopped");
 
@@ -132,11 +147,12 @@
         clipContainer.appendChild(deleteButton);
         soundClips.appendChild(clipContainer);
 
-        debugger
+        downloadBtn.removeAttribute('disabled')
 
-        const blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
+        // const blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
+        const blob = new Blob(chunks, { 'type': 'audio/webm' });
         chunks = [];
-        const audioURL = window.URL.createObjectURL(blob);
+        audioURL = window.URL.createObjectURL(blob);
         audio.src = audioURL;
 
         deleteButton.onclick = function (e) {
@@ -156,7 +172,7 @@
 
         // Success callback
         .then(function (stream) {
-          mediaRecorder = new MediaRecorder(stream)
+          mediaRecorder = new MediaRecorder(stream, options)
           init()
         })
 
