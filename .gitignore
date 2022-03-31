@@ -13,3 +13,5 @@ package-lock.json
 uploads
 output
 tmp
+.DS_Store
+.ds_store

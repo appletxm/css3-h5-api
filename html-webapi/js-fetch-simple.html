@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 100px;">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="expires" content="0"> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>test css3 and h5 api</title>
+  <link rel="icon" href="../assets/images/logo.ico" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: .12rem;
+    }
+    .progress {
+      margin-top: .1rem;
+      width: 3rem;
+      height: .06rem;
+      background: #eee;
+    }
+
+    .progress p {
+      width: 0;
+      height: 100%;
+      background: green;
+      transition: width .5s ease-in-out;
+    }
+
+    .wrap-box {
+      border: 1px solid #eee;
+      padding: 10px;
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  99999
+  
+  <script>
+    const encrypty = function(url, headers, payload){
+      return new Promise((resolve, reject) => {
+        fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers,
+        })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.text();
+            }
+
+            return reject(response);
+          })
+          .then((data) => {
+            resolve(data);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      })
+    }
+
+    const HEADER = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    }
+    const payload = {
+      "channel": "booking",
+      "countryCode": "cn",
+      "lang": "zh",
+      "lob": "hotel",
+      "medium": "wechatmp",
+      "recordLocator": "10010565989"
+    }
+    const encodedPayload = btoa(JSON.stringify());
+    encrypty('http://localhost:8000/npsfeedbackstg/v2/encrypt', HEADER, encodedPayload)
+  </script>
+</body>
+
+</html>

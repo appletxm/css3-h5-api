@@ -6,6 +6,7 @@ const chalk = require('chalk')
 const app = express()
 const assignRouter = require('./server-router-assets')
 const apiRouter = require('./server-router-api')
+const wasmRouter = require('./server-router-aswm')
 const { routerUploadSingleFile } = require('./server-router-handle')
 const logger = require('./server-log')
 const ipAddress = require('ip').address()
@@ -57,6 +58,10 @@ app.use('/*.pdf', function (req, res) {
 
 app.use(['/*.png', '/*.jpg', '/*.gif', '/*.jpeg', '/*.ico'], function (req, res) {
   assignRouter(req, res, logger)
+})
+
+app.use(['/*.wasm', '/*.wat'], function (req, res) {
+  wasmRouter(req, res, logger)
 })
 
 // app.use(['/', '/src', '/assets'], (req, res) => {
